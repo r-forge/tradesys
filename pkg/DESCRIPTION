@@ -1,0 +1,12 @@
+Package: tradesys
+Version: 0.1
+Date: 2009-07-16
+Title: Trading System Modelling
+Author: Robert Sams <robert@sanctumfi.com>
+Maintainer: Robert Sams <robert@sanctumfi.com>
+Description: A framework for encoding and backtesting trading systems in R
+License: GPL
+Depends: zoo
+
+
+
