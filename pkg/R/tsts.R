@@ -58,6 +58,13 @@ tsts <- function(data, order.by=index(data), states=NULL, roll.at=NULL, pricecol
     pricecols <- list(valuation=pricecols[1], enterlong=pricecols[1], entershort=pricecols[1], exitlong=pricecols[1],
                       exitshort=pricecols[1], rolllong=pricecols[1], rollshort=pricecols[1])
   }
+  ## valuation column cannot have NA's. other price cols with NA's get assigned valuation price
+  if(any(is.na(data[, pricecols$valuation])))
+    stop(paste("NA's are not allowed in the valuation price column", pricecols$valuation))
+  for(col in pricecols){
+    if(any(n <- is.na(data[, col])))
+      data[which(n), col] <- data[which(n), pricecols$valuation]
+  }
   attr(data, "index") <- order.by
   attr(data, "tsts") <- list(roll.at=roll.at, pricecols=pricecols)
   class(data) <- "tsts"
