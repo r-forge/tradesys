@@ -35,10 +35,11 @@ tradesys(data, el=FALSE, es=FALSE, xl=FALSE, xs=FALSE,
 }
 
 \examples{
+library(TTR)
 data(spx)
 data(gbpusd)
-x <- tradesys(spx, el=MA(Close, 60) >= MA(Close, 120),
-              es=MA(Close, 60) < MA(Close, 120), pricecols="Close")
+x <- tradesys(spx, el=SMA(Close, 60) >= SMA(Close, 120),
+              es=SMA(Close, 60) < SMA(Close, 120), pricecols="Close")
 tail(x)
 tail(coredata(x))
 ## !! FIX THIS !!

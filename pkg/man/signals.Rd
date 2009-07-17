@@ -96,9 +96,5 @@ signals(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrycond=FALSE, entrywins=FALSE
   A state vector of the same length as the signal vectors.
 }
 
-\examples{
-signals(TRUE)
-}
-
 \author{Robert Sams \email{robert@sanctumfi.com}}
 \keyword{math}

@@ -7,6 +7,7 @@ Maintainer: Robert Sams <robert@sanctumfi.com>
 Description: A framework for encoding and backtesting trading systems in R
 License: GPL
 Depends: zoo
+Recomends: TTR
 
 
 
