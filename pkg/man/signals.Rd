@@ -14,10 +14,10 @@ signals(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrycond=FALSE, entrywins=FALSE
 }
 
 \arguments{
-  \item{el}{boolean. enter long signals.}
-  \item{es}{boolean. enter short signals.}
-  \item{xl}{boolean. exit long signals.}
-  \item{xs}{boolean. exit short signals.}
+  \item{el}{logical. enter long signals.}
+  \item{es}{logical. enter short signals.}
+  \item{xl}{logical. exit long signals.}
+  \item{xs}{logical. exit short signals.}
   \item{entrycond}{logical. see below.}
   \item{entrywins}{logical. see below.}
 }
@@ -32,8 +32,7 @@ signals(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrycond=FALSE, entrywins=FALSE
   \eqn{s_{i}=1}{s(i)=1} when \code{el[i]} is TRUE and
   \eqn{s_{i}=-1}{s(i)=-1} when \code{es[i]} is TRUE. When both
   \code{el[i]} and \code{es[i]} are FALSE,
-  \eqn{s_{i}=s_{i-1}}{s(i)=s(i-1)}. An error is raised if \code{el[i]}
-  and \code{es[i]} are both TRUE. These entry rules imply the property
+  \eqn{s_{i}=s_{i-1}}{s(i)=s(i-1)}. These entry rules imply the property
   of "once in, always in"; upon the first entry signal, the system's
   state vector is thereafter alternating sequences of 1's and -1's.
   
@@ -75,26 +74,48 @@ signals(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrycond=FALSE, entrywins=FALSE
     \code{1001} \tab 9 \tab 1\cr
     \code{1010} \tab 10\tab \eqn{min(s_{t-1}, 0)}{min[s(t-1), 0]}\cr %%%
     \code{1011} \tab 11\tab 0\cr %%%
-    \code{1100} \tab 12\tab INVALID\cr
-    \code{1101} \tab 13\tab INVALID\cr
-    \code{1110} \tab 14\tab INVALID\cr
-    \code{1111} \tab 15\tab INVALID\cr
+    \code{1100} \tab 12\tab \eqn{s_{t-1}}{s(t-1)} \cr
+    \code{1101} \tab 13\tab \eqn{max(s_{t-1}, 0)}{max[s(t-1), 0]} \cr
+    \code{1110} \tab 14\tab \eqn{min(s_{t-1}, 0)}{min[s(t-1), 0]} \cr
+    \code{1111} \tab 15\tab 0\cr
   }
+  Binaries 12-15 will raise a notice to the user pointing out that it is
+  a nonesense to have both \code{el[i]} and \code{es[i]} as TRUE. As the
+  above table implies, they are both treated as FALSE in this case.
+  
   When \code{entrywins} is TRUE, binary 5 and 7 map to -1 and binary 10
-  and 11 map to 1. When \code{entrycond} is TRUE, the signals themselves
-  are altered in the code before performing the above mapping. When
-  \code{xl[i]} is TRUE, \code{el[i:j]} is set to FALSE where \code{j} is
-  the offset of the first TRUE \code{es} after \code{i}. Symmetrically,
-  when \code{xs[i]} is TRUE, \code{es[i:j]} is set to FALSE where
-  \code{j} is the offset of the first TRUE \code{el} after \code{i}.
+  and 11 map to 1.
 
-  
-  
+  When \code{entrycond} is TRUE, the signals themselves are altered in
+  the code before performing the above mapping. When \code{xl[i]} is
+  TRUE, \code{el[i:j]} is set to FALSE where \code{j} is the offset of
+  the first TRUE \code{es} after \code{i}. Symmetrically, when
+  \code{xs[i]} is TRUE, \code{es[i:j]} is set to FALSE where \code{j} is
+  the offset of the first TRUE \code{el} after \code{i}.
+
 }
 
 \value{
   A state vector of the same length as the signal vectors.
 }
 
+\examples{
+el <- c(TRUE,FALSE)
+es <- c(FALSE,FALSE)
+signals(el, es)
+el[2] <- TRUE
+xl <- c(FALSE,TRUE)
+signals(el, es, xl)
+signals(el, es, xl, entrywins=TRUE)
+
+el <- c(TRUE,FALSE,TRUE)
+es <- c(FALSE,FALSE,FALSE)
+xl <- c(FALSE,TRUE,FALSE)
+
+signals(el, es, xl)
+signals(el, es, xl, entrycond=TRUE)
+signals(es, el, FALSE, xl)
+signals(es, el, FALSE, xl, entrycond=TRUE)
+}
 \author{Robert Sams \email{robert@sanctumfi.com}}
 \keyword{math}
