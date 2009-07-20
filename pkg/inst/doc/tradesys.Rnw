@@ -1,5 +1,6 @@
 \documentclass[a4]{article}
-\usepackage{G:/robert/tex/sty/Sweave}
+\usepackage{G:/robert/tex/sty/Sweave} % Mayfair machine needs this..
+%\usepackage{Sweave} 
 \usepackage{url}
 
 \newcommand{\code}[1]{\texttt{#1}}
@@ -23,21 +24,22 @@ Mention other related packages like blotter, TTR, xts, etc...
 \subsection{A formal definition of ``trading system''}
 A \emph{trading system} is an algorithm on a timeseries $X_{t}$ that
 specifies, for each time \emph{t}, whether the system's state is long,
-short or flat. Mathematically, it is a function that calculates each
-state $s_{i} \in \left\{1,0,-1\right\}$ on the basis of $X_{1}, ...,
-X_{i}$. $X_{t}$ may be as simple as a daily series of closing prices
-but is often a multivariate series $X_{t}^{v}$ with various price and
-other data. The states vector combined with the timeseries is
+short or flat. Mathematically, it is a function $f(X_{t})$ that
+calculates each state $s_{i} \in \left\{1,0,-1\right\}$ on the basis
+of $X_{1}, ..., X_{i}$. $X_{t}$ may be as simple as a daily series of
+closing prices but is often a multivariate series with various price
+and other data. The states vector combined with the timeseries is
 sufficient to do most analyses, like period returns, drawdowns,
-etc. Let's call such a combination $\left\{X_{t}^{v}, s_{t}\right\}$ a
+etc. Let's call such a combination $\left\{X_{t}, s_{t}\right\}$ a
 \emph{trading system time series}. It can be thought of as the graph
 of a trading system function when applied to a specific timeseries
 $X_{t}$ In this package a trading system time series is represented as
 class \code{tsts}.
 
 But the trading system itself, the function from data to states, is
-encoded using \code{tradesys}. This is best explained by working
-through a simple and concrete example.
+encoded using \code{tradesys}, which is a subclass of
+\code{tsts}. This is best explained by working through a simple
+example.
 
 \subsection{Example: Dual-moving average system}
 <<intro,results=HIDE>>=
@@ -72,11 +74,7 @@ So what did it return?
 <<intro3>>=
 class(x)
 tail(x)
-@ \code{x} has class \code{'tradesys'}, which is a subclass of the
-\code{'tsts'} class. We won't go into the details of these two classes
-just yet. Suffice it to say that \code{x} is \code{data} with the
-state vector calculated from the entry critieria cbinded to the right.
-
+@ 
 The analysis function \code{equity} is used to calculate period
 returns and the equity curve.
 <<intro4,fig=TRUE>>=
@@ -124,18 +122,7 @@ tail(x)
 @ 
 \code{makecols} takes a list of expressions. These expressions are
 evaluated in the same manner as the \code{el}, etc., and their results
-are cbinded to \code{data}. Look at trade 111.
-<<<intro7>>=
-trades(x)[111,]
-window(x, start="2008-06-10", end="2008-06-11")
-window(x, start="2008-07-21", end="2008-07-22")
-@ 
-Here you can see that the long entry on 10 June was done at 11 June's
-open price, and the long exit on 21 July was done at the 22 July open price.
-
-The list passed to \code{makecols} is evaluated \emph{before} the
-entry and exit expressions. They can therefore be referred to in the
-entry and exit expressions....
+are cbinded to \code{data}. 
 
 \section*{Computational details}
 The results in this paper were obtained using R

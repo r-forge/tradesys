@@ -23,7 +23,7 @@
 }
 
 \usage{
-tsts(data, order.by=index(data), states=NULL, roll.at=NULL, pricecols=1)
+tsts(data, order.by=index(data), states=0, roll.at=NULL, pricecols=1)
 }
 
 \arguments{
@@ -53,10 +53,8 @@ tsts(data, order.by=index(data), states=NULL, roll.at=NULL, pricecols=1)
   higher resolution series like tick data.
 
   \code{states} must be a numeric vector consisting of only 1s, -1s and
-  0s and of the same length as the number of rows in \code{data}. NA's
-  are not allowed. If \code{states} is NULL, \code{data} is searched for
-  a column named "states" and if no such column exits, states is a
-  vector of 0s only.
+  0s and its length must be a multiple of the number of rows in
+  \code{data}. NA's are not allowed. 
   
   \code{pricecols} specifies via column names or indices which columns
   hold price information. By default, all price information is in the
@@ -95,6 +93,9 @@ x <- tsts(m, order.by=seq(Sys.Date(), length.out=25, by="day"))
 is.tsts(x)
 class(x[1:10, ]) ## row indexing strips tsts attribute
 class(x[, 1:2])  ## ... so does column indexing
+
+tsts(matrix(pi))
+tsts(matrix(rnorm(100)))
 
 ## Availiable methods
 print(x)

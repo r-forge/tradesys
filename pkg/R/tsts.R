@@ -1,17 +1,9 @@
-tsts <- function(data, order.by=index(data), states=NULL, roll.at=NULL, pricecols=1){
+tsts <- function(data, order.by=index(data), states=0, roll.at=NULL, pricecols=1){
   data <- as.matrix(data)
   if(length(colnames(data)) != unique(length(colnames(data))))
     stop("data must have unique column names.")
-  if(is.null(states)){
-    if("states" %in% tolower(colnames(data))){
-      states <- data[, which(tolower(colnames(data)) == "states")]
-      data <- data[, -which(tolower(colnames(data)) == "states")]
-    }else{
-      states <- rep(0, nrow(data))
-    }
-  } 
-  if(length(states) != nrow(data))
-    stop("length(states) must equal nrow(data)")
+  if(nrow(data) %% length(states) != 0)
+    stop("length(states) must be a multiple of nrow(data)")
   if(any(!states %in% c(0,1,-1)))
     stop("states must be a vector composed of 0, 1, and -1.")
   data <- cbind(data, states=states)
@@ -124,7 +116,7 @@ tail.tsts <- function(x, ...){
 
 window.tsts <- function(x, index = index.tsts(x), start = NULL, end = NULL, ...){
   y <- window(as.zoo.tsts(x), index, start, end, ...)
-  tsts(y, index(y), NULL, attr(x, "tsts")$roll.at, attr(x, "tsts")$pricecols)
+  tsts(y[, which(colnames(y) == "states")], index(y), as.vector(y[, "states"]), attr(x, "tsts")$roll.at, attr(x, "tsts")$pricecols)
 }
 
 as.matrix.tsts <- function(x, ...){
