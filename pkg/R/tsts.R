@@ -1,4 +1,6 @@
-tsts <- function(data, order.by=index(data), states=0, roll.at=NULL, pricecols=1){
+tsts <- function(data, order.by=index(data), states=0, roll.at=NULL, pricecols=1, entrywins=FALSE, entrycond=FALSE){
+  Index <- order.by
+  CoreAttr <- attributes(data)
   data <- as.matrix(data)
   if(length(colnames(data)) != unique(length(colnames(data))))
     stop("data must have unique column names.")
@@ -6,16 +8,15 @@ tsts <- function(data, order.by=index(data), states=0, roll.at=NULL, pricecols=1
     stop("length(states) must be a multiple of nrow(data)")
   if(any(!states %in% c(0,1,-1)))
     stop("states must be a vector composed of 0, 1, and -1.")
-  data <- cbind(data, states=states)
-  names(order.by) <- NULL ## Huh.. whence the "" names?
-  if(length(order.by) != length(unique(order.by)))
+  data <- cbind(data, St=states)
+  if(length(Index) != length(unique(Index)))
     stop("all order.by must be unique.")
-  if(length(order.by) != nrow(data))
+  if(length(Index) != nrow(data))
     stop("length(order.by) must equal nrow(data)")
   if(!is.null(roll.at)){
-    if(any(class(roll.at) != class(order.by)))
+    if(any(class(roll.at) != class(Index)))
       stop("roll.at and order.by must be the same class")
-    if(any(!roll.at %in% order.by))
+    if(any(!roll.at %in% Index))
       stop("all roll.at must be in order.by")
   }
   ## process pricecols parameter
@@ -36,8 +37,8 @@ tsts <- function(data, order.by=index(data), states=0, roll.at=NULL, pricecols=1
     if("roll" %in% names(pricecols))
       l <- replace(l, which(names(l) %in% c("rolllong","rollshort")), pricecols$roll)
     lapply(l, function(x, data){
-      if(x == which(colnames(data) == "states"))
-        stop("pricecol maps to the 'states' column.")
+      if(x == which(colnames(data) == "St"))
+        stop("pricecol cannot map to the 'St' column.")
       if(is.character(x))
         if(!x %in% colnames(data))
           stop(paste("pricecol", x, "is not in colnames(data)"))
@@ -57,8 +58,10 @@ tsts <- function(data, order.by=index(data), states=0, roll.at=NULL, pricecols=1
     if(any(n <- is.na(data[, col])))
       data[which(n), col] <- data[which(n), pricecols$valuation]
   }
-  attr(data, "index") <- order.by
-  attr(data, "tsts") <- list(roll.at=roll.at, pricecols=pricecols)
+  attr(data, "index") <- Index
+  attr(data, "tsts") <- list(roll.at=roll.at, pricecols=pricecols, coreattr=CoreAttr,
+                             exprcols=NULL, exprsigs=list(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE),
+                             entrywins=entrywins, entrycond=entrycond)
   class(data) <- "tsts"
   data
 }
@@ -87,7 +90,7 @@ index.tsts <- function(x, ...){
   if(length(value) != length(index(x)))
     stop("index(x) and value must be the same length.")
   if(class(index(x))[1] != class(value)[1])
-    stop("index(x) and value must be the same class.")
+    warning("index(x) and value are not of the same class.")
   if(!is.null(attr(x, "tsts")$roll.at)){
     if(class(attr(x, "tsts")$roll.at)[1] != class(value)[1])
       stop("index(x) and value must be the same class.")
@@ -112,11 +115,6 @@ head.tsts <- function(x, ...){
 
 tail.tsts <- function(x, ...){
   tail(as.zoo(x), ...)
-}
-
-window.tsts <- function(x, index = index.tsts(x), start = NULL, end = NULL, ...){
-  y <- window(as.zoo.tsts(x), index, start, end, ...)
-  tsts(y[, which(colnames(y) == "states")], index(y), as.vector(y[, "states"]), attr(x, "tsts")$roll.at, attr(x, "tsts")$pricecols)
 }
 
 as.matrix.tsts <- function(x, ...){

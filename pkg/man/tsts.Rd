@@ -8,7 +8,6 @@
 \alias{end.tsts}
 \alias{head.tsts}
 \alias{tail.tsts}
-\alias{window.tsts}
 \alias{as.matrix.tsts}
 \alias{as.zoo.tsts}
 \alias{is.tsts}
@@ -23,7 +22,8 @@
 }
 
 \usage{
-tsts(data, order.by=index(data), states=0, roll.at=NULL, pricecols=1)
+tsts(data, order.by=index(data), states=0, roll.at=NULL,
+     pricecols=1, entrywins=FALSE, entrycond=FALSE)
 }
 
 \arguments{
@@ -34,6 +34,8 @@ tsts(data, order.by=index(data), states=0, roll.at=NULL, pricecols=1)
   \item{roll.at}{vector of index points points where roll trades are
     done. (Must be the same class as \code{order.by}.)}
   \item{pricecols}{see below.}
+  \item{entrywins}{logical. see below.}
+  \item{entrycond}{logical. see below.}
 }
 
 \details{
@@ -87,9 +89,9 @@ tsts(data, order.by=index(data), states=0, roll.at=NULL, pricecols=1)
 }
 
 \examples{
-## A degenerate system
-m <- matrix(rnorm(50), ncol=2, dimnames=list(NULL, c("foo","bar")))
-x <- tsts(m, order.by=seq(Sys.Date(), length.out=25, by="day"))
+data(spx)
+spx <- window(spx, start="2009-01-01")
+x <- tsts(spx)
 is.tsts(x)
 class(x[1:10, ]) ## row indexing strips tsts attribute
 class(x[, 1:2])  ## ... so does column indexing
@@ -103,7 +105,6 @@ head(x)
 tail(x)
 start(x)
 end(x)
-window(x, end=Sys.Date() + 5)
 as.matrix(x)
 as.zoo(x)
 index(x) <- index(x) + 1

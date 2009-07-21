@@ -57,9 +57,9 @@ The sample dataset \code{spx} is a zoo matrix and contains daily
 OHLC and open interest data for about 60 years. The system can be
 defined in one simple call to \code{tradesys}.
 <<intro2>>=
-x <- tradesys(data=spx, 
-              el=SMA(Close, 60) >= SMA(Close, 120), 
-              es=SMA(Close, 60) < SMA(Close, 120))
+x <- tsts(spx)
+addsig(x, "el", SMA(Close, 60) >= SMA(Close, 120))
+addsig(x, "es", SMA(Close, 60) < SMA(Close, 120))
 @ 
 The \code{el} and \code{es} parameters define the system's long and
 short entry criteria, respectively. They take expression objects that
@@ -100,10 +100,7 @@ The \code{'tsts'} class has a very flexible mechanism for defining the
 price context of a trading system timeseries. We can set this from
 \code{tradesys} using the \code{pricecols} parameter.
 <<intro5>>=
-x <- tradesys(data=spx, 
-              el=SMA(Close, 60) >= SMA(Close, 120), 
-              es=SMA(Close, 60) < SMA(Close, 120),
-              pricecols="Close")
+x <- tsts(spx, pricecols="Close")
 @ 
 
 This specifies that the system will assume that all trades are
@@ -112,14 +109,11 @@ that we want the system to compute signals on closing prices, position
 valuations at closing prices, and trades on the \emph{following day's}
 open price. This (and much else) can be accomplished with the
 \code{makecols} parameter.
-<<intro6>>=
-x <- tradesys(data=spx, 
-              el=SMA(Close, 60) >= SMA(Close, 120), 
-              es=SMA(Close, 60) < SMA(Close, 120),
-              pricecols=list(long="Next", short="Next", valuation="Close"),
-              makecols=list(Next=c(embed(Open, 2)[, 1], NA)))
-tail(x)
-@ 
+%%<<intro6>>=
+%% x <- tradesys(data=spx, pricecols=list(long="Next", short="Next", valuation="Close"))
+%%               makecols=list(Next=c(embed(Open, 2)[, 1], NA)))
+%% tail(x)
+%%@ 
 \code{makecols} takes a list of expressions. These expressions are
 evaluated in the same manner as the \code{el}, etc., and their results
 are cbinded to \code{data}. 

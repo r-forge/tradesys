@@ -65,8 +65,9 @@ OHLC and open interest data for about 60 years. The system can be
 defined in one simple call to \code{tradesys}.
 \begin{Schunk}
 \begin{Sinput}
-> x <- tradesys(data = spx, el = SMA(Close, 60) >= SMA(Close, 120), 
-+     es = SMA(Close, 60) < SMA(Close, 120))
+> x <- tsts(spx)
+> addsig(x, "el", SMA(Close, 60) >= SMA(Close, 120))
+> addsig(x, "es", SMA(Close, 60) < SMA(Close, 120))
 \end{Sinput}
 \end{Schunk}
 The \code{el} and \code{es} parameters define the system's long and
@@ -84,19 +85,19 @@ So what did it return?
 > class(x)
 \end{Sinput}
 \begin{Soutput}
-[1] "tradesys" "tsts"    
+[1] "tsts"
 \end{Soutput}
 \begin{Sinput}
 > tail(x)
 \end{Sinput}
 \begin{Soutput}
-             Open   High    Low  Close     Volume states
-2009-05-12 910.52 915.57 896.46 908.35 6871750400     -1
-2009-05-13 905.40 905.40 882.80 883.92 7091820000     -1
-2009-05-14 884.24 898.36 882.52 893.07 6134870000     -1
-2009-05-15 892.76 896.97 878.94 882.88 5439720000     -1
-2009-05-18 886.07 910.00 886.07 909.71 5702150000     -1
-2009-05-19 909.67 916.39 905.22 908.13 6616270000     -1
+             Open   High    Low  Close     Volume St
+2009-05-12 910.52 915.57 896.46 908.35 6871750400 -1
+2009-05-13 905.40 905.40 882.80 883.92 7091820000 -1
+2009-05-14 884.24 898.36 882.52 893.07 6134870000 -1
+2009-05-15 892.76 896.97 878.94 882.88 5439720000 -1
+2009-05-18 886.07 910.00 886.07 909.71 5702150000 -1
+2009-05-19 909.67 916.39 905.22 908.13 6616270000 -1
 \end{Soutput}
 \end{Schunk}
 The analysis function \code{equity} is used to calculate period
@@ -156,8 +157,7 @@ price context of a trading system timeseries. We can set this from
 \code{tradesys} using the \code{pricecols} parameter.
 \begin{Schunk}
 \begin{Sinput}
-> x <- tradesys(data = spx, el = SMA(Close, 60) >= SMA(Close, 120), 
-+     es = SMA(Close, 60) < SMA(Close, 120), pricecols = "Close")
+> x <- tsts(spx, pricecols = "Close")
 \end{Sinput}
 \end{Schunk}
 
@@ -167,24 +167,11 @@ that we want the system to compute signals on closing prices, position
 valuations at closing prices, and trades on the \emph{following day's}
 open price. This (and much else) can be accomplished with the
 \code{makecols} parameter.
-\begin{Schunk}
-\begin{Sinput}
-> x <- tradesys(data = spx, el = SMA(Close, 60) >= SMA(Close, 120), 
-+     es = SMA(Close, 60) < SMA(Close, 120), pricecols = list(long = "Next", 
-+         short = "Next", valuation = "Close"), makecols = list(Next = c(embed(Open, 
-+         2)[, 1], NA)))
-> tail(x)
-\end{Sinput}
-\begin{Soutput}
-             Open   High    Low  Close     Volume   Next states
-2009-05-12 910.52 915.57 896.46 908.35 6871750400 905.40     -1
-2009-05-13 905.40 905.40 882.80 883.92 7091820000 884.24     -1
-2009-05-14 884.24 898.36 882.52 893.07 6134870000 892.76     -1
-2009-05-15 892.76 896.97 878.94 882.88 5439720000 886.07     -1
-2009-05-18 886.07 910.00 886.07 909.71 5702150000 909.67     -1
-2009-05-19 909.67 916.39 905.22 908.13 6616270000 908.13     -1
-\end{Soutput}
-\end{Schunk}
+%%<<intro6>>=
+%% x <- tradesys(data=spx, pricecols=list(long="Next", short="Next", valuation="Close"))
+%%               makecols=list(Next=c(embed(Open, 2)[, 1], NA)))
+%% tail(x)
+%%@ 
 \code{makecols} takes a list of expressions. These expressions are
 evaluated in the same manner as the \code{el}, etc., and their results
 are cbinded to \code{data}. 
