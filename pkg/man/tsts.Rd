@@ -16,6 +16,10 @@
 \alias{states<-}
 \alias{phases}
 \alias{phases<-}
+\alias{roll.at}
+\alias{roll.at<-}
+\alias{pricecols}
+\alias{pricecols<-}
 
 \title{Trading System Time Series}
 

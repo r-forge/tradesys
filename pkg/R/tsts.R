@@ -13,13 +13,6 @@ tsts <- function(data, order.by=index(data), states=0, roll.at=NULL, pricecols=1
     stop("all order.by must be unique.")
   if(length(Index) != nrow(data))
     stop("length(order.by) must equal nrow(data)")
-  ## valuation column cannot have NA's. other price cols with NA's get assigned valuation price
-  if(any(is.na(data[, pricecols$valuation])))
-    stop(paste("NA's are not allowed in the valuation price column", pricecols$valuation))
-  for(col in pricecols){
-    if(any(n <- is.na(data[, col])))
-      data[which(n), col] <- data[which(n), pricecols$valuation]
-  }
   attr(data, "index") <- Index
   attr(data, "tsts") <- list(roll.at=NULL, pricecols=pricecols, coreattr=CoreAttr,
                              exprcols=NULL, exprsigs=list(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE),

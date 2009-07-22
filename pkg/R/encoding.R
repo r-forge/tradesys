@@ -24,3 +24,35 @@ addcol <- function(x, name, expr){
   coredata(y) <- coredata(y)
   eval.parent(substitute(x <- y))
 }
+
+entrywins <- function(x){
+  if(!is.tsts(x))
+    stop("x must be class 'tsts'.")
+  attr(x, "tsts")$entrywins
+}
+
+"entrywins<-" <- function(x, value){
+  if(!is.tsts(x))
+    stop("x must be class 'tsts'.")
+  if(!is.logical(value))
+    stop("value must be logical.")
+  attr(x, "tsts")$entrywins <- value
+  coredata(x) <- coredata(x)
+  x
+}
+
+entrycond <- function(x){
+  if(!is.tsts(x))
+    stop("x must be class 'tsts'.")
+  attr(x, "tsts")$entrycond
+}
+
+"entrycond<-" <- function(x, value){
+  if(!is.tsts(x))
+    stop("x must be class 'tsts'.")
+  if(!is.logical(value))
+    stop("value must be logical.")
+  attr(x, "tsts")$entrycond <- value
+  coredata(x) <- coredata(x)
+  x
+}

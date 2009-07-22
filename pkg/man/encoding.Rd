@@ -2,6 +2,10 @@
 
 \alias{addsig}
 \alias{addcol}
+\alias{entrywins}
+\alias{entrywins<-}
+\alias{entrycond}
+\alias{entrycond<-}
 
 \title{Trading System Encoding}
 
@@ -15,12 +19,20 @@
 \usage{
 addsig(x, name, expr)
 addcol(x, name, expr)
+
+entrywins(x)
+entrywins(x) <- value
+
+entrycond(x)
+entrycond(x) <- value
+
 }
 
 \arguments{
   \item{x}{a tsts object.}
   \item{expr}{expression.}
   \item{name}{character. signal name or column name.}
+  \item{value}{logical. see below.}
 }
 
 \details{
@@ -37,14 +49,25 @@ addcol(x, name, expr)
 
 \examples{
 data(spx)
-spxx <- tsts(spx)
+x <- tsts(spx)
 
-addcol(spxx, "Diff", Open - Close)
-addcol(spxx, "Biff", Open * 2)
-addsig(spxx, "el", Open < Close)
-addsig(spxx, "es", Open > Close)
+library(TTR)
+addcol(x, "MAF", SMA(Close, 60))
+addcol(x, "MAS", SMA(Close, 120))
 
-tail(spxx)
+head(x)
+tail(x)
+
+addsig(x, "el", MAF >= MAS)
+addsig(x, "es", MAF < MAS)
+
+head(x)
+tail(x)
+
+entrywins(x)
+entrywins(x) <- TRUE
+entrycond(x)
+entrycond(x) <- TRUE
 }
 
 \author{Robert Sams \email{robert@sanctumfi.com}}
