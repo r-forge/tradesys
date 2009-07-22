@@ -1,7 +1,7 @@
 
-\name{signals}
+\name{signalmap}
 
-\alias{signals}
+\alias{signalmap}
 
 \title{Signals-to-States}
 
@@ -10,7 +10,7 @@
 }
 
 \usage{
-signals(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrycond=FALSE, entrywins=FALSE) 
+signalmap(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrycond=FALSE, entrywins=FALSE) 
 }
 
 \arguments{
@@ -23,7 +23,7 @@ signals(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrycond=FALSE, entrywins=FALSE
 }
 \details{
   
-  \code{signals} converts entry and exit signals into a numeric vector
+  \code{signalmap} converts entry and exit signals into a numeric vector
   of states. A signal is a logical value and is one of four types:
   \emph{enter long}, \emph{enter short}, \emph{exit long}, and
   \emph{exit short}. All four signals taken together determine state
@@ -57,7 +57,7 @@ signals(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrycond=FALSE, entrywins=FALSE
   treated as FALSE.
   
   Here is a complete definition of the mapping computed by
-  \code{signals}. Think of each signal quad as a four digit binary
+  \code{signalmap}. Think of each signal quad as a four digit binary
   number, where the left-most digit represents the enter long signal,
   the next digit represents the enter short signal, and so on. 
   \tabular{lll}{
@@ -102,20 +102,20 @@ signals(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrycond=FALSE, entrywins=FALSE
 \examples{
 el <- c(TRUE,FALSE)
 es <- c(FALSE,FALSE)
-signals(el, es)
+signalmap(el, es)
 el[2] <- TRUE
 xl <- c(FALSE,TRUE)
-signals(el, es, xl)
-signals(el, es, xl, entrywins=TRUE)
+signalmap(el, es, xl)
+signalmap(el, es, xl, entrywins=TRUE)
 
 el <- c(TRUE,FALSE,TRUE)
 es <- c(FALSE,FALSE,FALSE)
 xl <- c(FALSE,TRUE,FALSE)
 
-signals(el, es, xl)
-signals(el, es, xl, entrycond=TRUE)
-signals(es, el, FALSE, xl)
-signals(es, el, FALSE, xl, entrycond=TRUE)
+signalmap(el, es, xl)
+signalmap(el, es, xl, entrycond=TRUE)
+signalmap(es, el, FALSE, xl)
+signalmap(es, el, FALSE, xl, entrycond=TRUE)
 }
 \author{Robert Sams \email{robert@sanctumfi.com}}
 \keyword{math}

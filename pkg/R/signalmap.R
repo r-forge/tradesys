@@ -1,4 +1,4 @@
-signals <- function(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrycond=FALSE, entrywins=FALSE){
+signalmap <- function(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrycond=FALSE, entrywins=FALSE){
   ## NA's are treated as FALSE
   el[which(is.na(el))] <- FALSE
   es[which(is.na(es))] <- FALSE

@@ -16,11 +16,11 @@ coredata.tsts <- function(x, ...){
     value <- cbind(value, do.call("cbind", cols))    
   }
   ## Evaluate exprsigs
-  s <- signals(eval(attr(x, "tsts")$exprsigs$el, c(l, as.list(as.data.frame(value)))),
-               eval(attr(x, "tsts")$exprsigs$es, c(l, as.list(as.data.frame(value)))),
-               eval(attr(x, "tsts")$exprsigs$xl, c(l, as.list(as.data.frame(value)))),
-               eval(attr(x, "tsts")$exprsigs$xs, c(l, as.list(as.data.frame(value)))),
-               attr(x, "tsts")$entrycond, attr(x, "tsts")$entrywins)
+  s <- signalmap(eval(attr(x, "tsts")$exprsigs$el, c(l, as.list(as.data.frame(value)))),
+                 eval(attr(x, "tsts")$exprsigs$es, c(l, as.list(as.data.frame(value)))),
+                 eval(attr(x, "tsts")$exprsigs$xl, c(l, as.list(as.data.frame(value)))),
+                 eval(attr(x, "tsts")$exprsigs$xs, c(l, as.list(as.data.frame(value)))),
+                 attr(x, "tsts")$entrycond, attr(x, "tsts")$entrywins)
   y <- cbind(value, St=s)
   attr(y, "tsts") <- attr(x, "tsts")
   class(y) <- "tsts"
