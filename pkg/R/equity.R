@@ -34,10 +34,10 @@ equity <- function(x, delta=NULL, uselog=FALSE){
     }
     r[i] <- pnl[i] * d[i]
   }
-  y <- cbind(trade=NA, states=s, delta=d, price=p, ror=r, equity=cumprod(1+r))
+  y <- cbind(Trade=NA, St=s, Delta=d, Price=p, RoR=r, Equity=cumprod(1+r))
   ## crate trade id's
-  y[(n+1), "trade"] <- 1:length(n)
-  y[, "trade"] <- na.locf(y[, "trade"], na.rm=FALSE)
-  y[which(states(x) == 0), "trade"] <- 0
+  y[(n+1), "Trade"] <- 1:length(n)
+  y[, "Trade"] <- na.locf(y[, "Trade"], na.rm=FALSE)
+  y[which(states(x) == 0), "Trade"] <- 0
   zoo(y, order.by=index(x))
 }

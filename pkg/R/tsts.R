@@ -18,6 +18,7 @@ tsts <- function(data, order.by=index(data), states=0, roll.at=NULL, pricecols=1
                              columns=NULL, signals=list(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE),
                              entrywins=FALSE, entrycond=FALSE)
   class(data) <- "tsts"
+  pricecols(data) <- pricecols
   if(!is.null(roll.at))
     roll.at(data) <- roll.at
   data
