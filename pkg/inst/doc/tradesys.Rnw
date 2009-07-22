@@ -28,18 +28,13 @@ short or flat. Mathematically, it is a function $f(X_{t})$ that
 calculates each state $s_{i} \in \left\{1,0,-1\right\}$ on the basis
 of $X_{1}, ..., X_{i}$. $X_{t}$ may be as simple as a daily series of
 closing prices but is often a multivariate series with various price
-and other data. The states vector combined with the timeseries is
-sufficient to do most analyses, like period returns, drawdowns,
-etc. Let's call such a combination $\left\{X_{t}, s_{t}\right\}$ a
-\emph{trading system time series}. It can be thought of as the graph
-of a trading system function when applied to a specific timeseries
-$X_{t}$ In this package a trading system time series is represented as
-class \code{tsts}.
+and other data. The states vector combined with the timeseries is the
+raw material for backtesting research from the calculation of period
+returns onwards. Let's call such a combination $\left\{X_{t},
+s_{t}\right\}$ a \emph{trading system time series}. In this package a
+trading system time series is represented as class \code{tsts}.
 
-But the trading system itself, the function from data to states, is
-encoded using \code{tradesys}, which is a subclass of
-\code{tsts}. This is best explained by working through a simple
-example.
+But what about $f(X_{t})$, what form does it take?...
 
 \subsection{Example: Dual-moving average system}
 <<intro,results=HIDE>>=
@@ -48,31 +43,30 @@ library(TTR)
 @ 
 This system is long whenever the 60-day moving average of price is
 above the 120-day moving average and short otherwise. We test it on
-the S\&P 500 index.
+the S\&P 500 index dataset \code{spx}, which is a zoo matrix and
+contains daily OHLC and open interest data for about 60 years.
 <<intro1>>=
 data(spx)
-colnames(spx)
+tail(spx)
 @ 
-The sample dataset \code{spx} is a zoo matrix and contains daily
-OHLC and open interest data for about 60 years. The system can be
-defined in one simple call to \code{tradesys}.
+The system can be defined in three lines.
 <<intro2>>=
 x <- tsts(spx)
 addsig(x, "el", SMA(Close, 60) >= SMA(Close, 120))
 addsig(x, "es", SMA(Close, 60) < SMA(Close, 120))
 @ 
-The \code{el} and \code{es} parameters define the system's long and
-short entry criteria, respectively. They take expression objects that
-must evaluate to logical vectors equal in length to \code{nrow(data)}.
-The expressions are evaluated in the normal way using R's \emph{lazy
-  evaluation} scheme, although \code{tradesys} first puts the columns
-of \code{data} into the evaluation frame as named vectors, so
-\code{Close} in the above expression evaluates as if it were
-\code{data[, `Close']}.
 
-So what did it return?
+\code{addsig}--''add signal''--defines the long and short entry
+criteria, respectively. They take expression objects that must
+evaluate to logical vectors equal in length to \code{nrow(x)}.  The
+expressions are evaluated in the normal way using R's \emph{lazy
+  evaluation} scheme, although \code{addsig} first puts the columns of
+\code{x} into the evaluation frame as named vectors, so \code{Close}
+in the above expression evaluates as if it were \code{data[,
+    `Close']}.
+
+The states vector is now defined and we can do some backtesting.
 <<intro3>>=
-class(x)
 tail(x)
 @ 
 The analysis function \code{equity} is used to calculate period
@@ -80,8 +74,8 @@ returns and the equity curve.
 <<intro4,fig=TRUE>>=
 y <- equity(x, uselog=TRUE)
 tail(y)
-EquityStats(y[, c("equity")])
-plot(y[, c("ror", "equity")], main="60/120 DMA -- SPX")
+EquityStats(y[, c("Equity")])
+plot(y[, c("RoR", "Equity")], main="60/120 DMA -- SPX")
 @ 
 Use \code{trades} to enumerate system trades and their holding
 period returns.
@@ -92,32 +86,52 @@ tail(z)
 What prices are assumed in these calcuations, as \code{spx} contains
 columns for open, high, low and close prices? By default, the prices
 used in these performance calculations is the left-most column, which
-is this case, is the open price. This won't due. We can't calculate
-our signal on Monday's closing price whilst trading on that signal
-using Monday's open price! 
+is this case, is the open price. 
+<<intro5>>=
+unlist(pricecols(x))
+@ 
+This won't due. We can't calculate our signal on Monday's closing
+price whilst trading on that signal using Monday's open price!
 
 The \code{'tsts'} class has a very flexible mechanism for defining the
-price context of a trading system timeseries. We can set this from
-\code{tradesys} using the \code{pricecols} parameter.
-<<intro5>>=
-x <- tsts(spx, pricecols="Close")
+price context of a trading system timeseries. 
+<<intro6>>=
+pricecols(x) <- "Close"
+unlist(pricecols(x))
 @ 
-
 This specifies that the system will assume that all trades are
 executed at the closing price. This is an improvement. But let's say
 that we want the system to compute signals on closing prices, position
 valuations at closing prices, and trades on the \emph{following day's}
-open price. This (and much else) can be accomplished with the
-\code{makecols} parameter.
-%%<<intro6>>=
-%% x <- tradesys(data=spx, pricecols=list(long="Next", short="Next", valuation="Close"))
-%%               makecols=list(Next=c(embed(Open, 2)[, 1], NA)))
-%% tail(x)
-%%@ 
-\code{makecols} takes a list of expressions. These expressions are
-evaluated in the same manner as the \code{el}, etc., and their results
-are cbinded to \code{data}. 
+open price. This is a good place to introduce to the \code{addcol}
+function, for it is our solution to this problem.
+<<intro7>>=
+addcol(x, "Next", c(embed(Open, 2)[, 1], NA))
+tail(x)
+@ 
+So now \code{x} has an additional column named ``Next'', which
+contains the open price of the \emph{next} day. Like the signal
+expressions, the expression that defines this column is stored in
+\code{x} so that the column is recalculated everytime new data is
+assigned to \code{x} via \code{coredata}. Now we can update our
+pricing assumptions with another call to \code{pricecols}.
+<<intro8>>=
+pricecols(x) <- list(valuation="Close", entry="Next", exit="Next")
+@ 
+Let's Re-run \code{trades} and examine an arbitrary example, say trade 109.
+<<intro9>>=
+trades(x)[109,]
+@ 
+You can confirm for yourself that the trade entry on 11-09 is done 
+at the Open price on 11-12...
+<<intro10>>=
+window(spx, start="2007-11-09", end="2007-11-12")
+window(spx, start="2008-01-03", end="2008-01-04")
+@ 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Splicing Timeseries}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Computational details}
 The results in this paper were obtained using R
 \Sexpr{paste(R.Version()[6:7], collapse = ".")} with the packages
