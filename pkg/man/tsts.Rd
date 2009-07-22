@@ -116,6 +116,8 @@ states(x)
 states(x) <- c(0,1,1,1,-1) ## length multiple of nrow(x)
 phases(x)
 phases(x) <- phases(x)
+roll.at(x)
+roll.at(x) <- as.Date(c("2009-02-26","2009-04-21"))
 }
 
 \author{Robert Sams \email{robert@sanctumfi.com}}

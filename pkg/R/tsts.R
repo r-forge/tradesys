@@ -13,12 +13,6 @@ tsts <- function(data, order.by=index(data), states=0, roll.at=NULL, pricecols=1
     stop("all order.by must be unique.")
   if(length(Index) != nrow(data))
     stop("length(order.by) must equal nrow(data)")
-  if(!is.null(roll.at)){
-    if(any(class(roll.at) != class(Index)))
-      stop("roll.at and order.by must be the same class")
-    if(any(!roll.at %in% Index))
-      stop("all roll.at must be in order.by")
-  }
   ## process pricecols parameter
   if(is.list(pricecols)){
     names(pricecols) <- tolower(names(pricecols))
@@ -59,10 +53,12 @@ tsts <- function(data, order.by=index(data), states=0, roll.at=NULL, pricecols=1
       data[which(n), col] <- data[which(n), pricecols$valuation]
   }
   attr(data, "index") <- Index
-  attr(data, "tsts") <- list(roll.at=roll.at, pricecols=pricecols, coreattr=CoreAttr,
+  attr(data, "tsts") <- list(roll.at=NULL, pricecols=pricecols, coreattr=CoreAttr,
                              exprcols=NULL, exprsigs=list(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE),
                              entrywins=FALSE, entrycond=FALSE)
   class(data) <- "tsts"
+  if(!is.null(roll.at))
+    roll.at(data) <- roll.at
   data
 }
 
