@@ -118,6 +118,9 @@ phases(x)
 phases(x) <- phases(x)
 roll.at(x)
 roll.at(x) <- as.Date(c("2009-02-26","2009-04-21"))
+pricecols(x)
+pricecols(x) <- "Close"
+pricecols(x) <- list(entry="Close", exit="Open")
 }
 
 \author{Robert Sams \email{robert@sanctumfi.com}}

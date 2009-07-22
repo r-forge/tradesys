@@ -13,38 +13,6 @@ tsts <- function(data, order.by=index(data), states=0, roll.at=NULL, pricecols=1
     stop("all order.by must be unique.")
   if(length(Index) != nrow(data))
     stop("length(order.by) must equal nrow(data)")
-  ## process pricecols parameter
-  if(is.list(pricecols)){
-    names(pricecols) <- tolower(names(pricecols))
-    l <- list(valuation=1, enterlong=1, entershort=1, exitlong=1, exitshort=1, rolllong=1, rollshort=1)
-    n <- which(names(pricecols) %in% c("valuation","enterlong","entershort","exitlong","exitshort","rolllong","rollshort"))
-    if(length(n) != 0)
-      l <- replace(l, match(names(pricecols[n]), names(l)), pricecols[n])
-    if("enter" %in% names(pricecols))
-      l <- replace(l, which(names(l) %in% c("enterlong","entershort")), pricecols$enter)
-    if("exit" %in% names(pricecols))
-      l <- replace(l, which(names(l) %in% c("exitlong","exitshort")), pricecols$exit)
-    if("long" %in% names(pricecols))
-      l <- replace(l, which(names(l) %in% c("enterlong","exitlong")), pricecols$long)
-    if("short" %in% names(pricecols))
-      l <- replace(l, which(names(l) %in% c("entershort","exitshort")), pricecols$short)
-    if("roll" %in% names(pricecols))
-      l <- replace(l, which(names(l) %in% c("rolllong","rollshort")), pricecols$roll)
-    lapply(l, function(x, data){
-      if(x == which(colnames(data) == "St"))
-        stop("pricecol cannot map to the 'St' column.")
-      if(is.character(x))
-        if(!x %in% colnames(data))
-          stop(paste("pricecol", x, "is not in colnames(data)"))
-      if(is.numeric(x))
-        if(x > ncol(data))
-          stop("a pricecol index exceeds ncol(data)")
-    }, data)
-    pricecols <- l
-  }else{
-    pricecols <- list(valuation=pricecols[1], enterlong=pricecols[1], entershort=pricecols[1], exitlong=pricecols[1],
-                      exitshort=pricecols[1], rolllong=pricecols[1], rollshort=pricecols[1])
-  }
   ## valuation column cannot have NA's. other price cols with NA's get assigned valuation price
   if(any(is.na(data[, pricecols$valuation])))
     stop(paste("NA's are not allowed in the valuation price column", pricecols$valuation))
