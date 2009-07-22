@@ -10,8 +10,12 @@
 \alias{tail.tsts}
 \alias{as.matrix.tsts}
 \alias{as.zoo.tsts}
-\alias{is.tsts}
 \alias{[.tsts}
+\alias{is.tsts}
+\alias{states}
+\alias{states<-}
+\alias{phases}
+\alias{phases<-}
 
 \title{Trading System Time Series}
 
@@ -94,16 +98,24 @@ class(x[, 1:2])  ## ... so does column indexing
 tsts(matrix(pi))
 tsts(matrix(rnorm(100)))
 
-## Availiable methods
+## Basic methods
 print(x)
 head(x)
 tail(x)
 start(x)
 end(x)
+
+## Coercion methods
 as.matrix(x)
 as.zoo(x)
+
+## Extractor/assignment functions
 index(x) <- index(x) + 1
 index(x)
+states(x)
+states(x) <- c(0,1,1,1,-1) ## length multiple of nrow(x)
+phases(x)
+phases(x) <- phases(x)
 }
 
 \author{Robert Sams \email{robert@sanctumfi.com}}

@@ -1,26 +1,20 @@
-\name{states}
+\name{statemap}
 
 \alias{phasemap}
 \alias{statemap}
-\alias{phases}
-\alias{states}
 
 \title{States and Phases}
 
 \description{
-  Convert states to phases and vice-versa.
+  Map states to phases and vice-versa.
 }
 
 \usage{
 phasemap(states)
 statemap(phases)
-
-phases(x)
-states(x)
 }
 
 \arguments{
-  \item{x}{a "tsts" object.}
   \item{states}{numeric vector of states.}
   \item{phases}{character vector of phases.}
 }
@@ -58,9 +52,6 @@ states(x)
     0                                    \tab if \tab XA \cr
     \eqn{s_{i-1}}{s(i-1)}                \tab if \tab UC
   }
-
-  \code{states} and \code{phases} extract their respective vectors from
-  a "tsts" object.
 }
 \value{
   A numeric or character vector.
