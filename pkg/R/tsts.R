@@ -1,4 +1,4 @@
-tsts <- function(data, order.by=index(data), states=0, roll.at=NULL, pricecols=1, entrywins=FALSE, entrycond=FALSE){
+tsts <- function(data, order.by=index(data), states=0, roll.at=NULL, pricecols=1){
   Index <- order.by
   CoreAttr <- attributes(data)
   data <- as.matrix(data)
@@ -61,7 +61,7 @@ tsts <- function(data, order.by=index(data), states=0, roll.at=NULL, pricecols=1
   attr(data, "index") <- Index
   attr(data, "tsts") <- list(roll.at=roll.at, pricecols=pricecols, coreattr=CoreAttr,
                              exprcols=NULL, exprsigs=list(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE),
-                             entrywins=entrywins, entrycond=entrycond)
+                             entrywins=FALSE, entrycond=FALSE)
   class(data) <- "tsts"
   data
 }

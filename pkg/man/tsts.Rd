@@ -20,8 +20,7 @@
 }
 
 \usage{
-tsts(data, order.by=index(data), states=0, roll.at=NULL,
-     pricecols=1, entrywins=FALSE, entrycond=FALSE)
+tsts(data, order.by=index(data), states=0, roll.at=NULL, pricecols=1)
 }
 
 \arguments{
@@ -32,8 +31,6 @@ tsts(data, order.by=index(data), states=0, roll.at=NULL,
   \item{roll.at}{vector of index points points where roll trades are
     done. (Must be the same class as \code{order.by}.)}
   \item{pricecols}{see below.}
-  \item{entrywins}{logical. see below.}
-  \item{entrycond}{logical. see below.}
 }
 
 \details{
