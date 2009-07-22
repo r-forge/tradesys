@@ -6,7 +6,7 @@
 \title{Signals-to-States}
 
 \description{
-  Convert signal vectors to a vector of states.
+  Map signal vectors to a vector of states.
 }
 
 \usage{
@@ -24,7 +24,7 @@ signalmap(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrycond=FALSE, entrywins=FAL
 \details{
   
   \code{signalmap} converts entry and exit signals into a numeric vector
-  of states. A signal is a logical value and is one of four types:
+  of states. A signal is a logical vector and is one of four types:
   \emph{enter long}, \emph{enter short}, \emph{exit long}, and
   \emph{exit short}. All four signals taken together determine state
   \eqn{s}. 

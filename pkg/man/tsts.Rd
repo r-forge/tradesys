@@ -11,8 +11,6 @@
 \alias{as.matrix.tsts}
 \alias{as.zoo.tsts}
 \alias{is.tsts}
-\alias{as.tsts}
-\alias{as.tsts.default}
 \alias{[.tsts}
 
 \title{Trading System Time Series}
