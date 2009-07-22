@@ -10,7 +10,8 @@
 }
 
 \usage{
-signalmap(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrycond=FALSE, entrywins=FALSE) 
+signalmap(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, 
+          entrycond=FALSE, entrywins=FALSE) 
 }
 
 \arguments{

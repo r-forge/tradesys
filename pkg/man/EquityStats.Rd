@@ -50,7 +50,8 @@ EquityStats(equity, dates=index(equity))
 
 \examples{
 ## What everybody wants..
-EquityStats(zoo(seq(1.01, length.out=12, by=.01), order.by=seq(Sys.Date(), length.out=12, by="month")))
+EquityStats(zoo(seq(1.01, length.out=12, by=.01),
+            order.by=seq(Sys.Date(), length.out=12, by="month")))
 
 ## S&P 500
 data(spx)

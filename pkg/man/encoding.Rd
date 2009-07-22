@@ -12,9 +12,8 @@
 \title{Trading System Encoding}
 
 \description{
-  
-  Add to a \code{tsts} object expressions that define entry/exit conditions or
-  derived column data.
+
+  Define or retrieve a \code{tsts} object's signals or column expressions.
   
 }
 
@@ -43,14 +42,6 @@ entrycond(x) <- value
 
 \details{
   NEED TO DOCUMENT
-}
-
-\value{
-
-  A \code{tsts} object with \code{expr} appended to its respective
-  attribute. Evaluation via the \code{coredata} assignment method is a
-  side-effect.
-  
 }
 
 \examples{
