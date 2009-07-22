@@ -2,6 +2,8 @@
 
 \alias{addsig}
 \alias{addcol}
+\alias{getsig}
+\alias{getcol}
 \alias{entrywins}
 \alias{entrywins<-}
 \alias{entrycond}
@@ -17,8 +19,12 @@
 }
 
 \usage{
+
 addsig(x, name, expr)
 addcol(x, name, expr)
+
+getsig(x)
+getcol(x)
 
 entrywins(x)
 entrywins(x) <- value
@@ -30,8 +36,8 @@ entrycond(x) <- value
 
 \arguments{
   \item{x}{a tsts object.}
-  \item{expr}{expression.}
-  \item{name}{character. signal name or column name.}
+  \item{expr}{expression. signal or column definition.}
+  \item{name}{character. signal or column name.}
   \item{value}{logical. see below.}
 }
 
@@ -68,6 +74,9 @@ entrywins(x)
 entrywins(x) <- TRUE
 entrycond(x)
 entrycond(x) <- TRUE
+
+getcol(x)
+getsig(x)
 }
 
 \author{Robert Sams \email{robert@sanctumfi.com}}

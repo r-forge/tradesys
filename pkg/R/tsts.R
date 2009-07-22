@@ -15,7 +15,7 @@ tsts <- function(data, order.by=index(data), states=0, roll.at=NULL, pricecols=1
     stop("length(order.by) must equal nrow(data)")
   attr(data, "index") <- Index
   attr(data, "tsts") <- list(roll.at=NULL, pricecols=pricecols, coreattr=CoreAttr,
-                             exprcols=NULL, exprsigs=list(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE),
+                             columns=NULL, signals=list(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE),
                              entrywins=FALSE, entrycond=FALSE)
   class(data) <- "tsts"
   if(!is.null(roll.at))
