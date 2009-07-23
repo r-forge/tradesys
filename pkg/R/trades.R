@@ -1,4 +1,4 @@
-trades <- function(x, delta=NULL, uselog=FALSE){
+trades <- function(x, delta=NULL, useror=FALSE){
   if(!is.tsts(x))
     stop("x must be class 'tsts'.")
   d <- data.frame(Phase=phases(x), ETime=index(x))
@@ -42,19 +42,14 @@ trades <- function(x, delta=NULL, uselog=FALSE){
   d$Time <- as.integer(d$XTime - d$ETime)
   d$Numb <- match(d$XTime, index(x)) - match(d$ETime, index(x))
   ## PnL/RoR calcs
-  d$PnL <- d$XPrice - d$EPrice
-  d$PnL[which(d$Phase == "ES")] <- d$PnL[which(d$Phase == "ES")] * -1
+  d$PnL <- (d$XPrice - d$EPrice) * c(1,-1)[match(d$Phase, c("EL","ES"))]
+  if(useror)
+    d$RoR <- (d$XPrice / d$EPrice - 1) * c(1,-1)[match(d$Phase, c("EL","ES"))]
+  else
+    d$RoR <- d$PnL
+  if(is.null(delta))
+    delta <- OptimalF(d$RoR) / -min(d$RoR)
+  d$RoR <- d$RoR * delta
   rownames(d) <- as.character(1:nrow(d))
-  if(uselog){
-    d$RoR <- log(d$XPrice) - log(d$EPrice) 
-    d$RoR[which(d$Phase == "ES")] <- d$RoR[which(d$Phase == "ES")] * -1
-    if(is.null(delta))
-      delta <- OptimalF(d$RoR) / -min(d$RoR)
-    d$RoR <- d$RoR * delta
-  }else{
-    if(is.null(delta))
-      delta <- OptimalF(d$PnL) / -min(d$PnL)
-    d$RoR <- d$PnL * delta
-  }
   d
 }

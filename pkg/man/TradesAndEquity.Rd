@@ -1,29 +1,32 @@
 \name{TradesAndEquity}
 
 \alias{equity}
-\alias{trades}
 
 \title{Trading System Performance Analysis}
 
 \description{
-  \code{equity} returns a tsts object's equity curve.\cr
   
-  \code{trades} returns a tsts object's trades.
+  \code{equity} returns a tsts object's equity curve.\cr
+
 }
 
 \usage{
+
 equity(x, delta=NULL, uselog=FALSE)
-trades(x, delta=NULL, uselog=FALSE)
+
 }
 
 \arguments{
+  
   \item{x}{a tsts object.}
   \item{delta}{numeric. Equity returns per change in price.}
   \item{uselog}{logical. If TRUE, re-define \code{delta} in terms of log
     returns.}
+  
 }
 
 \details{
+  
   \code{trades} is passed a tsts object and returns a data frame of
   the system's trades. Each row describes a long or short entry with its
   entry and exit times and prices, the realised P\&L of the trade and
@@ -87,19 +90,20 @@ trades(x, delta=NULL, uselog=FALSE)
 }
 
 \note{
+  
   The underlying assumption of these functions is "fixed equity
   fraction" leveraging. It would be nice to incorporate time varying
   point value to support leveraging schemes like "pyramiding",
   "volatility scaling", etc. if this can be done in a straightforward way.
+  
 }
+
 \value{
+  
   \code{equity} returns a matrix with columns "trade", "states",
   "price", "ror", and "equity". It is a zoo object with the same index
   as \code{x}.
   
-  \code{trades} returns a data.frame with columns "phase", "etime",
-  "xtime", "time", "nobs", "eprice", "xprice", "pnl", and "ror". Each
-  row is a trade.
 }
 
 \author{Robert Sams \email{robert@sanctumfi.com}}

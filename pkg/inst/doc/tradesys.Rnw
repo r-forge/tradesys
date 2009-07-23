@@ -80,8 +80,9 @@ plot(y[, c("RoR", "Equity")], main="60/120 DMA -- SPX")
 Use \code{trades} to enumerate system trades and their holding
 period returns.
 <<intro4>>=
-z <- trades(x, uselog=TRUE)
+z <- trades(x, useror=TRUE)
 tail(z)
+prod(1 + z$RoR)^(1/nrow(z)) - 1 ## geomean trade return
 @ 
 What prices are assumed in these calcuations, as \code{spx} contains
 columns for open, high, low and close prices? By default, the prices
