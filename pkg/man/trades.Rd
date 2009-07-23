@@ -2,17 +2,17 @@
 
 \alias{trades}
 
-\title{Enumerate a Trading System's Trades}
+\title{Trades and Holding Period Returns}
 
 \description{
   
-  Return a tsts object's trades in a data frame. 
+  Enumerate and describe a tsts object's trades in a data frame.
   
 }
 
 \usage{
 
-trades(x, delta=NULL, useror=FALSE)
+trades(x, delta=NULL, percent=FALSE)
 
 }
 
@@ -20,7 +20,7 @@ trades(x, delta=NULL, useror=FALSE)
   
   \item{x}{a tsts object.}
   \item{delta}{numeric. Equity returns per change in price.}
-  \item{useror}{logical. see below.}
+  \item{percent}{logical. see below.}
   
 }
 
@@ -32,17 +32,17 @@ trades(x, delta=NULL, useror=FALSE)
   holding period return.
   
   \code{delta} is a numeric constant \eqn{\Delta}{d} that defines equity
-  return per \emph{change in price} (or \emph{price return} if
-  \code{useror=TRUE}). It defines the system's leverage.
+  return per \emph{change in price} (or \emph{percentage change in price} if
+  \code{percent=TRUE}). It defines the system's leverage.
 
   Trade holding period returns are defined as: \deqn{r = (p_{x} - p_{e})
   s_{e}\Delta}{r = [px - pe] * se * d} where \eqn{\Delta}{d} is the
   value passed to \code{delta} and \eqn{s_{e}}{se} is the state defining
-  the trade's entry (1 or -1). If \code{useror} is TRUE, holding period
+  the trade's entry (1 or -1). If \code{percent} is TRUE, holding period
   returns are defined as: \deqn{r = (p_{x} / p_{e} - 1) s_{e}\Delta}{r =
   [px / pe -1] * se * d}. If \code{delta} is null, \eqn{\Delta}{d} is
-  chosen so that the cumulative product of the returns so defined is
-  maximised.
+  chosen so that the cumulative product of the holding period returns so
+  defined is maximised.
   
   Roll trades are calculated when \code{x} has a non-null
   \code{tsts$roll.at} attribute. Rolls are used when a system runs on a

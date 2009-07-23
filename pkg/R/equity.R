@@ -1,4 +1,4 @@
-equity <- function(x, delta=NULL, uselog=FALSE){
+equity <- function(x, delta=NULL, percent=FALSE){
   h <- phases(x)
   s <- states(x)
   p <- as.matrix(x)[, attr(x, "tsts")$pricecols$valuation]
@@ -12,29 +12,30 @@ equity <- function(x, delta=NULL, uselog=FALSE){
     message("The entershort price column will be used for XL phases where s(t)=-1 and s(t-1)=1.")
   if(attr(x, "tsts")$pricecols$enterlong != attr(x, "tsts")$pricecols$exitshort)
     message("The enterlong price column will be used for XS phases where s(t)=1 and s(t-1)=-1.")
-  if(uselog)
-    p <- log(p)
-  pnl <- c(0, diff(p) * s[-length(s)])
+  if(percent)
+    chg <- c(0, exp(1)^(diff(log(p)) * s[-length(s)]))
+  else
+    chg <- c(0, diff(p) * s[-length(s)])
   if(is.null(delta))
-    delta <- OptimalF(pnl) / -min(pnl)
+    delta <- OptimalF(chg) / -min(chg)
   d <- delta
   r <- 0
   n <- which(h %in% c("EL","ES"))
   m <- match(attr(x, "tsts")$roll.at, index(x))
-  for(i in 2:length(pnl)){
-    if(i %in% (n+1))
+  for(i in 2:length(chg)){
+    if(i %in% (n+1)) ## recalc delta
       d[i] <- delta
     else
       d[i] <- d[i-1] / (1 + r[i-1])
-    if(i %in% (m+1)){
+    if(i %in% (m+1)){ ## adjust for roll trades
       if(s[i-1] == 1)
         p[i] <- as.matrix(x)[i, attr(x, "tsts")$pricecols$rolllong]
       else
         p[i] <- as.matrix(x)[i, attr(x, "tsts")$pricecols$rollshort]
     }
-    r[i] <- pnl[i] * d[i]
+    r[i] <- chg[i] * d[i]
   }
-  y <- cbind(Trade=NA, St=s, Delta=d, Price=p, RoR=r, Equity=cumprod(1+r))
+  y <- cbind(Trade=NA, St=s, Delta=d, Price=p, Chg=chg, RoR=r, Equity=cumprod(1+r))
   ## crate trade id's
   y[(n+1), "Trade"] <- 1:length(n)
   y[, "Trade"] <- na.locf(y[, "Trade"], na.rm=FALSE)

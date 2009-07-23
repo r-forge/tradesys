@@ -1,4 +1,4 @@
-trades <- function(x, delta=NULL, useror=FALSE){
+trades <- function(x, delta=NULL, percent=FALSE){
   if(!is.tsts(x))
     stop("x must be class 'tsts'.")
   d <- data.frame(Phase=phases(x), ETime=index(x))
@@ -43,7 +43,7 @@ trades <- function(x, delta=NULL, useror=FALSE){
   d$Numb <- match(d$XTime, index(x)) - match(d$ETime, index(x))
   ## PnL/RoR calcs
   d$PnL <- (d$XPrice - d$EPrice) * c(1,-1)[match(d$Phase, c("EL","ES"))]
-  if(useror)
+  if(percent)
     d$RoR <- (d$XPrice / d$EPrice - 1) * c(1,-1)[match(d$Phase, c("EL","ES"))]
   else
     d$RoR <- d$PnL
