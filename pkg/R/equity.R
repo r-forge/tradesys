@@ -1,44 +1,37 @@
-equity <- function(x, delta=NULL, percent=FALSE){
-  h <- phases(x)
-  s <- states(x)
-  p <- as.matrix(x)[, attr(x, "tsts")$pricecols$valuation]
-  q <- as.matrix(x)[, attr(x, "tsts")$pricecols$rolllong]
-  q[which(s == -1)] <- as.matrix(x)[which(s == -1), attr(x, "tsts")$pricecols$rollshort]
-  p[which(h == "EL")] <- as.matrix(x)[which(h == "EL"), attr(x, "tsts")$pricecols$enterlong]
-  p[which(h == "ES")] <- as.matrix(x)[which(h == "ES"), attr(x, "tsts")$pricecols$entershort]
-  p[which(h == "XL")] <- as.matrix(x)[which(h == "XL"), attr(x, "tsts")$pricecols$exitlong]
-  p[which(h == "XS")] <- as.matrix(x)[which(h == "XS"), attr(x, "tsts")$pricecols$exitshort]
-  if(attr(x, "tsts")$pricecols$entershort != attr(x, "tsts")$pricecols$exitlong)
-    message("The entershort price column will be used for XL phases where s(t)=-1 and s(t-1)=1.")
-  if(attr(x, "tsts")$pricecols$enterlong != attr(x, "tsts")$pricecols$exitshort)
-    message("The enterlong price column will be used for XS phases where s(t)=1 and s(t-1)=-1.")
-  if(percent)
-    chg <- c(0, exp(1)^(diff(log(p)) * s[-length(s)]))
-  else
-    chg <- c(0, diff(p) * s[-length(s)])
-  if(is.null(delta))
-    delta <- OptimalF(chg) / -min(chg)
-  d <- delta
-  r <- 0
-  n <- which(h %in% c("EL","ES"))
-  m <- match(attr(x, "tsts")$roll.at, index(x))
-  for(i in 2:length(chg)){
-    if(i %in% (n+1)) ## recalc delta
-      d[i] <- delta
-    else
-      d[i] <- d[i-1] / (1 + r[i-1])
-    if(i %in% (m+1)){ ## adjust for roll trades
-      if(s[i-1] == 1)
-        p[i] <- as.matrix(x)[i, attr(x, "tsts")$pricecols$rolllong]
-      else
-        p[i] <- as.matrix(x)[i, attr(x, "tsts")$pricecols$rollshort]
-    }
-    r[i] <- chg[i] * d[i]
+equity <- function(prices, states, delta=1, resize=NULL, percent=TRUE){
+  ## all three args must be multiples of each other.. expand to longest
+  Prices <- cbind(prices, states, delta)[, 1]
+  States <- cbind(prices, states, delta)[, 2]
+  Delta <- cbind(prices, states, delta)[, 3]
+  Resize <- as.logical(c(abs(States[1]), sapply(abs(diff(States)), min, 1) == 1))
+  if(!is.null(resize))
+    Resize <- cbind(resize, prices)[, 1]
+  PricesLag <- Prices
+  PricesLag[which(!Resize)] <- NA
+  PricesLag <- na.locf(PricesLag)
+  PnL <- 0
+  RoR <- 0
+  if(length(Prices) > 1){
+    PnL <- c(PnL, (Prices[2:length(Prices)] - PricesLag[-length(PricesLag)]) * States[-length(States)])
+    RoR <- c(RoR, (Prices[2:length(Prices)] / PricesLag[-length(PricesLag)] - 1) * States[-length(States)])
   }
-  y <- cbind(Trade=NA, St=s, Delta=d, Price=p, Chg=chg, RoR=r, Equity=cumprod(1+r))
-  ## crate trade id's
-  y[(n+1), "Trade"] <- 1:length(n)
-  y[, "Trade"] <- na.locf(y[, "Trade"], na.rm=FALSE)
-  y[which(states(x) == 0), "Trade"] <- 0
-  zoo(y, order.by=index(x))
+  EquityLag <- rep(1, length(Prices))
+  if(percent)
+    Equity <- 1 + RoR * Delta
+  else
+    Equity <- 1 + PnL * Delta
+  if(length(Prices) > 1){ ## recursively solve Equity adjusting for resizing
+    sapply(2:length(Prices), function(i){
+      e <- Equity
+      elag <- EquityLag
+      e[i] <- Equity[i] * EquityLag[i-1]
+      if(Resize[i])
+        elag[i] <- e[i]
+      else
+        elag[i] <- elag[i-1]
+      assign("Equity", e, inherits=TRUE)
+      assign("EquityLag", elag, inherits=TRUE)
+    })
+  }
+  x <- cbind(States, Trade=cumsum(Resize), Resize, Delta, Prices, PnL, RoR, Equity)
 }
