@@ -12,7 +12,7 @@
 
 \usage{
 
-equity(prices, states, delta=1, resize=NULL, roll.at=FALSE, roll.prices=prices, percent=TRUE)
+equity(prices, states, delta=1, size.at=NULL, roll.at=FALSE, roll.prices=prices, percent=TRUE)
 
 }
 
@@ -21,7 +21,7 @@ equity(prices, states, delta=1, resize=NULL, roll.at=FALSE, roll.prices=prices, 
   \item{prices}{numeric vector of prices}
   \item{states}{numeric vector of states}
   \item{delta}{numeric vector of delta coefficients.}
-  \item{resize}{logical. see below.}
+  \item{size.at}{logical. see below.}
   \item{roll.at}{logical. see below.}
   \item{roll.prices}{numeric. see below.}
   \item{percent}{logical. \emph{percentage} or \emph{absolute} change in price.}
@@ -38,7 +38,7 @@ equity(prices, states, delta=1, resize=NULL, roll.at=FALSE, roll.prices=prices, 
   consist of 1s, 0s, and -1s only.
 
   \code{delta} defines the percentage change in equity given a
-  percentage change in price at each trade resize point. It specifies
+  percentage change in price at each trade size.at point. It specifies
   the system's leverage parameter. If passed a scalar, the system
   follows a fixed fractional leveraging scheme. A variable leverage
   scheme is followed if a vector is passed. In such a case, the values
@@ -46,12 +46,12 @@ equity(prices, states, delta=1, resize=NULL, roll.at=FALSE, roll.prices=prices, 
   \code{states}. Differing lengths are allowed but must be a multiple of
   these.
   
-  \code{resize} is a logical vector that causes the equity to have delta
+  \code{size.at} is a logical vector that causes the equity to have delta
   sensitivity at each point where this vector is TRUE. By default, TRUE
   values are inserted wherever a trade entry occurs, thus implimenting
   the common scheme whereby trades are sized to delta equity at
   initiation and held constant throughout the trade
-  horizon. \code{resize=TRUE} will impliment a dynamic leveraging scheme
+  horizon. \code{size.at=TRUE} will impliment a dynamic leveraging scheme
   whereby a constant equity fraction is risked at each period. Any
   scheme can be defined by passing its appropriate vector, which length
   must be a multiple of length \code{price}.
@@ -61,13 +61,13 @@ equity(prices, states, delta=1, resize=NULL, roll.at=FALSE, roll.prices=prices, 
     E_{t} = \left(\frac{p_{t}}{p_{i}} - 1\right) s_{t-1} \Delta E_{i} + E_{i}
   }{E(t) = [p(t) / p(i) - 1] * s(t-1) * delta * E(i) + E(i)}, 
   where \eqn{i} is the time of the last trade re-size prior to
-  \eqn{t}, as specified in \code{resize}.
+  \eqn{t}, as specified in \code{size.at}.
 
   As described above, the default meaning of delta is percentage change
-  in equity for percentage change in price (at trade resize points). If
+  in equity for percentage change in price (at trade size.at points). If
   \code{percent} is false, \eqn{\Delta}{delta} is re-defined to mean:
   percentage change in equity given unit change in price (at trade
-  resize points). Equity is therefore calculated as\deqn{
+  size.at points). Equity is therefore calculated as\deqn{
     E_{t} = (p_{t} - p_{i}) s_{t-1} \Delta E_{i} + E_{i}
   }{E(t) = [p(t) - p(i)] * s(t-1) * delta * E(i) + E(i)}
   . Using absolute rather than relative change is sensible in many

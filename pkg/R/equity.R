@@ -1,4 +1,4 @@
-equity <- function(prices, states, delta=1, resize=NULL, roll.at=FALSE, roll.prices=prices, percent=TRUE){
+equity <- function(prices, states, delta=1, size.at=NULL, roll.at=FALSE, roll.prices=prices, percent=TRUE){
   ## all three args must be multiples of each other.. expand to longest
   Prices <- cbind(prices, states, delta)[, 1]
   States <- cbind(prices, states, delta)[, 2]
@@ -7,8 +7,8 @@ equity <- function(prices, states, delta=1, resize=NULL, roll.at=FALSE, roll.pri
   Rollprc <- cbind(prices, roll.prices, roll.at)[, 2]
   Resize <- as.logical(c(abs(States[1]), sapply(abs(diff(States)), min, 1) == 1))
   Trade <- cumsum(Resize)
-  if(!is.null(resize))
-    Resize <- cbind(resize, prices)[, 1]
+  if(!is.null(size.at))
+    Resize <- cbind(size.at, prices)[, 1]
   PricesLag <- Prices
   PricesLag[which(!Resize&!Rollat)] <- NA
   PricesLag <- PricesLag + (Rollprc - Prices) * as.numeric(Rollat)

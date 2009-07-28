@@ -38,7 +38,7 @@ test.randomprice <- function(){
   checkEquals((prices[29] - prices[21]) * .25 * x[21, "Equity"] + x[21, "Equity"], x[29, "Equity"], checkNames=FALSE)
 
   ## resize=TRUE so E(t) = ([p(t) / p(t-1) - 1] * s(t-1) * delta + 1) * E(t-1)
-  x <- equity(prices <- randPrice(100), states=altnStates(100), delta=.25, resize=TRUE)
+  x <- equity(prices <- randPrice(100), states=altnStates(100), delta=.25, size.at=TRUE)
   checkEquals(((prices[5] / prices[4] - 1)   *  .25 + 1) * x[ 4, "Equity"], x[5, "Equity"], checkNames=FALSE)
   checkEquals(((prices[7] / prices[6] - 1)   *  .25 + 1) * x[ 6, "Equity"], x[7, "Equity"], checkNames=FALSE)
   checkEquals(((prices[11] / prices[10] - 1) *  .25 + 1) * x[10, "Equity"], x[11, "Equity"], checkNames=FALSE)
