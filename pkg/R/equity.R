@@ -1,17 +1,22 @@
-equity <- function(prices, states, delta=1, size.at=NULL, roll.at=FALSE, roll.prices=prices, percent=TRUE){
-  ## all three args must be multiples of each other.. expand to longest
-  Prices <- cbind(prices, states, delta)[, 1]
-  States <- cbind(prices, states, delta)[, 2]
-  Delta <- cbind(prices, states, delta)[, 3]
-  Rollat <- cbind(prices, roll.prices, roll.at)[, 3]
-  Rollprc <- cbind(prices, roll.prices, roll.at)[, 2]
-  Resize <- as.logical(c(abs(States[1]), sapply(abs(diff(States)), min, 1) == 1))
-  Trade <- cumsum(Resize)
+equity <- function(prices, states, delta=1, size.at=NULL, roll.at=FALSE, percent=TRUE){
+  if(is.matrix(prices)){
+    Prices <- prices[, 1]
+    Rrices <- prices[, 2]
+  }else{
+    Prices <- prices
+    Rrices <- prices
+  }
+  ## states, delta, size.at and roll.at be multiples of price
+  States <- cbind(prices, states)[, 2]
+  Delta <- cbind(prices, delta)[, 2]
+  Rollat <- cbind(prices, roll.at)[, 2]
+  Sizeat <- as.logical(c(abs(States[1]), sapply(abs(diff(States)), min, 1) == 1))
+  Trade <- cumsum(Sizeat)
   if(!is.null(size.at))
-    Resize <- cbind(size.at, prices)[, 1]
+    Sizeat <- cbind(size.at, prices)[, 1]
   PricesLag <- Prices
-  PricesLag[which(!Resize&!Rollat)] <- NA
-  PricesLag <- PricesLag + (Rollprc - Prices) * as.numeric(Rollat)
+  PricesLag[which(!Sizeat&!Rollat)] <- NA
+  PricesLag <- PricesLag + (Rrices - Prices) * as.numeric(Rollat)
   PricesLag <- na.locf(PricesLag)
   PnL <- 0
   RoR <- 0
@@ -29,7 +34,7 @@ equity <- function(prices, states, delta=1, size.at=NULL, roll.at=FALSE, roll.pr
       e <- Equity
       elag <- EquityLag
       e[i] <- Equity[i] * EquityLag[i-1]
-      if(Resize[i])
+      if(Sizeat[i])
         elag[i] <- e[i]
       else
         elag[i] <- elag[i-1]
@@ -37,6 +42,6 @@ equity <- function(prices, states, delta=1, size.at=NULL, roll.at=FALSE, roll.pr
       assign("EquityLag", elag, inherits=TRUE)
     })
   }
-  x <- cbind(States, Trade, Resize, Delta, Prices, PnL, RoR, Equity)
+  x <- cbind(States, Trade, Sizeat, Delta, Prices, PnL, RoR, Equity)
   x
 }

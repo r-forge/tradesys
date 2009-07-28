@@ -12,7 +12,7 @@
 
 \usage{
 
-equity(prices, states, delta=1, size.at=NULL, roll.at=FALSE, roll.prices=prices, percent=TRUE)
+equity(prices, states, delta=1, size.at=NULL, roll.at=FALSE, percent=TRUE)
 
 }
 
@@ -23,7 +23,6 @@ equity(prices, states, delta=1, size.at=NULL, roll.at=FALSE, roll.prices=prices,
   \item{delta}{numeric vector of delta coefficients.}
   \item{size.at}{logical. see below.}
   \item{roll.at}{logical. see below.}
-  \item{roll.prices}{numeric. see below.}
   \item{percent}{logical. \emph{percentage} or \emph{absolute} change in price.}
 
 }
@@ -74,10 +73,12 @@ equity(prices, states, delta=1, size.at=NULL, roll.at=FALSE, roll.prices=prices,
   contexts and necessary when price can take negative values (eg many spreads
   and derivative positions).
 
-  If \code{roll.at} is non-null, roll price adjustments are made. It is
+  If any \code{roll.at} are true, roll price adjustments are made. It is
   a logical vector, and everywhere it is true, \eqn{R_{t} - P_{t}}{R(t)
     - P(t)} is added to \eqn{P_{i}}{P(i)}, where \eqn{R_{t}}{R(t)} is
-  the price in \code{roll.prices[t]}. 
+  the price in \code{prices[t, 2]}. That is, a two-column matrix should
+  be passed to \code{prices}, with the second column containing the roll
+  prices. If this is not done, \code{roll.at} is ignored.
   
 }
   
