@@ -12,7 +12,7 @@
 
 \usage{
 
-equity(prices, states, delta=1, resize=NULL, percent=TRUE)
+equity(prices, states, delta=1, resize=NULL, roll.at=FALSE, roll.prices=prices, percent=TRUE)
 
 }
 
@@ -22,6 +22,8 @@ equity(prices, states, delta=1, resize=NULL, percent=TRUE)
   \item{states}{numeric vector of states}
   \item{delta}{numeric vector of delta coefficients.}
   \item{resize}{logical. see below.}
+  \item{roll.at}{logical. see below.}
+  \item{roll.prices}{numeric. see below.}
   \item{percent}{logical. \emph{percentage} or \emph{absolute} change in price.}
 
 }
@@ -70,7 +72,13 @@ equity(prices, states, delta=1, resize=NULL, percent=TRUE)
   }{E(t) = [p(t) - p(i)] * s(t-1) * delta * E(i) + E(i)}
   . Using absolute rather than relative change is sensible in many
   contexts and necessary when price can take negative values (eg many spreads
-  and derivative positions). 
+  and derivative positions).
+
+  If \code{roll.at} is non-null, roll price adjustments are made. It is
+  a logical vector, and everywhere it is true, \eqn{R_{t} - P_{t}}{R(t)
+    - P(t)} is added to \eqn{P_{i}}{P(i)}, where \eqn{R_{t}}{R(t)} is
+  the price in \code{roll.prices[t]}. 
+  
 }
   
 
