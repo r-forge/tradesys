@@ -44,7 +44,7 @@ equity(prices, states, delta=1, resize=NULL, percent=TRUE)
   \code{states}. Differing lengths are allowed but must be a multiple of
   these.
   
-  \code{resize} is a boolean vector that causes the equity to have delta
+  \code{resize} is a logical vector that causes the equity to have delta
   sensitivity at each point where this vector is TRUE. By default, TRUE
   values are inserted wherever a trade entry occurs, thus implimenting
   the common scheme whereby trades are sized to delta equity at
@@ -56,8 +56,8 @@ equity(prices, states, delta=1, resize=NULL, percent=TRUE)
 
   Equity is initially normalised to 1, \eqn{E_{0} = 1}{E(0) = 1} and
   calculated thereafter as:\deqn{
-    E_{t} = [(\frac{p_{t}}{p_{i}}) s_{t-1} \Delta E_{i}]
-  }{E(t) = (p(t) / p(i)) s(t-1) delta E(i)}
+    E_{t} = \left(\frac{p_{t}}{p_{i}} - 1\right) s_{t-1} \Delta E_{i} + E_{i}
+  }{E(t) = [p(t) / p(i) - 1] * s(t-1) * delta * E(i) + E(i)}, 
   where \eqn{i} is the time of the last trade re-size prior to
   \eqn{t}, as specified in \code{resize}.
 
@@ -67,10 +67,10 @@ equity(prices, states, delta=1, resize=NULL, percent=TRUE)
   percentage change in equity given unit change in price (at trade
   resize points). Equity is therefore calculated as\deqn{
     E_{t} = (p_{t} - p_{i}) s_{t-1} \Delta E_{i} + E_{i}
-  }{E(t) = [p(t) - p(i)] s(t-1) delta E(i) + E(i)}
+  }{E(t) = [p(t) - p(i)] * s(t-1) * delta * E(i) + E(i)}
   . Using absolute rather than relative change is sensible in many
-  contexts and necessary when price can take negative values (eg spreads
-  and many derivative positions). 
+  contexts and necessary when price can take negative values (eg many spreads
+  and derivative positions). 
 }
   
 
