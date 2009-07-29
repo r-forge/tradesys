@@ -2,6 +2,7 @@
 
 \alias{phasemap}
 \alias{statemap}
+\alias{statechg}
 
 \title{States and Phases}
 
@@ -12,6 +13,7 @@
 \usage{
 phasemap(states)
 statemap(phases)
+statechg(states)
 }
 
 \arguments{
@@ -52,9 +54,16 @@ statemap(phases)
     0                                    \tab if \tab XA \cr
     \eqn{s_{i-1}}{s(i-1)}                \tab if \tab UC
   }
+
+  \code{statechg} converts a vector of states into a logical vector
+  indicating those points where there is a change in state. It is
+  calculated: \deqn{
+    min(|s_{t} - s_{t-1}|, 1)
+  }{min(|s(t) - s(t-1)|, 1)}, where \eqn{t=0} is \eqn{|s_{0}|}{|s(0)|}.
 }
 \value{
-  A numeric or character vector.
+  A numeric (\code{statemap}), character (\code{phasemap}), or logical
+  (\code{statechg}) vector.
 }
 \examples{
 ## statemap is invertable
@@ -63,6 +72,7 @@ statemap(p <- phasemap(s <- c(0,0,1,1,1,1,-1,-1,-1,0,0))) == s
 q <- p
 q[4] <- "EL"
 phasemap(statemap(q)) == q
+statechg(s)
 }
 \author{Robert Sams \email{robert@sanctumfi.com}}
 \keyword{math}

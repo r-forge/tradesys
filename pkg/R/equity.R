@@ -1,40 +1,35 @@
-equity <- function(prices, states, delta=1, size.at=NULL, roll.at=FALSE, percent=TRUE){
-  if(is.matrix(prices)){
-    Prices <- prices[, 1]
-    Rrices <- prices[, 2]
-  }else{
-    Prices <- prices
-    Rrices <- prices
-  }
+equity <- function(prices, states, delta=1, size.at=statechg(states), roll.at=FALSE, percent=TRUE){
+  if(is.matrix(prices))
+    rrices <- prices[, 2]
+  else
+    rrices <- prices
   ## states, delta, size.at and roll.at be multiples of price
-  States <- cbind(prices, states)[, 2]
-  Delta <- cbind(prices, delta)[, 2]
-  Rollat <- cbind(prices, roll.at)[, 2]
-  if(is.null(size.at))
-    size.at <- state.changes(States)
-  Sizeat <- cbind(prices, size.at)[, 2]
-  Trade <- cumsum(state.changes(states))
-  PricesLag <- Prices
-  PricesLag[which(!Sizeat&!Rollat)] <- NA
-  PricesLag <- PricesLag + (Rrices - Prices) * as.numeric(Rollat)
-  PricesLag <- na.locf(PricesLag)
+  states <- cbind(prices, states)[, 2]
+  delta <- cbind(prices, delta)[, 2]
+  roll.at <- cbind(prices, roll.at)[, 2]
+  size.at <- cbind(prices, size.at)[, 2]
+  Trade <- cumsum(statechg(states))
+  pricesLag <- prices
+  pricesLag[which(!size.at & !roll.at)] <- NA
+  pricesLag <- pricesLag + (rrices - prices) * as.numeric(roll.at)
+  pricesLag <- na.locf(pricesLag)
   PnL <- 0
   RoR <- 0
-  if(length(Prices) > 1){
-    PnL <- c(PnL, (Prices[2:length(Prices)] - PricesLag[-length(PricesLag)]) * States[-length(States)])
-    RoR <- c(RoR, (Prices[2:length(Prices)] / PricesLag[-length(PricesLag)] - 1) * States[-length(States)])
+  if(length(prices) > 1){
+    PnL <- c(PnL, (prices[2:length(prices)] - pricesLag[-length(pricesLag)]) * states[-length(states)])
+    RoR <- c(RoR, (prices[2:length(prices)] / pricesLag[-length(pricesLag)] - 1) * states[-length(states)])
   }
-  EquityLag <- rep(1, length(Prices))
+  EquityLag <- rep(1, length(prices))
   if(percent)
-    Equity <- 1 + RoR * Delta
+    Equity <- 1 + RoR * delta
   else
-    Equity <- 1 + PnL * Delta
-  if(length(Prices) > 1){ ## recursively solve Equity adjusting for resizing
-    sapply(2:length(Prices), function(i){
+    Equity <- 1 + PnL * delta
+  if(length(prices) > 1){ ## recursively solve Equity adjusting for resizing
+    sapply(2:length(prices), function(i){
       e <- Equity
       elag <- EquityLag
       e[i] <- Equity[i] * EquityLag[i-1]
-      if(Sizeat[i])
+      if(size.at[i])
         elag[i] <- e[i]
       else
         elag[i] <- elag[i-1]
@@ -42,7 +37,6 @@ equity <- function(prices, states, delta=1, size.at=NULL, roll.at=FALSE, percent
       assign("EquityLag", elag, inherits=TRUE)
     })
   }
-  x <- cbind(States, Trade, Sizeat, Delta, Prices, PnL, RoR, Equity)
-  x
+  cbind(States=states, Trade, Size=size.at, Roll=roll.at, Delta=delta, Prices=prices, PnL, RoR, Equity)
 }
 
