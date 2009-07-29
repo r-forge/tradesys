@@ -10,10 +10,10 @@ equity <- function(prices, states, delta=1, size.at=NULL, roll.at=FALSE, percent
   States <- cbind(prices, states)[, 2]
   Delta <- cbind(prices, delta)[, 2]
   Rollat <- cbind(prices, roll.at)[, 2]
-  Sizeat <- as.logical(c(abs(States[1]), sapply(abs(diff(States)), min, 1) == 1))
-  Trade <- cumsum(Sizeat)
-  if(!is.null(size.at))
-    Sizeat <- cbind(size.at, prices)[, 1]
+  if(is.null(size.at))
+    size.at <- state.changes(States)
+  Sizeat <- cbind(prices, size.at)[, 2]
+  Trade <- cumsum(state.changes(states))
   PricesLag <- Prices
   PricesLag[which(!Sizeat&!Rollat)] <- NA
   PricesLag <- PricesLag + (Rrices - Prices) * as.numeric(Rollat)
@@ -45,3 +45,4 @@ equity <- function(prices, states, delta=1, size.at=NULL, roll.at=FALSE, percent
   x <- cbind(States, Trade, Sizeat, Delta, Prices, PnL, RoR, Equity)
   x
 }
+
