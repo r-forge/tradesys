@@ -1,17 +1,15 @@
-trades <- function(x, delta=NULL, percent=FALSE){
-  if(!is.tsts(x))
-    stop("x must be class 'tsts'.")
+trades <- function(x, delta=1, percent=FALSE, states=states(x), pricecols=pricecols(x), roll.at=FALSE){
   d <- data.frame(Phase=phases(x), ETime=index(x))
   d <- cbind(d, XTime=NA, Time=NA, Numb=NA, EPrice=NA, XPrice=NA, PnL=NA, RoR=NA)
   d <- d[-which(as.vector(d$Phase) == "UC"),]
   if(d$ETime[nrow(d)] == end(x))
     d <- d[-nrow(d),] ## ignore entries done on last day
   d$XTime <- c(d$ETime[-1], end(x))
-  d$EPrice[d$Phase == "EL"] <- x[match(d$ETime[d$Phase == "EL"], index(x)), attr(x, "tsts")$pricecols$enterlong]
-  d$EPrice[d$Phase == "ES"] <- x[match(d$ETime[d$Phase == "ES"], index(x)), attr(x, "tsts")$pricecols$entershort]
-  d$XPrice[d$Phase == "EL"] <- x[match(d$XTime[d$Phase == "EL"], index(x)), attr(x, "tsts")$pricecols$exitlong]
-  d$XPrice[d$Phase == "ES"] <- x[match(d$XTime[d$Phase == "ES"], index(x)), attr(x, "tsts")$pricecols$exitshort]
-  if(!is.null(attr(x, "tsts")$roll.at)){ ## create roll trades if needed
+  d$EPrice[d$Phase == "EL"] <- x[match(d$ETime[d$Phase == "EL"], index(x)), pricecols$Long]
+  d$EPrice[d$Phase == "ES"] <- x[match(d$ETime[d$Phase == "ES"], index(x)), pricecols$Short]
+  d$XPrice[d$Phase == "EL"] <- x[match(d$XTime[d$Phase == "EL"], index(x)), pricecols$Short]
+  d$XPrice[d$Phase == "ES"] <- x[match(d$XTime[d$Phase == "ES"], index(x)), pricecols$Long]
+  if(any(roll.at)){ ## create roll trades if needed
     roll.n <- match(attr(x, "tsts")$roll.at, index(x))
     roll.n <- roll.n[which(states(x)[roll.n] != 0)]
     if(length(roll.n) > 0)
@@ -21,12 +19,12 @@ trades <- function(x, delta=NULL, percent=FALSE){
       n <- which(rdate >= d$ETime & rdate < d$XTime)
       if(d$Phase[n] == "EL"){
         roll.phase <- "EL"
-        roll.coli <- attr(x, "tsts")$pricecols$rolllong
-        roll.colo <- attr(x, "tsts")$pricecols$exitlong
+        roll.coli <- attr(x, "tsts")$pricecols$RollLong
+        roll.colo <- attr(x, "tsts")$pricecols$Short
       }else{
         roll.phase <- "ES"
-        roll.coli <- attr(x, "tsts")$pricecols$rollshort
-        roll.colo <- attr(x, "tsts")$pricecols$exitshort
+        roll.coli <- attr(x, "tsts")$pricecols$RollShort
+        roll.colo <- attr(x, "tsts")$pricecols$Long
       }
       ## roll-in trade
       dd <- data.frame(Phase=roll.phase, ETime=rdate, XTime=d$XTime[n], Time=NA, Numb=NA,
@@ -47,8 +45,6 @@ trades <- function(x, delta=NULL, percent=FALSE){
     d$RoR <- (d$XPrice / d$EPrice - 1) * c(1,-1)[match(d$Phase, c("EL","ES"))]
   else
     d$RoR <- d$PnL
-  if(is.null(delta))
-    delta <- OptimalF(d$RoR) / -min(d$RoR)
   d$RoR <- d$RoR * delta
   rownames(d) <- as.character(1:nrow(d))
   d

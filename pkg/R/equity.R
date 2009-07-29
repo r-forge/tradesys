@@ -1,9 +1,12 @@
 equity <- function(prices, states, delta=1, size.at=statechg(states), roll.at=FALSE, percent=TRUE){
-  if(is.matrix(prices))
-    rrices <- prices[, 2]
-  else
+  if(is.matrix(prices)){
+    prices <- prices(prices, states)
+    rrices <- prices[, "RollLong"] ## !!FIX ME!!
+    prices <- prices[, "Use"]
+  }else{
     rrices <- prices
-  ## states, delta, size.at and roll.at be multiples of price
+  }
+  ## states, delta, size.at and roll.at must be multiples of price
   states <- cbind(prices, states)[, 2]
   delta <- cbind(prices, delta)[, 2]
   roll.at <- cbind(prices, roll.at)[, 2]
@@ -39,4 +42,3 @@ equity <- function(prices, states, delta=1, size.at=statechg(states), roll.at=FA
   }
   cbind(States=states, Trade, Size=size.at, Roll=roll.at, Delta=delta, Prices=prices, PnL, RoR, Equity)
 }
-
