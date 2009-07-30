@@ -1,12 +1,8 @@
 pricecols <- function(x){
-  if(!is.tsts(x))
-    stop("x must be class 'tsts'.")
   attr(x, "tsts")$pricecols
 }
 
 "pricecols<-" <- function(x, value){
-  if(!is.tsts(x))
-    stop("x must be class 'tsts'.")
   if(!is.list(value))
     l <- list(Mark=value[1], Long=value[1], Short=value[1], RollLong=value[1], RollShort=value[1])
   else
@@ -34,14 +30,6 @@ pricecols <- function(x){
         stop("No value may index columns 'St','Trade','Size','Roll','Delta', or 'Equity'")
     }
   }, x)
-##   ## valuation column cannot have NA's. 
-##   if(any(is.na(x[, l$Mark])))
-##     stop(paste("NA's are not allowed in the Mark price column", pricecols$Mark))
-##   ## ...other price cols with NA's get assigned valuation price
-##   for(col in l){
-##     if(any(n <- is.na(x[, col])))
-##       x[which(n), col] <- x[which(n), l$Mark]
-##   }
   attr(x, "tsts")$pricecols <- l
   x
 }

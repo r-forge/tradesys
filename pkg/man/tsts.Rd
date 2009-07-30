@@ -29,7 +29,7 @@
 
 \usage{
 
-tsts(data, order.by=index(data), states=0, pricecols=1)
+tsts(data, order.by=index(data), states=0, pricecols=1, \dots)
 
 }
 
@@ -40,6 +40,7 @@ tsts(data, order.by=index(data), states=0, pricecols=1)
     in 'data' are ordered.}
   \item{states}{numeric. vector of 1s, -1s and 0s}
   \item{pricecols}{character or named list. see below.}
+  \item{\dots}{define other tsts attributes.}
 
 }
 
@@ -49,7 +50,7 @@ tsts(data, order.by=index(data), states=0, pricecols=1)
   attribute containing \code{order.by}, and a "tsts" attribute
   containing copies of the remaining arguments. The value passed to
   \code{data} should be a numeric matrix with unique column names. It
-  will be coerced via \code{as.matrix}. 
+  will be coerced via \code{as.matrix}.
   
   \code{order.by} defines the ordering index of \code{data}. It is a
   vector of unique values and must have a length equal the number of
@@ -61,7 +62,7 @@ tsts(data, order.by=index(data), states=0, pricecols=1)
 
   \code{states} must be a numeric vector consisting of only 1s, -1s and
   0s and its length must be a multiple of the number of rows in
-  \code{data}. NA's are not allowed. 
+  \code{data}. NA's are not allowed.
   
   \code{pricecols} specifies via column names or indices which columns
   hold price information. There are five categories of price
@@ -95,13 +96,12 @@ tsts(data, order.by=index(data), states=0, pricecols=1)
   \code{order.by} and a "tsts" attribute, which is a named list
   containing:\itemize{
     \item pricecols
-    \item coreattr
+    \item exprcols
+    \item signals
     \item delta
     \item roll.at
     \item size.at
     \item percent
-    \item columns
-    \item signals
     \item entrywins
     \item entrycond
   }

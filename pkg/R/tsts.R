@@ -1,35 +1,32 @@
-tsts <- function(data, order.by=index(data), states=0, pricecols=1){
-  Index <- order.by
-  CoreAttr <- attributes(data)
+tsts <- function(data, order.by=index(data), states=0, pricecols=1, ...){
+  if(length(order.by) != length(unique(order.by)))
+    stop("all order.by must be unique.")
+  if(length(order.by) != nrow(data))
+    stop("length(order.by) must equal nrow(data)")
   data <- as.matrix(data)
   if(length(colnames(data)) != unique(length(colnames(data))))
     stop("data must have unique column names.")
   if(nrow(data) %% length(states) != 0)
     stop("length(states) must be a multiple of nrow(data)")
-  if(any(!states %in% c(0,1,-1)))
-    stop("states must be a vector composed of 0, 1, and -1.")
+  if(!any(states %in% c(1,0,-1)))
+    stop("states must be a numeric vector containing only 1, 0, and -1 values")
   data <- cbind(data, St=states)
-  if(length(Index) != length(unique(Index)))
-    stop("all order.by must be unique.")
-  if(length(Index) != nrow(data))
-    stop("length(order.by) must equal nrow(data)")
-  attr(data, "index") <- Index
-  attr(data, "tsts") <- list(pricecols=pricecols,
-                             coreattr=CoreAttr,
-                             ## equity attributes
-                             delta=as.expression(1),
-                             roll.at=expression(FALSE),
-                             size.at=expression(statechg(St)),
-                             percent=TRUE,
-                             ## state attributes
-                             columns=NULL,
-                             signals=list(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE),
-                             entrywins=FALSE,
-                             entrycond=FALSE)
-  class(data) <- "tsts"
+  l <- list(NOMATCH=NA,
+            pricecols=1,
+            exprcols=list(),
+            signals=list(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE),
+            delta=expression(1),
+            roll.at=expression(FALSE),
+            size.at=expression(statechg(St)),
+            percent=TRUE,
+            entrywins=FALSE,
+            entrycond=FALSE)
+  l <- replace(l, match(names(list(...)), names(l), nomatch=1), list(...))
+  attr(data, "tsts") <- l[-1]
+  attr(data, "index") <- order.by
   pricecols(data) <- pricecols
-  Eq <- equity(data, states(data), delta=1, size.at=statechg(states(data)), roll.at=FALSE, percent=TRUE)
-  cbind(data, Eq=Eq[, "Equity"])
+  class(data) <- "tsts"
+  data
 }
 
 ###
@@ -57,12 +54,6 @@ index.tsts <- function(x, ...){
     stop("index(x) and value must be the same length.")
   if(class(index(x))[1] != class(value)[1])
     warning("index(x) and value are not of the same class.")
-  if(!is.null(attr(x, "tsts")$roll.at)){
-    if(class(attr(x, "tsts")$roll.at)[1] != class(value)[1])
-      stop("index(x) and value must be the same class.")
-    if(any(!attr(x, "tsts")$roll.at %in% value))
-      stop("all roll.at values must be in value.")
-  }
   attr(x, "index") <- value
   x
 }
@@ -85,7 +76,6 @@ tail.tsts <- function(x, ...){
 
 as.matrix.tsts <- function(x, ...){
   rownames(x) <- format(attr(x, "index"))
-  attr(x, "tsts") <- NULL
   attr(x, "index") <- NULL
   class(x) <- "matrix"
   x
