@@ -16,29 +16,31 @@
 \alias{states<-}
 \alias{phases}
 \alias{phases<-}
-\alias{roll.at}
-\alias{roll.at<-}
 \alias{pricecols}
 \alias{pricecols<-}
 
 \title{Trading System Time Series}
 
 \description{
+
   Create a "tsts" object, a trading system time series.
+
 }
 
 \usage{
-tsts(data, order.by=index(data), states=0, roll.at=NULL, pricecols=1)
+
+tsts(data, order.by=index(data), states=0, pricecols=1)
+
 }
 
 \arguments{
+
   \item{data}{numeric vector or matrix.}
   \item{order.by}{an index vector with unique entries by which the observations
     in 'data' are ordered.}
   \item{states}{numeric. vector of 1s, -1s and 0s}
-  \item{roll.at}{vector of index points points where roll trades are
-    done. (Must be the same class as \code{order.by}.)}
-  \item{pricecols}{see below.}
+  \item{pricecols}{character or named list. see below.}
+
 }
 
 \details{
@@ -86,18 +88,39 @@ tsts(data, order.by=index(data), states=0, roll.at=NULL, pricecols=1)
   columns. If a scalar is passed, all price columns are given this
   value. An error is raised if \code{data} does not contain the column
   identifiers that you pass.
+
+  A call to \code{tsts} returns \code{data} with with class attribute
+  "tsts" and columns "St" (the state vector) and "Eq" (the equity
+  vector) cbind'ed to the right. It has an attribute "index" containing
+  \code{order.by} and a "tsts" attribute, which is a named list
+  containing:\itemize{
+    \item pricecols
+    \item coreattr
+    \item delta
+    \item roll.at
+    \item size.at
+    \item percent
+    \item columns
+    \item signals
+    \item entrywins
+    \item entrycond
+  }
+  All but the first two are assigned default values. They can be altered
+  later using the signal and equity encoding tools documented
+  seperately. 
   
-  \code{roll.at} is a logical vector specifying the times at which an
-  open position is rolled. The performance calculations incorporate this
-  in the following way. For all those times where this vector is TRUE,
-  an open long position is closed at the \emph{Short} price and
-  simultaneously re-opened at the \emph{RollLong} price. Similarly, an
-  open short position is closed at the \emph{Long} price and
-  simultaneously re-opened at the \emph{RollShort} price.
 }
 
 \value{
+
   A tsts object.
+
+}
+
+\seealso{
+
+  EquityEncoding and SignalEncoding
+
 }
 
 \examples{
@@ -129,8 +152,6 @@ states(x)
 states(x) <- c(0,1,1,1,-1) ## length multiple of nrow(x)
 phases(x)
 phases(x) <- phases(x)
-roll.at(x)
-roll.at(x) <- as.Date(c("2009-02-26","2009-04-21"))
 pricecols(x)
 pricecols(x) <- "Close"
 pricecols(x) <- list(Long="Close", Short="Open")

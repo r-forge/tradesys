@@ -1,4 +1,4 @@
-\name{encoding}
+\name{SignalEncoding}
 
 \alias{addsig}
 \alias{addcol}
@@ -9,11 +9,11 @@
 \alias{entrycond}
 \alias{entrycond<-}
 
-\title{Trading System Encoding}
+\title{Trading System Signal Encoding}
 
 \description{
 
-  Define or retrieve a \code{tsts} object's signals or column expressions.
+  Define or evaluate a \code{tsts} object's signal expressions.
   
 }
 

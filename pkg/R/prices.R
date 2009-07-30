@@ -1,4 +1,4 @@
-prices <- function(x, states=states(x)){
+prices <- function(x, states=states(x), roll.at=roll.at(x)){
   if(is.tsts(x)){
     y <- as.matrix(x)[, unlist(lapply(pricecols(x), function(x, y) if(is.numeric(x)) colnames(y)[x] else x, x))]
     colnames(y) <- names(pricecols(x))
@@ -24,12 +24,13 @@ prices <- function(x, states=states(x)){
       y[which(n), i] <- y[which(n), "Mark"]
     }
   }
-  y <- cbind(Use=y[, "Mark"], y)
+  y <- cbind(Price=y[, "Mark"], Roll=y[, "RollLong"], y)
   h <- phasemap(states)
-  y[which(h == "EL"), "Use"] <- y[which(h == "EL"), "Long"]
-  y[which(h == "ES"), "Use"] <- y[which(h == "ES"), "Short"]
-  y[which(h == "XL"), "Use"] <- y[which(h == "XL"), "Short"]
-  y[which(h == "XS"), "Use"] <- y[which(h == "XS"), "Long"]
-  y
+  y[which(h == "EL"), "Price"] <- y[which(h == "EL"), "Long"]
+  y[which(h == "ES"), "Price"] <- y[which(h == "ES"), "Short"]
+  y[which(h == "XL"), "Price"] <- y[which(h == "XL"), "Short"]
+  y[which(h == "XS"), "Price"] <- y[which(h == "XS"), "Long"]
+  RollAt <- which(cbind(y[, "Price"], roll.at)[, 2])
+  y[which(RollAt & states == -1), "Roll"] <- y[which(RollAt & states == -1), "RollShort"]
   y
 }

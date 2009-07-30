@@ -1,4 +1,4 @@
-tsts <- function(data, order.by=index(data), states=0, roll.at=NULL, pricecols=1){
+tsts <- function(data, order.by=index(data), states=0, pricecols=1){
   Index <- order.by
   CoreAttr <- attributes(data)
   data <- as.matrix(data)
@@ -14,14 +14,22 @@ tsts <- function(data, order.by=index(data), states=0, roll.at=NULL, pricecols=1
   if(length(Index) != nrow(data))
     stop("length(order.by) must equal nrow(data)")
   attr(data, "index") <- Index
-  attr(data, "tsts") <- list(roll.at=NULL, pricecols=pricecols, coreattr=CoreAttr,
-                             columns=NULL, signals=list(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE),
-                             entrywins=FALSE, entrycond=FALSE)
+  attr(data, "tsts") <- list(pricecols=pricecols,
+                             coreattr=CoreAttr,
+                             ## equity attributes
+                             delta=as.expression(1),
+                             roll.at=expression(FALSE),
+                             size.at=expression(statechg(St)),
+                             percent=TRUE,
+                             ## state attributes
+                             columns=NULL,
+                             signals=list(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE),
+                             entrywins=FALSE,
+                             entrycond=FALSE)
   class(data) <- "tsts"
   pricecols(data) <- pricecols
-  if(!is.null(roll.at))
-    roll.at(data) <- roll.at
-  data
+  Eq <- equity(data, states(data), delta=1, size.at=statechg(states(data)), roll.at=FALSE, percent=TRUE)
+  cbind(data, Eq=Eq[, "Equity"])
 }
 
 ###

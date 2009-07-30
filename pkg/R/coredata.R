@@ -6,9 +6,9 @@ coredata.tsts <- function(x, ...){
 
 "coredata<-.tsts" <- function(x, value){
   attr(x, "tsts")$coreattr <- attributes(value)
-  ## Evaluate columns
   l <- list(index=attr(x, "index"), roll.at=attr(x, "tsts")$roll.at,
             entrywins=attr(x, "tsts")$entrywins, entrycond=attr(x, "tsts")$entrycond)
+  ## Evaluate columns
   if(!is.null(attr(x, "tsts")$columns)){ 
     cols <- lapply(attr(x, "tsts")$columns, eval, c(l, as.list(as.data.frame(value))))
     if(any(unlist(lapply(cols, function(x) (nrow(value) %% length(x)) != 0)))) 
