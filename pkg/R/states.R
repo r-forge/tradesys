@@ -1,6 +1,6 @@
 states <- function(x){
   if(!"St" %in% colnames(x))
-    stop("x doesn't contain a states column 'St'.")
+    return(FALSE)
   y <- x[, "St"]
   names(y) <- NULL
   y

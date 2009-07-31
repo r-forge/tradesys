@@ -1,18 +1,8 @@
-prices <- function(x, states=states(x), roll.at=roll.at(x)){
-  if(is.tsts(x)){
-    y <- as.matrix(x)[, unlist(lapply(pricecols(x), function(x, y) if(is.numeric(x)) colnames(y)[x] else x, x))]
-    colnames(y) <- names(pricecols(x))
-  }else{
-    if(!is.matrix(x))
-      x <- matrix(x, ncol=1, dimnames=list(NULL, "Mark"))
-    if(!"Mark" %in% colnames(x))
-      stop("'Mark' must be in colnames(x).")
-    if(length(which(colnames(x) == "Mark")) > 1)
-      stop("Only one colnames(x) may be 'Mark'.")
-    y <- x[, match(c("Mark","Long","Short","RollLong","RollShort"), colnames(x), which(colnames(x) == "Mark"))]
-    colnames(y) <- c("Mark","Long","Short","RollLong","RollShort")
-  }
-  y <- zoo(y, order.by=index(x))
+prices <- function(x){
+  if(!is.tsts(x))
+    return(invisible(NULL))
+  y <- as.matrix(x)[, unlist(lapply(attr(x, "tstsp")$pricecols(x), function(x, y) if(is.numeric(x)) colnames(y)[x] else x, x))]
+  colnames(y) <- names(attr(x, "tstsp")$pricecols(x))
   if(any(is.na(y[, "Mark"]))){ ## fill NA's in Mark column
     message("NA's in 'Mark' column.. filling with previous value")
     y[, "Mark"] <- na.locf(y[, "Mark"])
@@ -25,12 +15,12 @@ prices <- function(x, states=states(x), roll.at=roll.at(x)){
     }
   }
   y <- cbind(Price=y[, "Mark"], Roll=y[, "RollLong"], y)
-  h <- phasemap(states)
+  h <- phasemap(states(x))
   y[which(h == "EL"), "Price"] <- y[which(h == "EL"), "Long"]
   y[which(h == "ES"), "Price"] <- y[which(h == "ES"), "Short"]
   y[which(h == "XL"), "Price"] <- y[which(h == "XL"), "Short"]
   y[which(h == "XS"), "Price"] <- y[which(h == "XS"), "Long"]
-  RollAt <- which(cbind(y[, "Price"], roll.at)[, 2])
-  y[which(RollAt & states == -1), "Roll"] <- y[which(RollAt & states == -1), "RollShort"]
-  y
+  RollAt <- which(as.logical(cbind(roll.at(x), y[, "Price"])[, 1]))
+  y[which(RollAt & states(x) == -1), "Roll"] <- y[which(RollAt & states(x) == -1), "RollShort"]
+  zoo(y, order.by=index(x))
 }

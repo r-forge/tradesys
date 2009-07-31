@@ -1,7 +1,9 @@
 coredata.tsts <- function(x, ...){
-  y <- x[, 1:attr(x, "tsts")$coreattr$dim[2]]
-  attributes(y) <- attr(x, "tsts")$coreattr
-  y
+  y <- as.matrix.tsts(x)
+  if(length(attr(x, "tsts")$exprcols) > 0) ## remove exprcols, if any
+    y <- y[, -match(names(attr(x, "tsts")$exprcols), colnames(y))]
+  y <- y[, -which(colnames(y) == "St")]
+  zoo(y, order.by=index(x))
 }
 
 "coredata<-.tsts" <- function(x, value){

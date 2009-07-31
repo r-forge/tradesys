@@ -1,4 +1,5 @@
-tsts <- function(data, order.by=index(data), states=0, pricecols=1, ...){
+tsts <- function(data, order.by=index(data), states=0, pricecols=1, exprcols, signals, 
+                 delta, roll.at, size.at, percent=TRUE, entrywins=FALSE, entrycond=FALSE){
   if(length(order.by) != length(unique(order.by)))
     stop("all order.by must be unique.")
   if(length(order.by) != nrow(data))
@@ -10,22 +11,69 @@ tsts <- function(data, order.by=index(data), states=0, pricecols=1, ...){
     stop("length(states) must be a multiple of nrow(data)")
   if(!any(states %in% c(1,0,-1)))
     stop("states must be a numeric vector containing only 1, 0, and -1 values")
-  data <- cbind(data, St=states)
-  l <- list(NOMATCH=NA,
-            pricecols=1,
-            exprcols=list(),
-            signals=list(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE),
-            delta=expression(1),
-            roll.at=expression(FALSE),
-            size.at=expression(statechg(St)),
-            percent=TRUE,
-            entrywins=FALSE,
-            entrycond=FALSE)
-  l <- replace(l, match(names(list(...)), names(l), nomatch=1), list(...))
-  attr(data, "tsts") <- l[-1]
+  l <- list(pricecols=processPriceCols(data, pricecols))
+  if(missing(exprcols)){
+    l$exprcols <- NULL
+  }else{
+    l$exprcols <- as.expression(substitute(exprcols))
+  }
+  if(missing(signals)){
+    l$signals <- as.expression(list(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE))
+  }else{
+    l$signals <- as.expression(substitute(signals))
+  }
+  if(missing(delta)){
+    l$delta <- 1
+  }else{
+    l$delta <- as.expression(substitute(delta))
+  }
+  if(missing(roll.at)){
+    l$roll.at <- FALSE
+  }else{
+    l$roll.at <- as.expression(substitute(roll.at))
+  }
+  if(missing(size.at)){
+    l$size.at <- expression(statechg(St))
+  }else{
+    l$size.at <- as.expression(substitute(size.at))
+  }
+  if(!is.logical(percent)){
+    warning("percent must be logical.. using FALSE.")
+    l$percent <- FALSE
+  }else{
+    l$percent <- percent
+  }
+  if(!is.logical(entrywins)){
+    warning("entrywins must be logical.. using FALSE.")
+    l$entrywins <- FALSE
+  }else{
+    l$entrywins <- entrywins
+  }
+  if(!is.logical(entrycond)){
+    warning("entrycond must be logical.. using FALSE.")
+    l$entrycond <- FALSE
+  }else{
+    l$entrycond <- entrycond
+  }
+  attr(data, "tstsp") <- l
   attr(data, "index") <- order.by
-  pricecols(data) <- pricecols
+  ## Evaluate exprcols 
+  m <- eval(attr(data, "tstsp")$exprcols, as.list(as.data.frame(data)))
+  if(is.list(m))
+    data <- cbind(data, do.call("cbind", m))
+  else
+    data <- cbind(data, m)
+  ## Evaluate signals 
+  s <- signalmap(eval(attr(data, "tsts")$signals$el, as.list(as.data.frame(data))),
+                 eval(attr(data, "tsts")$signals$es, as.list(as.data.frame(data))),
+                 eval(attr(data, "tsts")$signals$xl, as.list(as.data.frame(data))),
+                 eval(attr(data, "tsts")$signals$xs, as.list(as.data.frame(data))),
+                 attr(data, "tsts")$entrycond, attr(data, "tsts")$entrywins)
+  data <- cbind(data, St=s)
   class(data) <- "tsts"
+  ## Evaluate delta, roll.at, size.at
+  ##e <- equity(prices(data), s, attr(data, "tstsp")$delta, size.at(data), roll.at(data), attr(data, "tstsp")$percent=TRUE)
+  ##cbind(data, Equity=e)
   data
 }
 
