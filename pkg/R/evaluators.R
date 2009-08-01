@@ -1,37 +1,43 @@
-signals <- function(x){
-  if(!is.tsts(x))
-    return(c(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE))
-  do.call("cbind", lapply(attr(x, "tstsp")$signals, eval, envir=as.list(as.data.frame(as.matrix(x)))))
+signals <- function(x, list=NULL){
+  if(is.null(list))
+    list <- attr(x, "tstsp")$signals
+  do.call("cbind", lapply(list, eval, envir=c(index=index(x), as.list(as.data.frame(as.matrix(x))))))
 }
 
-exprcols <- function(x){
-  if(!is.tsts(x))
-    return(NULL)
-  if(is.null(attr(x, "tstsp")$exprcols))
-    return(NULL) 
-  do.call("cbind", lapply(attr(x, "tstsp")$exprcols, eval, envir=as.list(as.data.frame(as.matrix(x)))))
+"signals<-" <- function(x, type="el", value){
+  type <- tolower(type[1])
+  if(!type %in% c("el","es","xl","xs"))
+    stop("type must be one of 'el', 'es', 'xl', 'xs'.")
+  attr(x, "tstsp")$signals[[type]] <- value
+  x
 }
 
-delta <- function(x){
-  if(!is.tsts(x))
-    return(FALSE)
-  y <- eval(attr(x, "tsts")$delta, c(list(index=index(x)), as.list(as.data.frame(as.matrix(x)))))
+exprcols <- function(x, list=NULL){
+  if(is.null(list))
+    list <- attr(x, "tstsp")$exprcols
+  do.call("cbind", lapply(list, eval, envir=c(index=index(x), as.list(as.data.frame(as.matrix(x))))))
+}
+
+delta <- function(x, expr){
+  if(missing(expr))
+    expr <- attr(x, "tstsp")$delta
+  y <- eval(expr, c(list(index=index(x)), as.list(as.data.frame(as.matrix(x)))))
   if(length(y) == 1)
     return(y)
   cbind(y, states(x))[, 1] ## expand if necessary
 }
 
-size.at <- function(x){
-  if(!is.tsts(x))
-    return(FALSE)
-  y <- eval(attr(x, "tsts")$size.at, c(list(index=index(x)), as.list(as.data.frame(as.matrix(x)))))
+size.at <- function(x, expr){
+  if(missing(expr))
+    expr <- attr(x, "tstsp")$size.at
+  y <- eval(expr, c(list(index=index(x)), as.list(as.data.frame(as.matrix(x)))))
   as.logical(cbind(y, states(x))[, 1]) ## expand if necessary
 }
 
-roll.at <- function(x){
-  if(!is.tsts(x))
-    return(FALSE)
-  y <- eval(attr(x, "tsts")$roll.at, c(list(index=index(x)), as.list(as.data.frame(as.matrix(x)))))
+roll.at <- function(x, expr){
+  if(missing(expr))
+    expr <- attr(x, "tstsp")$roll.at
+  y <- eval(expr, c(list(index=index(x)), as.list(as.data.frame(as.matrix(x)))))
   as.logical(cbind(y, states(x))[, 1]) ## expand if necessary
 }
 

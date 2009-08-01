@@ -1,8 +1,8 @@
-prices <- function(x){
+prices <- function(x, pricecols=tstsp(x)$pricecols){
   if(!is.tsts(x))
     return(invisible(NULL))
-  y <- as.matrix(x)[, unlist(lapply(attr(x, "tstsp")$pricecols(x), function(x, y) if(is.numeric(x)) colnames(y)[x] else x, x))]
-  colnames(y) <- names(attr(x, "tstsp")$pricecols(x))
+  y <- as.matrix(x)[, unlist(lapply(pricecols, function(x, y) if(is.numeric(x)) colnames(y)[x] else x, x))]
+  colnames(y) <- names(pricecols)
   if(any(is.na(y[, "Mark"]))){ ## fill NA's in Mark column
     message("NA's in 'Mark' column.. filling with previous value")
     y[, "Mark"] <- na.locf(y[, "Mark"])
