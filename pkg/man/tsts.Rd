@@ -12,8 +12,6 @@
 \alias{as.zoo.tsts}
 \alias{[.tsts}
 \alias{is.tsts}
-\alias{states}
-\alias{states<-}
 \alias{phases}
 \alias{phases<-}
 
