@@ -1,5 +1,5 @@
-tsts <- function(data, order.by=index(data), states=0, pricecols=1, exprcols, signals, 
-                 delta, roll.at, size.at, percent=TRUE, entrywins=FALSE, entrycond=FALSE){
+tsts <- function(data, order.by=index(data), states=NULL, pricecols=1, exprcols, signals, 
+                 delta, size.at, roll.at, percent=TRUE, entrywins=FALSE, entrycond=FALSE){
   if(length(order.by) != length(unique(order.by)))
     stop("all order.by must be unique.")
   if(length(order.by) != nrow(data))
@@ -7,10 +7,17 @@ tsts <- function(data, order.by=index(data), states=0, pricecols=1, exprcols, si
   data <- as.matrix(data)
   if(length(colnames(data)) != unique(length(colnames(data))))
     stop("data must have unique column names.")
-  if(nrow(data) %% length(states) != 0)
-    stop("length(states) must be a multiple of nrow(data)")
-  if(!any(states %in% c(1,0,-1)))
-    stop("states must be a numeric vector containing only 1, 0, and -1 values")
+  if(!is.null(states)){
+    if(nrow(data) %% length(states) != 0)
+      stop("length(states) must be a multiple of nrow(data)")
+    if(!any(states %in% c(1,0,-1)))
+      stop("states must be a numeric vector containing only 1, 0, and -1 values")
+  }else{
+    if(missing(signals)){
+      message("neither states or signals specified.. using states=0")
+      states <- 0
+    }
+  }
   l <- list(pricecols=processPriceCols(data, pricecols))
   if(missing(exprcols)){
     l$exprcols <- NULL
@@ -18,7 +25,7 @@ tsts <- function(data, order.by=index(data), states=0, pricecols=1, exprcols, si
     l$exprcols <- as.expression(substitute(exprcols))
   }
   if(missing(signals)){
-    l$signals <- as.expression(list(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE))
+    l$signals <- NULL
   }else{
     l$signals <- as.expression(substitute(signals))
   }
