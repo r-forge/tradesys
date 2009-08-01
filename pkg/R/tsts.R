@@ -1,5 +1,5 @@
 tsts <- function(data, order.by=index(data), states=NULL, pricecols=1, exprcols, signals, 
-                 delta, size.at, roll.at, percent=TRUE, entrywins=FALSE, entrycond=FALSE){
+                 delta=statechg(St), size.at, roll.at, percent=TRUE, entrywins=FALSE, entrycond=FALSE){
   if(length(order.by) != length(unique(order.by)))
     stop("all order.by must be unique.")
   if(length(order.by) != nrow(data))

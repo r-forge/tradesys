@@ -26,7 +26,7 @@
 \usage{
 
 tsts(data, order.by=index(data), states=NULL, pricecols=1, exprcols, signals, 
-     delta, size.at, roll.at, percent=TRUE, entrywins=FALSE, entrycond=FALSE)
+     delta=statechg(St), size.at, roll.at, percent=TRUE, entrywins=FALSE, entrycond=FALSE)
 
 }
 
