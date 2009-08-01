@@ -207,9 +207,6 @@ states(x)
 states(x) <- c(0,1,1,1,-1) ## length multiple of nrow(x)
 phases(x)
 phases(x) <- phases(x)
-pricecols(x)
-pricecols(x) <- "Close"
-pricecols(x) <- list(Long="Close", Short="Open")
 }
 
 \author{Robert Sams \email{robert@sanctumfi.com}}
