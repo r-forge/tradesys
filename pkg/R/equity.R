@@ -1,21 +1,21 @@
-equity <- function(prices, states, delta=1, size.at=statechg(states), roll.at=FALSE, percent=TRUE){
+equity <- function(prices, states, delta=1, size.at=as.logical(c(states[1], diff(states))), roll.at=FALSE, percent=TRUE){
   if(is.matrix(prices)){
-    prices <- prices(prices, states)
-    rrices <- prices[, "RollLong"] ## !!FIX ME!!
-    prices <- prices[, "Use"]
+    rrices <- as.vector(prices[, "Roll"])
+    prices <- as.vector(prices[, "Price"])
   }else{
     rrices <- prices
   }
   ## states, delta, size.at and roll.at must be multiples of price
-  states <- cbind(prices, states)[, 2]
-  delta <- cbind(prices, delta)[, 2]
-  roll.at <- cbind(prices, roll.at)[, 2]
-  size.at <- cbind(prices, size.at)[, 2]
-  Trade <- cumsum(statechg(states))
+  states <- cbind(states, prices)[, 1]
+  delta <- cbind(delta, prices)[, 1]
+  roll.at <- cbind(roll.at, prices)[, 1]
+  size.at <- cbind(size.at, prices)[, 1]
+  Trade <- cumsum(as.logical(c(states[1], diff(states)))) ## trades at state change
   pricesLag <- prices
   pricesLag[which(!size.at & !roll.at)] <- NA
+  pricesLag[1] <- prices[1]
   pricesLag <- pricesLag + (rrices - prices) * as.numeric(roll.at)
-  pricesLag <- na.locf(pricesLag)
+  pricesLag <- na.locf(pricesLag, na.rm=FALSE)
   PnL <- 0
   RoR <- 0
   if(length(prices) > 1){

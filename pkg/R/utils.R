@@ -1,10 +1,3 @@
-statechg <- function(states){
-  if(!is.numeric(states)|any(!states %in% c(1,0,-1)))
-    stop("states must be a numeric vector of 1s, 0s, and -1s.")
-  as.logical(c(abs(states[1]), sapply(abs(diff(states)), min, 1) == 1))
-}
-
-
 processPriceCols <- function(x, pclist){ ## x is a tsts object, pclist is a list of pricecol names
   if(!is.list(pclist))
     l <- list(Mark=pclist[1], Long=pclist[1], Short=pclist[1], RollLong=pclist[1], RollShort=pclist[1])

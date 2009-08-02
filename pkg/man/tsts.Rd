@@ -26,7 +26,8 @@
 \usage{
 
 tsts(data, order.by=index(data), states=NULL, pricecols=1, exprcols=NULL, signals=NULL, 
-     delta=1, size.at=statechg(St), roll.at=FALSE, percent=TRUE, entrywins=FALSE, entrycond=FALSE)
+     delta=1, size.at=as.logical(c(St[1], diff(St))), roll.at=FALSE, percent=TRUE,
+     entrywins=FALSE, entrycond=FALSE)
 
 }
 
@@ -176,9 +177,15 @@ tsts(data, order.by=index(data), states=NULL, pricecols=1, exprcols=NULL, signal
 
 \examples{
 data(spx)
-spx <- window(spx, start="2009-01-01")
+spx <- window(spx, start="2007-01-01")
 x <- tsts(spx, states=0)
 is.tsts(x)
+##library(TTR)
+##tstsp(x)$signals$el <- expression(SMA(Close, 60) > SMA(Close, 120))
+##tstsp(x)$signals$es <- expression(SMA(Close, 60) <= SMA(Close, 120))
+##tail(x)
+##tail(coredata(x))
+
 class(x[1:10, ]) ## row indexing strips tsts attribute
 class(x[, 1:2])  ## ... so does column indexing
 

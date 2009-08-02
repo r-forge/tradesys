@@ -5,7 +5,7 @@
 \alias{signals}
 \alias{delta}
 \alias{size.at}
-\alias{roll.at}
+n\alias{roll.at}
 \alias{prices}
 
 \title{Convience Functions}
@@ -29,7 +29,7 @@ size.at(x, expr)
 
 roll.at(x, expr)
 
-prices(x, pricecols=tstsp(x)$pricecols)
+prices(x, pricecols=tstsp(x)$pricecols, roll.at=FALSE)
 
 }
 
@@ -39,6 +39,7 @@ prices(x, pricecols=tstsp(x)$pricecols)
   \item{expr}{an expression.}
   \item{value}{a vector or expresion.}
   \item{pricecols}{list. see below.}
+  \item{roll.at}{logical vector.}
 }
 
 \details{

@@ -12,7 +12,8 @@
 
 \usage{
 
-equity(prices, states, delta=1, size.at=statechg(states), roll.at=FALSE, percent=TRUE)
+equity(prices, states, delta=1, size.at=as.logical(c(states[1], diff(states))),
+       roll.at=FALSE, percent=TRUE)
 
 }
 

@@ -13,6 +13,8 @@ exprcols <- function(x, list=NULL){
 delta <- function(x, expr){
   if(missing(expr))
     expr <- attr(x, "tstsp")$delta
+  else
+    expr <- substitute(expr)
   y <- eval(expr, c(list(index=index(x)), as.list(as.data.frame(as.matrix(x)))))
   if(length(y) == 1)
     return(y)
@@ -22,6 +24,8 @@ delta <- function(x, expr){
 size.at <- function(x, expr){
   if(missing(expr))
     expr <- attr(x, "tstsp")$size.at
+  else
+    expr <- substitute(expr)
   y <- eval(expr, c(list(index=index(x)), as.list(as.data.frame(as.matrix(x)))))
   as.logical(cbind(y, states(x))[, 1]) ## expand if necessary
 }
@@ -29,6 +33,8 @@ size.at <- function(x, expr){
 roll.at <- function(x, expr){
   if(missing(expr))
     expr <- attr(x, "tstsp")$roll.at
+  else
+    expr <- substitute(expr)
   y <- eval(expr, c(list(index=index(x)), as.list(as.data.frame(as.matrix(x)))))
   as.logical(cbind(y, states(x))[, 1]) ## expand if necessary
 }

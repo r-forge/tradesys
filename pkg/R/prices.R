@@ -1,6 +1,4 @@
-prices <- function(x, pricecols=tstsp(x)$pricecols){
-  if(!is.tsts(x))
-    return(invisible(NULL))
+prices <- function(x, pricecols=tstsp(x)$pricecols, roll.at=FALSE){
   y <- as.matrix(x)[, unlist(lapply(pricecols, function(x, y) if(is.numeric(x)) colnames(y)[x] else x, x))]
   colnames(y) <- names(pricecols)
   if(any(is.na(y[, "Mark"]))){ ## fill NA's in Mark column
@@ -20,7 +18,7 @@ prices <- function(x, pricecols=tstsp(x)$pricecols){
   y[which(h == "ES"), "Price"] <- y[which(h == "ES"), "Short"]
   y[which(h == "XL"), "Price"] <- y[which(h == "XL"), "Short"]
   y[which(h == "XS"), "Price"] <- y[which(h == "XS"), "Long"]
-  RollAt <- which(as.logical(cbind(roll.at(x), y[, "Price"])[, 1]))
+  RollAt <- which(as.logical(cbind(roll.at, y[, "Price"])[, 1]))
   y[which(RollAt & states(x) == -1), "Roll"] <- y[which(RollAt & states(x) == -1), "RollShort"]
   zoo(y, order.by=index(x))
 }

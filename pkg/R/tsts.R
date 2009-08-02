@@ -1,5 +1,6 @@
 tsts <- function(data, order.by=index(data), states=NULL, pricecols=1, exprcols=NULL, signals=NULL, 
-                 delta=1, size.at=statechg(St), roll.at=FALSE, percent=TRUE, entrywins=FALSE, entrycond=FALSE){
+                 delta=1, size.at=as.logical(c(St[1], diff(St))), roll.at=FALSE, percent=TRUE,
+                 entrywins=FALSE, entrycond=FALSE){
   if(length(order.by) != length(unique(order.by)))
     stop("all order.by must be unique.")
   if(length(order.by) != nrow(data))
@@ -68,16 +69,18 @@ tsts <- function(data, order.by=index(data), states=NULL, pricecols=1, exprcols=
                    eval(l$signals$xl, as.list(as.data.frame(data))),
                    eval(l$signals$xs, as.list(as.data.frame(data))),
                    l$entrycond, l$entrywins)
-    data <- cbind(data, St=s)
   }else{
-    data <- cbind(data, St=states)
+    s <- cbind(states, data)[, 1]
   }
+  data <- cbind(data, St=s)
+  ## Evaluate delta, roll.at, size.at
+  size.at <- eval(l$size.at, as.list(as.data.frame(data)))
+  e <- equity(prices(data, l$pricecols), s, delta(data, l$delta), size.at,
+              roll.at(data, l$roll.at), l$percent)
+  data <- cbind(data, Equity=e[, "Equity"])
   attr(data, "index") <- order.by
   attr(data, "tstsp") <- l
   class(data) <- "tsts"
-  ## Evaluate delta, roll.at, size.at
-  ##e <- equity(prices(data), s, attr(data, "tstsp")$delta, size.at(data), roll.at(data), attr(data, "tstsp")$percent=TRUE)
-  ##cbind(data, Equity=e)
   data
 }
 
@@ -124,7 +127,7 @@ head.tsts <- function(x, ...){
 
 tail.tsts <- function(x, ...){
   tail(as.zoo(x), ...)
-p}
+}
 
 as.matrix.tsts <- function(x, ...){
   rownames(x) <- format(attr(x, "index"))
