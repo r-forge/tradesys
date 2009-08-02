@@ -26,7 +26,7 @@ EquityStats(equity, dates=index(equity))
     RORC =\tab \eqn{E_{n} / E_{1} - 1}\cr
     CAGR =\tab \eqn{(E_{n} / E_{1})^{(365/D)} - 1}
   }
-  where $E_{i}$ is equity at time \emph{i} and \emph{D} is number of
+  where \eqn{E_{i}} is equity at time \emph{i} and \emph{D} is number of
   days between \emph{Date(n)} and \emph{Date(1)}.
   
   Two volatility statistics are calculated:
@@ -34,7 +34,7 @@ EquityStats(equity, dates=index(equity))
     MAXDD =\tab \eqn{MIN(DD_{1}, ..., DD_{n})}\cr
     VOLA =\tab \eqn{SD(ROR_{1}, ..., ROR_{n}) * \sqrt{365/D}}\cr
   }
-  where $DD_{i}$ is the max drawdown at time \emph{i}, defined as \deqn{
+  where \eqn{DD_{i}} is the max drawdown at time \emph{i}, defined as \deqn{
     min(E_{1}, ..., E_{i}) / E_{i} - 1
   }
 

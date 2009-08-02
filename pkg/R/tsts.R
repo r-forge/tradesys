@@ -74,9 +74,10 @@ tsts <- function(data, order.by=index(data), states=NULL, pricecols=1, exprcols=
   }
   data <- cbind(data, St=s)
   ## Evaluate delta, roll.at, size.at
+  delta <- eval(l$delta, as.list(as.data.frame(data)))
   size.at <- eval(l$size.at, as.list(as.data.frame(data)))
-  e <- equity(prices(data, l$pricecols), s, delta(data, l$delta), size.at,
-              roll.at(data, l$roll.at), l$percent)
+  roll.at <- eval(l$roll.at, as.list(as.data.frame(data)))
+  e <- equity(prices(data, l$pricecols), s, delta, size.at, roll.at, l$percent)
   data <- cbind(data, Equity=e[, "Equity"])
   attr(data, "index") <- order.by
   attr(data, "tstsp") <- l

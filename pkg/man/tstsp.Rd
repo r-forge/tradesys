@@ -39,6 +39,7 @@ tstsp(x) <- value
 
 \examples{
 data(spx)
+spx <- window(spx, start="2005-01-01")
 tstsp(x <- tsts(spx))
 library(TTR)
 tstsp(x)$signals$el <- expression(SMA(Close, 60) > SMA(Close, 120))

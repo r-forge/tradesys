@@ -5,7 +5,7 @@
 \alias{signals}
 \alias{delta}
 \alias{size.at}
-n\alias{roll.at}
+\alias{roll.at}
 \alias{prices}
 
 \title{Convience Functions}
@@ -69,6 +69,8 @@ prices(x, pricecols=tstsp(x)$pricecols, roll.at=FALSE)
 \examples{
 
 data(spx)
+spx <- window(spx, start="2005-01-01")
+
 x <- tsts(spx)
 
 library(TTR)
