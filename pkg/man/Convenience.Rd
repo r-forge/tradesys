@@ -19,15 +19,15 @@
 
 \usage{
 
-states(x, list=NULL)
+states(x)
 states(x) <- value
 
-signals(x) 
+signals(x, list=NULL) 
 signals(x, type="el") <- expression(value)
 
-delta(x)
-size.at(x)
-roll.at(x)
+delta(x, expr)
+size.at(x, expr)
+roll.at(x, expr)
 
 prices(x, pricecols=tstsp(x)$pricecols)
 
@@ -35,8 +35,9 @@ prices(x, pricecols=tstsp(x)$pricecols)
 
 \arguments{
   \item{x}{a tsts object.}
-  \item{list}{list of expressions.}
+  \item{list}{named list of signal expresions.}
   \item{type}{character. "el", "es", "xl", or "xs".}
+  \item{expr}{an expression.}
   \item{value}{a vector or expresion.}
   \item{pricecols}{list. see below.}
 }
@@ -67,21 +68,21 @@ prices(x, pricecols=tstsp(x)$pricecols)
 
 \examples{
 
-data(spx)
-x <- tsts(spx)
+## data(spx)
+## x <- tsts(spx)
 
-library(TTR)
-x <- cbind(x, MAF=expression(SMA(Close, 60)))
-x <- cbind(x, MAS=expression(SMA(Close, 120)))
+## library(TTR)
+## x <- cbind(x, MAF=expression(SMA(Close, 60)))
+## x <- cbind(x, MAS=expression(SMA(Close, 120)))
 
-head(x)
-tail(x)
+## head(x)
+## tail(x)
 
-signals(x, "el") <- expression(MAF >= MAS)
-signals(x, "es") <- expression(MAF < MAS)
+## signals(x, "el") <- expression(MAF >= MAS)
+## signals(x, "es") <- expression(MAF < MAS)
 
-head(signals(x))
-tail(signals(x))
+## head(signals(x))
+## tail(signals(x))
 
 }
 

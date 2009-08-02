@@ -1,5 +1,5 @@
-tsts <- function(data, order.by=index(data), states=NULL, pricecols=1, exprcols, signals, 
-                 delta=statechg(St), size.at, roll.at, percent=TRUE, entrywins=FALSE, entrycond=FALSE){
+tsts <- function(data, order.by=index(data), states=NULL, pricecols=1, exprcols=NULL, signals=NULL, 
+                 delta=1, size.at=statechg(St), roll.at=FALSE, percent=TRUE, entrywins=FALSE, entrycond=FALSE){
   if(length(order.by) != length(unique(order.by)))
     stop("all order.by must be unique.")
   if(length(order.by) != nrow(data))
@@ -19,31 +19,11 @@ tsts <- function(data, order.by=index(data), states=NULL, pricecols=1, exprcols,
     }
   }
   l <- list(pricecols=processPriceCols(data, pricecols))
-  if(missing(exprcols)){
-    l$exprcols <- NULL
-  }else{
-    l$exprcols <- as.expression(substitute(exprcols))
-  }
-  if(missing(signals)){
-    l$signals <- NULL
-  }else{
-    l$signals <- as.expression(substitute(signals))
-  }
-  if(missing(delta)){
-    l$delta <- 1
-  }else{
-    l$delta <- as.expression(substitute(delta))
-  }
-  if(missing(roll.at)){
-    l$roll.at <- FALSE
-  }else{
-    l$roll.at <- as.expression(substitute(roll.at))
-  }
-  if(missing(size.at)){
-    l$size.at <- expression(statechg(St))
-  }else{
-    l$size.at <- as.expression(substitute(size.at))
-  }
+  l <- c(l, list(exprcols=exprcols))
+  l <- c(l, list(signals=signals))
+  l$delta <- as.expression(substitute(delta))
+  l$size.at <- as.expression(substitute(size.at))
+  l$roll.at <- as.expression(substitute(roll.at))
   if(!is.logical(percent)){
     warning("percent must be logical.. using FALSE.")
     l$percent <- FALSE
@@ -62,21 +42,27 @@ tsts <- function(data, order.by=index(data), states=NULL, pricecols=1, exprcols,
   }else{
     l$entrycond <- entrycond
   }
-  attr(data, "tstsp") <- l
+  ## Evaluate exprcols
+  if(!is.null(l$exprcols)){
+    m <- eval(l$exprcols, as.list(as.data.frame(data)))
+    if(is.list(m))
+      data <- cbind(data, do.call("cbind", m))
+    else
+      data <- cbind(data, m)
+  }
+  ## Evaluate signals
+  if(is.null(states)){
+    s <- signalmap(eval(l$signals$el, as.list(as.data.frame(data))),
+                   eval(l$signals$es, as.list(as.data.frame(data))),
+                   eval(l$signals$xl, as.list(as.data.frame(data))),
+                   eval(l$signals$xs, as.list(as.data.frame(data))),
+                   l$entrycond, l$entrywins)
+    data <- cbind(data, St=s)
+  }else{
+    data <- cbind(data, St=states)
+  }
   attr(data, "index") <- order.by
-  ## Evaluate exprcols 
-  m <- eval(attr(data, "tstsp")$exprcols, as.list(as.data.frame(data)))
-  if(is.list(m))
-    data <- cbind(data, do.call("cbind", m))
-  else
-    data <- cbind(data, m)
-  ## Evaluate signals 
-  s <- signalmap(eval(attr(data, "tsts")$signals$el, as.list(as.data.frame(data))),
-                 eval(attr(data, "tsts")$signals$es, as.list(as.data.frame(data))),
-                 eval(attr(data, "tsts")$signals$xl, as.list(as.data.frame(data))),
-                 eval(attr(data, "tsts")$signals$xs, as.list(as.data.frame(data))),
-                 attr(data, "tsts")$entrycond, attr(data, "tsts")$entrywins)
-  data <- cbind(data, St=s)
+  attr(data, "tstsp") <- l
   class(data) <- "tsts"
   ## Evaluate delta, roll.at, size.at
   ##e <- equity(prices(data), s, attr(data, "tstsp")$delta, size.at(data), roll.at(data), attr(data, "tstsp")$percent=TRUE)
@@ -132,6 +118,7 @@ tail.tsts <- function(x, ...){
 as.matrix.tsts <- function(x, ...){
   rownames(x) <- format(attr(x, "index"))
   attr(x, "index") <- NULL
+  attr(x, "tstsp") <- NULL
   class(x) <- "matrix"
   x
 }

@@ -6,5 +6,5 @@ tstsp <- function(x){
 
 "tstsp<-" <- function(x, value){
   attr(x, "tstsp") <- value
-  x
+  as.tsts.default(x)
 }

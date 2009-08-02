@@ -25,8 +25,8 @@
 
 \usage{
 
-tsts(data, order.by=index(data), states=NULL, pricecols=1, exprcols, signals, 
-     delta=statechg(St), size.at, roll.at, percent=TRUE, entrywins=FALSE, entrycond=FALSE)
+tsts(data, order.by=index(data), states=NULL, pricecols=1, exprcols=NULL, signals=NULL, 
+     delta=1, size.at=statechg(St), roll.at=FALSE, percent=TRUE, entrywins=FALSE, entrycond=FALSE)
 
 }
 
@@ -38,13 +38,11 @@ tsts(data, order.by=index(data), states=NULL, pricecols=1, exprcols, signals,
   \item{states}{numeric. vector of 1s, -1s and 0s.}
   \item{pricecols}{character or named list. see below.}
   \item{exprcols}{a named list of expressions.}
-  \item{signals}{a list of up to four expressions named 'el','es','xl'
-    and 'xs'}
+  \item{signals}{a named list of expressions 'el','es','xl' and 'xs'}
   \item{delta}{a vector or expression that evaluates to a
     vector that is numeric and a multiple of \code{nrow(data)} in length.}
-  \item{roll.at,size.at}{a vector or expression that evaluates to a
-    vector that is logical and a multiple of \code{nrow(data)} in
-    length.}
+  \item{roll.at,size.at}{expression that evaluates to a
+    logical vector that is a multiple of \code{nrow(data)} in length.}
   \item{percent,entrywins,entrycond}{logical. see below}
 
 }

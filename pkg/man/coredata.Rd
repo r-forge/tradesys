@@ -22,31 +22,13 @@
 }
 
 \details{
-  \code{coredata} returns the exact data originally passed to the
-  \code{tsts} constructor, or assigned via the \code{coredata}
-  assignment method.
+  \code{coredata} strips the 'St', 'Equity', and (if there are any)
+  calccols columns from the data matrix and returns a zoo matrix. It
+  differs from \code{as.zoo.tsts} only by excluding these columns.
 
-  The assignment method is more involved. If \code{nrow(value)} equals
-  \code{nrow(x)}, then the index of \code{x} is preserved but
-  \code{value} replaces the data. If the rows are not equal,
-  \code{index(value)} becomes the new index. The column structure need not
-  be the same but must be consistent with attributes \code{pricecols}
-  and \code{exprcols}, and \code{exprsigs}.
-
-  The assigment function is called by \code{addsig} and \code{addcol}
-  because it evaluates the tsts object's expression attributes and
-  recalculates the states vector as a side effect. The sequence by which
-  this is done is as follows:
-  \enumerate{
-    \item Expressions in the \code{exprcols} attribute are evaluated in
-    order and the results are cbinded to \code{value} with their list
-    names as column names.
-    \item Expressions in the \code{exprsigs} attribute are evaluated and
-    the states vector is computed from them using \code{signals}. It is
-    cbinded to \code{value} with column name "St".
-    \item \code{tsts} and class attribute assigned to \code{value} and
-    returned.
-  }
+  The assignment method calls \code{tsts} with \code{value} passed to
+  it. \code{index(value)} should return the desired index, so zoo
+  objects are the natural thing to assign. 
 }
 
 \value{
@@ -57,6 +39,8 @@
 data(spx)
 x <- tsts(spx)
 identical(coredata(x), spx)
+coredata(x) <- window(coredata(x), start="2009-05-01")
+x
 }
 
 \author{Robert Sams \email{robert@sanctumfi.com}}
