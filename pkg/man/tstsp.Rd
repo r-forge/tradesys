@@ -8,7 +8,7 @@
 \description{
 
   \code{tstsp} returns the 'tstsp' attribute (or 'NULL'). The assignment
-  method replaces this attribute or modifies a member of it. 
+  method modifies this attribute and recalculates the system.
 
 }
 
@@ -16,23 +16,6 @@
 
 tstsp(x)
 tstsp(x) <- value
-
-## Basic configuration
-tstsp(x)$pricecols <- value
-tstsp(x)$entrywins <- value
-tstsp(x)$entrycond <- value
-tstsp(x)$percent <- value
-
-## Signal encoding
-tstsp(x)$el <- expression(value)
-tstsp(x)$es <- expression(value)
-tstsp(x)$xl <- expression(value)
-tstsp(x)$xs <- expression(value)
-
-## Equity encoding
-tstsp(x)$delta <- expression(value)
-tstsp(x)$size.at <- expression(value)
-tstsp(x)$roll.at <- expression(value)
 
 }
 
@@ -43,7 +26,9 @@ tstsp(x)$roll.at <- expression(value)
 }
 
 \details{
-  NEED TO DOCUMENT
+  Note that assigning directly to an expression member of 'tstsp'
+  requires a call to \code{expression} on the right-hand side, eg,
+  \code{tstsp(x)$size.at <- expression(SomeExpr)}. 
 }
 
 \value{
@@ -53,6 +38,14 @@ tstsp(x)$roll.at <- expression(value)
 }
 
 \examples{
+data(spx)
+tstsp(x <- tsts(spx))
+library(TTR)
+tstsp(x)$signals$el <- expression(SMA(Close, 60) > SMA(Close, 120))
+tstsp(x)$signals$es <- expression(SMA(Close, 60) < SMA(Close, 120))
+tstsp(x)$entrycond
+tstsp(x)$entrycond <- TRUE
+tail(x)
 }
 
 \author{Robert Sams \email{robert@sanctumfi.com}}

@@ -20,6 +20,17 @@ tsts <- function(data, order.by=index(data), states=NULL, pricecols=1, exprcols=
   }
   l <- list(pricecols=processPriceCols(data, pricecols))
   l <- c(l, list(exprcols=exprcols))
+  if(!is.null(signals)){
+    if(!is.list(signals)){
+      message("signals must be a list.. setting to NULL.")
+      signals <- NULL
+    }else{
+      if(any(!names(signals) %in% c("el","es","xl","xs")))
+        stop("only el, es, xl and xs are valid signal names")
+      signals <- replace(list(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE),
+                         match(names(signals), c("el","es","xl","xs")), signals)
+    }
+  }
   l <- c(l, list(signals=signals))
   l$delta <- as.expression(substitute(delta))
   l$size.at <- as.expression(substitute(size.at))

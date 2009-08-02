@@ -7,7 +7,7 @@ as.tsts.default <- function(x, ...){
     ARGS <- tstsp(x)
   else
     ARGS <- list(...)
-  print(ARGS)
+  ARGS <- c(list(data=coredata(x)), list(order.by=index(x)), ARGS)
   do.call("tsts", ARGS)
 }
 
