@@ -124,7 +124,7 @@ head.tsts <- function(x, ...){
 
 tail.tsts <- function(x, ...){
   tail(as.zoo(x), ...)
-}
+p}
 
 as.matrix.tsts <- function(x, ...){
   rownames(x) <- format(attr(x, "index"))

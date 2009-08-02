@@ -1,15 +1,7 @@
 signals <- function(x, list=NULL){
   if(is.null(list))
     list <- attr(x, "tstsp")$signals
-  do.call("cbind", lapply(list, eval, envir=c(index=index(x), as.list(as.data.frame(as.matrix(x))))))
-}
-
-"signals<-" <- function(x, type="el", value){
-  type <- tolower(type[1])
-  if(!type %in% c("el","es","xl","xs"))
-    stop("type must be one of 'el', 'es', 'xl', 'xs'.")
-  attr(x, "tstsp")$signals[[type]] <- value
-  x
+  do.call("cbind", lapply(list, eval, envir=c(list(index=index(x)), as.list(as.data.frame(as.matrix(x))))))
 }
 
 exprcols <- function(x, list=NULL){
