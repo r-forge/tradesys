@@ -50,16 +50,16 @@ tsts <- function(data, order.by=index(data), pricecols=1, el=FALSE, es=FALSE,
   Frame <- as.list(as.data.frame(data))
   Frame$index <- order.by
   St <- do.call("signalmap", lapply(c(l["el"], l["es"], l["xl"], l["xs"], l["entrycond"], l["entrywins"]), eval, Frame))
-  data <- cbind(data, St)
   ## Evaluate delta, roll.at, size.at
   Frame <- as.list(as.data.frame(data))
+  Frame$St <- St
   Frame$index <- order.by
   delta <- eval(l$delta, Frame)
   size.at <- eval(l$size.at, Frame)
   roll.at <- eval(l$roll.at, Frame)
   ## Calculate equity
   Equity <- equity(prices(data, l$pricecols), St, delta, size.at, roll.at, l$percent)[, "Equity"]
-  data <- cbind(data, Equity)
+  data <- cbind(St, Equity, data)
   attr(data, "index") <- order.by
   attr(data, "tstsp") <- l
   class(data) <- "tsts"

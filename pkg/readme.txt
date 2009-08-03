@@ -1,7 +1,7 @@
 Todo
 
 - fix problem with calling extractors inside tsts... DONE.
-- St and Equity right-side cbinding.
+- left-bind St and Equity in tsts... DONE.
 - fix trades.
 - incorporate equity.simple into equity.
 - rename order.by to index?
