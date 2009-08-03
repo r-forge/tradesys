@@ -25,26 +25,27 @@
 
 \usage{
 
-tsts(data, order.by=index(data), states=NULL, pricecols=1, exprcols=NULL, signals=NULL, 
-     delta=1, size.at=as.logical(c(St[1], diff(St))), roll.at=FALSE, percent=TRUE,
-     entrywins=FALSE, entrycond=FALSE)
+tsts(data, index=index(data), pricecols=1, el=FALSE, es=FALSE, 
+     xl=FALSE, xs=FALSE, delta=1, size.at=as.logical(c(St[1], diff(St))),
+     roll.at=FALSE, exprcols=NULL, percent=TRUE, entrywins=FALSE,
+     entrycond=FALSE)
 
 }
 
 \arguments{
 
   \item{data}{numeric vector or matrix.}
-  \item{order.by}{an index vector with unique entries by which the observations
+  \item{index}{an index vector with unique entries by which the observations
     in 'data' are ordered.}
   \item{states}{numeric. vector of 1s, -1s and 0s.}
   \item{pricecols}{character or named list. see below.}
-  \item{exprcols}{a named list of expressions.}
   \item{signals}{a named list of expressions 'el','es','xl' and 'xs'}
   \item{delta}{a vector or expression that evaluates to a
     vector that is numeric and a multiple of \code{nrow(data)} in length.}
   \item{roll.at,size.at}{expression that evaluates to a
     logical vector that is a multiple of \code{nrow(data)} in length.}
   \item{percent,entrywins,entrycond}{logical. see below}
+  \item{exprcols}{a named list of expressions.}
 
 }
 
@@ -178,11 +179,12 @@ tsts(data, order.by=index(data), states=NULL, pricecols=1, exprcols=NULL, signal
 \examples{
 data(spx)
 spx <- window(spx, start="2005-01-01")
-x <- tsts(spx, states=0)
-is.tsts(x)
 library(TTR)
-tstsp(x)$signals$el <- expression(SMA(Close, 60) > SMA(Close, 120))
-tstsp(x)$signals$es <- expression(SMA(Close, 60) <= SMA(Close, 120))
+
+x <- tsts(spx, el=SMA(Close, 20) >= SMA(Close, 10), es=SMA(Close, 20) <
+          SMA(Close, 10), pricecols="Close")
+
+is.tsts(x)
 tail(x)
 tail(coredata(x))
 
@@ -193,23 +195,27 @@ class(x[, 1:2])  ## ... so does column indexing
 ## tsts(matrix(rnorm(100)))
 
 ## Basic methods
-print(x)
+## print(x)
 head(x)
 tail(x)
 start(x)
 end(x)
 
 ## Coercion methods
-as.matrix(x)
-as.zoo(x)
+tail(as.matrix(x))
+tail(as.zoo(x))
 
 ## Extractor/assignment functions
 index(x) <- index(x) + 1
-index(x)
-states(x)
-states(x) <- 1
-phases(x)
-phases(x) <- phases(x)
+tail(index(x))
+##states(x)
+##states(x) <- 1
+##phases(x)
+##phases(x) <- phases(x)
+
+tstsp(x)$el <- quote(SMA(Close, 30) >= SMA(Close, 10))
+tstsp(x)$entrycond <- TRUE
+as.tsts(x)
 }
 
 \author{Robert Sams \email{robert@sanctumfi.com}}

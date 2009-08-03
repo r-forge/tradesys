@@ -1,6 +1,8 @@
-tsts <- function(data, order.by=index(data), states=NULL, pricecols=1, exprcols=NULL, signals=NULL, 
-                 delta=1, size.at=as.logical(c(St[1], diff(St))), roll.at=FALSE, percent=TRUE,
-                 entrywins=FALSE, entrycond=FALSE){
+tsts <- function(data, order.by=index(data), pricecols=1, el=FALSE, es=FALSE, 
+                 xl=FALSE, xs=FALSE, delta=1, size.at=as.logical(c(St[1], diff(St))),
+                 roll.at=FALSE, exprcols=NULL, percent=TRUE, entrywins=FALSE,
+                 entrycond=FALSE){
+  ## Process data args
   if(length(order.by) != length(unique(order.by)))
     stop("all order.by must be unique.")
   if(length(order.by) != nrow(data))
@@ -8,77 +10,56 @@ tsts <- function(data, order.by=index(data), states=NULL, pricecols=1, exprcols=
   data <- as.matrix(data)
   if(length(colnames(data)) != unique(length(colnames(data))))
     stop("data must have unique column names.")
-  if(!is.null(states)){
-    if(nrow(data) %% length(states) != 0)
-      stop("length(states) must be a multiple of nrow(data)")
-    if(!any(states %in% c(1,0,-1)))
-      stop("states must be a numeric vector containing only 1, 0, and -1 values")
-  }else{
-    if(missing(signals)){
-      message("neither states or signals specified.. using states=0")
-      states <- 0
-    }
-  }
   l <- list(pricecols=processPriceCols(data, pricecols))
-  l <- c(l, list(exprcols=exprcols))
-  if(!is.null(signals)){
-    if(!is.list(signals)){
-      message("signals must be a list.. setting to NULL.")
-      signals <- NULL
-    }else{
-      if(any(!names(signals) %in% c("el","es","xl","xs")))
-        stop("only el, es, xl and xs are valid signal names")
-      signals <- replace(list(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE),
-                         match(names(signals), c("el","es","xl","xs")), signals)
-    }
-  }
-  l <- c(l, list(signals=signals))
-  l$delta <- as.expression(substitute(delta))
-  l$size.at <- as.expression(substitute(size.at))
-  l$roll.at <- as.expression(substitute(roll.at))
+  ## Process expression args
+  l$el <- substitute(el)
+  l$es <- substitute(es)
+  l$xl <- substitute(xl)
+  l$xs <- substitute(xs)
+  l$delta <- substitute(delta)
+  l$size.at <- substitute(size.at)
+  l$roll.at <- substitute(roll.at)
+  l$exprcols <- substitute(exprcols)
+  ## Process logical args
   if(!is.logical(percent)){
     warning("percent must be logical.. using FALSE.")
-    l$percent <- FALSE
-  }else{
-    l$percent <- percent
+    percent <- FALSE
   }
   if(!is.logical(entrywins)){
     warning("entrywins must be logical.. using FALSE.")
-    l$entrywins <- FALSE
-  }else{
-    l$entrywins <- entrywins
+    entrywins <- FALSE
   }
   if(!is.logical(entrycond)){
     warning("entrycond must be logical.. using FALSE.")
-    l$entrycond <- FALSE
-  }else{
-    l$entrycond <- entrycond
+    entrycond <- FALSE
   }
+  l$percent <- percent
+  l$entrywins <- entrywins
+  l$entrycond <- entrycond
   ## Evaluate exprcols
   if(!is.null(l$exprcols)){
-    m <- eval(l$exprcols, as.list(as.data.frame(data)))
+    Frame <- as.list(as.data.frame(data))
+    Frame$index <- order.by
+    m <- eval(l$exprcols, Frame)
     if(is.list(m))
       data <- cbind(data, do.call("cbind", m))
     else
       data <- cbind(data, m)
   }
   ## Evaluate signals
-  if(is.null(states)){
-    s <- signalmap(eval(l$signals$el, as.list(as.data.frame(data))),
-                   eval(l$signals$es, as.list(as.data.frame(data))),
-                   eval(l$signals$xl, as.list(as.data.frame(data))),
-                   eval(l$signals$xs, as.list(as.data.frame(data))),
-                   l$entrycond, l$entrywins)
-  }else{
-    s <- cbind(states, data)[, 1]
-  }
-  data <- cbind(data, St=s)
+  Frame <- as.list(as.data.frame(data))
+  Frame$index <- order.by
+  St <- do.call("signalmap", lapply(c(l["el"], l["es"], l["xl"], l["xs"], l["entrycond"], l["entrywins"]), eval, Frame))
+  data <- cbind(data, St)
   ## Evaluate delta, roll.at, size.at
-  delta <- eval(l$delta, as.list(as.data.frame(data)))
-  size.at <- eval(l$size.at, as.list(as.data.frame(data)))
-  roll.at <- eval(l$roll.at, as.list(as.data.frame(data)))
-  e <- equity(prices(data, l$pricecols), s, delta, size.at, roll.at, l$percent)
-  data <- cbind(data, Equity=e[, "Equity"])
+  Frame <- as.list(as.data.frame(data))
+  Frame$index <- order.by
+  delta <- eval(l$delta, Frame)
+  size.at <- eval(l$size.at, Frame)
+  roll.at <- eval(l$roll.at, Frame)
+  ## Calculate equity
+  Equity <- equity(prices(data, l$pricecols), St, delta, size.at, roll.at, l$percent)[, "Equity"]
+  data <- cbind(data, Equity)
   attr(data, "index") <- order.by
   attr(data, "tstsp") <- l
   class(data) <- "tsts"
@@ -139,5 +120,5 @@ as.matrix.tsts <- function(x, ...){
 }
 
 as.zoo.tsts <- function(x, ...){
-  zoo(as.matrix.tsts(x), order.by=attr(x, "index"))
+  zoo(as.matrix.tsts(x), index=attr(x, "index"))
 }

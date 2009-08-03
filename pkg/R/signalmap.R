@@ -34,8 +34,6 @@ signalmap <- function(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrycond=FALSE, e
     PHASES[c(11,12)] <- "EL"
   }
   y <- apply(matrix(x, ncol=4), 1, function(x){sum(c(8,4,2,1) * x)})
-  if(any(y > 11))
-    message(paste("el and es cannot both be TRUE.. both are set to FALSE at:", paste(which(y), collapse=",")))
   statemap(PHASES[y+1])
 }
 
