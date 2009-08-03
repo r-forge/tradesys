@@ -26,9 +26,9 @@ tstsp(x) <- value
 }
 
 \details{
-  Note that assigning directly to an expression member of 'tstsp'
-  requires a call to \code{expression} on the right-hand side, eg,
-  \code{tstsp(x)$size.at <- expression(SomeExpr)}. 
+  Note that assigning directly to a member of 'tstsp' that is type "call"
+  requires the use of \code{quote} on the right-hand side, eg,
+  \code{tstsp(x)$size.at <- quote(SomeExpr)}. 
 }
 
 \value{
@@ -42,8 +42,8 @@ data(spx)
 spx <- window(spx, start="2005-01-01")
 tstsp(x <- tsts(spx))
 library(TTR)
-tstsp(x)$signals$el <- expression(SMA(Close, 60) > SMA(Close, 120))
-tstsp(x)$signals$es <- expression(SMA(Close, 60) < SMA(Close, 120))
+tstsp(x)$el <- quote(SMA(Close, 60) > SMA(Close, 120))
+tstsp(x)$es <- quote(SMA(Close, 60) < SMA(Close, 120))
 tstsp(x)$entrycond
 tstsp(x)$entrycond <- TRUE
 tail(x)

@@ -25,7 +25,7 @@
 
 \usage{
 
-tsts(data, index=index(data), pricecols=1, el=FALSE, es=FALSE, 
+tsts(data, order.by=index(data), pricecols=1, el=FALSE, es=FALSE, 
      xl=FALSE, xs=FALSE, delta=1, size.at=as.logical(c(St[1], diff(St))),
      roll.at=FALSE, exprcols=NULL, percent=TRUE, entrywins=FALSE,
      entrycond=FALSE)
@@ -35,11 +35,10 @@ tsts(data, index=index(data), pricecols=1, el=FALSE, es=FALSE,
 \arguments{
 
   \item{data}{numeric vector or matrix.}
-  \item{index}{an index vector with unique entries by which the observations
+  \item{order.by}{an index vector with unique entries by which the observations
     in 'data' are ordered.}
-  \item{states}{numeric. vector of 1s, -1s and 0s.}
   \item{pricecols}{character or named list. see below.}
-  \item{signals}{a named list of expressions 'el','es','xl' and 'xs'}
+  \item{el,es,xl,xs}{entry and exit signals as expressions. see below.}
   \item{delta}{a vector or expression that evaluates to a
     vector that is numeric and a multiple of \code{nrow(data)} in length.}
   \item{roll.at,size.at}{expression that evaluates to a

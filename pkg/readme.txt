@@ -1,6 +1,6 @@
 Todo
 
-- fix problem with calling extractors inside tsts.
+- fix problem with calling extractors inside tsts... DONE.
 - St and Equity right-side cbinding.
 - fix trades.
 - incorporate equity.simple into equity.

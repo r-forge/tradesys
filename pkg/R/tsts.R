@@ -120,5 +120,5 @@ as.matrix.tsts <- function(x, ...){
 }
 
 as.zoo.tsts <- function(x, ...){
-  zoo(as.matrix.tsts(x), index=attr(x, "index"))
+  zoo(as.matrix.tsts(x), order.by=attr(x, "index"))
 }

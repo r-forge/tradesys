@@ -21,22 +21,17 @@
 states(x)
 states(x) <- value
 
-signals(x, list=NULL) 
-
-delta(x, expr)
-
-size.at(x, expr)
-
-roll.at(x, expr)
-
 prices(x, pricecols=tstsp(x)$pricecols, roll.at=FALSE)
+
+signals(x) 
+delta(x)
+size.at(x)
+roll.at(x)
 
 }
 
 \arguments{
   \item{x}{a tsts object.}
-  \item{list}{named list of signal expresions.}
-  \item{expr}{an expression.}
   \item{value}{a vector or expresion.}
   \item{pricecols}{list. see below.}
   \item{roll.at}{logical vector.}
@@ -74,10 +69,13 @@ spx <- window(spx, start="2005-01-01")
 x <- tsts(spx)
 
 library(TTR)
-tstsp(x)$signals$el <- expression(SMA(Close, 60) >= SMA(Close, 120))
-tstsp(x)$signals$es <- expression(SMA(Close, 60) < SMA(Close, 120))
+tstsp(x)$el <- quote(SMA(Close, 60) >= SMA(Close, 120))
+tstsp(x)$es <- quote(SMA(Close, 60) < SMA(Close, 120))
+
+##tstsp(x)$exprcols <- quote(Foobar=Close * 2)
 
 tail(signals(x))
+##tail(exprcols(x))
 delta(x)
 tail(size.at(x))
 tail(roll.at(x))
