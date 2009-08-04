@@ -1,20 +1,52 @@
-tsts <- function(data, order.by=index(data), pricecols=1, el=FALSE, es=FALSE, 
+tsts <- function(data, order.by=index(data), pricecols=colnames(data)[1], el=FALSE, es=FALSE, 
                  xl=FALSE, xs=FALSE, delta=1, size.at=as.logical(c(St[1], diff(St))),
                  roll.at=FALSE, exprcols=NULL, percent=TRUE, entrywins=FALSE,
                  entrycond=FALSE){
+  ## Process data and index args
+  if(length(order.by) != length(unique(order.by)))
+    stop("all order.by must be unique.")
   if(!is.matrix(data))
     data <- matrix(data, dimnames=list(NULL, "Price"))
   data <- as.matrix(data)
   if(is.null(colnames(data)))
     stop("colnames(data) cannot be NULL")
-  ## Process data args
-  if(length(order.by) != length(unique(order.by)))
-    stop("all order.by must be unique.")
+  if(any(duplicated(colnames(data))))
+    stop("data must have unique column names.")
   if(length(order.by) != nrow(data))
     stop("length(order.by) must equal nrow(data)")
-  if(length(colnames(data)) != unique(length(colnames(data))))
-    stop("data must have unique column names.")
-  l <- list(pricecols=processPriceCols(data, pricecols))
+  ## Process exprcols arg (we expect a named list of calls)
+  l <- list(exprcols=exprcols)
+  if(!is.null(exprcols)){
+    if(!is.list(exprcols) | is.null(names(exprcols)) | any(duplicated(names(exprcols))) | any(names(exprcols) %in% colnames(data)))
+      stop("exprcols must be a list with names that are unique and not in colnames(data)")
+    if(any(unlist(lapply(exprcols, class)) != "call"))
+      stop("exprcols must be a list of call objects")
+    data <- cbind(data, do.call("cbind", lapply(exprcols, eval, as.list(as.data.frame(data)))))
+  }
+  ## Process pricecols arg
+  if(!is.vector(pricecols) | !is.character(pricecols))
+    stop("pricecols must be a character vector of column names.")
+  pricecols <- pricecols[1:min(length(pricecols), 5)]
+  if(length(pricecols) == 1) ## everyone gets what's passed
+    names(pricecols) <- NULL
+  if(is.null(names(pricecols))) ## order determines mapping
+    names(pricecols) <- c("Mark","Long","Short","RollLong","RollShort")[1:length(pricecols)]
+  if(any(!names(pricecols) %in% c("Mark","Long","Short","RollLong","RollShort")))
+    stop("All names(pricecols) must be among 'Mark','Long','Short','RollLong','RollShort'")
+  if(any(!pricecols %in% colnames(data)))
+    stop("all pricecols must be in colnames(data) or names(exprcols)")
+  l$pricecols <- c(pricecols["Mark"], pricecols["Long"], pricecols["Short"], pricecols["RollLong"], pricecols["RollShort"])
+  names(l$pricecols) <- c("Mark","Long","Short","RollLong","RollShort")
+  if(is.na(l$pricecols["Mark"]))
+    stop("pricecols must be passed a value for 'Mark'")
+  if(is.na(l$pricecols["Long"]))
+    l$pricecols["Long"] <- l$pricecols["Mark"]
+  if(is.na(l$pricecols["Short"]))
+    l$pricecols["Short"] <- l$pricecols["Mark"]
+  if(is.na(l$pricecols["RollShort"]))
+    l$pricecols["RollShort"] <- l$pricecols["Short"]
+  if(is.na(l$pricecols["RollLong"]))
+    l$pricecols["RollLong"] <- l$pricecols["Long"]
   ## Process expression args
   l$el <- substitute(el)
   l$es <- substitute(es)
@@ -23,7 +55,6 @@ tsts <- function(data, order.by=index(data), pricecols=1, el=FALSE, es=FALSE,
   l$delta <- substitute(delta)
   l$size.at <- substitute(size.at)
   l$roll.at <- substitute(roll.at)
-  l$exprcols <- substitute(exprcols)
   ## Process logical args
   if(!is.logical(percent)){
     warning("percent must be logical.. using FALSE.")
@@ -40,16 +71,6 @@ tsts <- function(data, order.by=index(data), pricecols=1, el=FALSE, es=FALSE,
   l$percent <- percent
   l$entrywins <- entrywins
   l$entrycond <- entrycond
-  ## Evaluate exprcols
-  if(!is.null(l$exprcols)){
-    Frame <- as.list(as.data.frame(data))
-    Frame$index <- order.by
-    m <- eval(l$exprcols, Frame)
-    if(is.list(m))
-      data <- cbind(data, do.call("cbind", m))
-    else
-      data <- cbind(data, m)
-  }
   ## Evaluate signals
   Frame <- as.list(as.data.frame(data))
   Frame$index <- order.by

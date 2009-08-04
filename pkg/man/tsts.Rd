@@ -25,7 +25,7 @@
 
 \usage{
 
-tsts(data, order.by=index(data), pricecols=1, el=FALSE, es=FALSE, 
+tsts(data, order.by=index(data), pricecols=colnames(data)[1], el=FALSE, es=FALSE, 
      xl=FALSE, xs=FALSE, delta=1, size.at=as.logical(c(St[1], diff(St))),
      roll.at=FALSE, exprcols=NULL, percent=TRUE, entrywins=FALSE,
      entrycond=FALSE)
