@@ -12,6 +12,7 @@ cbind.tsts <- function(..., deparse.level=1){
     }
   }
   k <- tstsp(x)
-  k$exprcols <- c(k$exprcols, exprcols)
+  if(length(exprcols) > 0)
+    k$exprcols <- c(k$exprcols, exprcols)
   do.call("tsts", c(list(data=y), list(order.by=index(x)), k))
 }
