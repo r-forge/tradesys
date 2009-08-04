@@ -27,7 +27,7 @@
 
 tsts(data, order.by=index(data), pricecols=colnames(data)[1], el=FALSE, es=FALSE, 
      xl=FALSE, xs=FALSE, delta=1, size.at=as.logical(c(St[1], diff(St))),
-     roll.at=FALSE, exprcols=NULL, percent=TRUE, entrywins=FALSE,
+     roll.at=FALSE, formulae=NULL, percent=TRUE, entrywins=FALSE,
      entrycond=FALSE)
 
 }
@@ -42,7 +42,7 @@ tsts(data, order.by=index(data), pricecols=colnames(data)[1], el=FALSE, es=FALSE
   \item{delta}{a vector or expression that evaluates to a
     vector that is numeric and a multiple of \code{nrow(data)} in length.}
   \item{roll.at,size.at}{as with \code{delta} but logical.}
-  \item{exprcols}{a named list of expressions.}
+  \item{formulae}{a named list of expressions.}
   \item{percent,entrywins,entrycond}{logical. see below}
 
 }
@@ -89,7 +89,7 @@ tsts(data, order.by=index(data), pricecols=colnames(data)[1], el=FALSE, es=FALSE
   value. An error is raised if \code{data} does not contain the column
   identifiers that you pass.
 
-  \code{exprcols} is optional and will evaluate in turn each expression
+  \code{formulae} is optional and will evaluate in turn each expression
   contained in the list and right-ward cbind to \code{data} the resulting numeric
   vector using its list name as its column name. An error is raised if
   the evaluations don't return a numeric vector of a length that is a
@@ -129,7 +129,7 @@ tsts(data, order.by=index(data), pricecols=colnames(data)[1], el=FALSE, es=FALSE
   \code{order.by} (but named 'index') are included in the evaluation
   frame, so that these expressions can compute on the indexed data
   passed to \code{data} by simply using a vector's
-  name. \code{exprcols} is evaluated first and its resulting vectors can
+  name. \code{formulae} is evaluated first and its resulting vectors can
   be referred to by the others. Then the entry/exit signals are
   evaluated and the states column "St" can be referred to by the
   remaining three parameters: \code{delta}, \code{size.at} and

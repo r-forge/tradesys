@@ -6,10 +6,10 @@ signals <- function(x){
       order.by=index(x))
 }
 
-exprcols <- function(x){
+formulae <- function(x){
   if(!is.tsts(x))
     return(invisible(NULL))
-  do.call("cbind", lapply(attr(x, "tstsp")$exprcols, eval, envir=c(index=index(x), as.list(as.data.frame(as.matrix(x))))))
+  do.call("cbind", lapply(attr(x, "tstsp")$formulae, eval, envir=c(index=index(x), as.list(as.data.frame(as.matrix(x))))))
 }
 
 delta <- function(x){

@@ -1,6 +1,6 @@
 tsts <- function(data, order.by=index(data), pricecols=colnames(data)[1], el=FALSE, es=FALSE, 
                  xl=FALSE, xs=FALSE, delta=1, size.at=as.logical(c(St[1], diff(St))),
-                 roll.at=FALSE, exprcols=NULL, percent=TRUE, entrywins=FALSE,
+                 roll.at=FALSE, formulae=NULL, percent=TRUE, entrywins=FALSE,
                  entrycond=FALSE){
   ## Process data and index args
   if(length(order.by) != length(unique(order.by)))
@@ -14,14 +14,14 @@ tsts <- function(data, order.by=index(data), pricecols=colnames(data)[1], el=FAL
     stop("data must have unique column names.")
   if(length(order.by) != nrow(data))
     stop("length(order.by) must equal nrow(data)")
-  ## Process exprcols arg (we expect a named list of calls)
-  l <- list(exprcols=exprcols)
-  if(!is.null(exprcols)){
-    if(!is.list(exprcols) | is.null(names(exprcols)) | any(duplicated(names(exprcols))) | any(names(exprcols) %in% colnames(data)))
-      stop("exprcols must be a list with names that are unique and not in colnames(data)")
-    if(any(unlist(lapply(exprcols, class)) != "call"))
-      stop("exprcols must be a list of call objects")
-    data <- cbind(data, do.call("cbind", lapply(exprcols, eval, as.list(as.data.frame(data)))))
+  ## Process formulae arg (we expect a named list of calls)
+  l <- list(formulae=formulae)
+  if(!is.null(formulae)){
+    if(!is.list(formulae) | is.null(names(formulae)) | any(duplicated(names(formulae))) | any(names(formulae) %in% colnames(data)))
+      stop("formulae must be a list with names that are unique and not in colnames(data)")
+    if(any(unlist(lapply(formulae, class)) != "call"))
+      stop("formulae must be a list of call objects")
+    data <- cbind(data, do.call("cbind", lapply(formulae, eval, as.list(as.data.frame(data)))))
   }
   ## Process pricecols arg
   if(!is.vector(pricecols) | !is.character(pricecols))
@@ -34,7 +34,7 @@ tsts <- function(data, order.by=index(data), pricecols=colnames(data)[1], el=FAL
   if(any(!names(pricecols) %in% c("Mark","Long","Short","RollLong","RollShort")))
     stop("All names(pricecols) must be among 'Mark','Long','Short','RollLong','RollShort'")
   if(any(!pricecols %in% colnames(data)))
-    stop("all pricecols must be in colnames(data) or names(exprcols)")
+    stop("all pricecols must be in colnames(data) or names(formulae)")
   l$pricecols <- c(pricecols["Mark"], pricecols["Long"], pricecols["Short"], pricecols["RollLong"], pricecols["RollShort"])
   names(l$pricecols) <- c("Mark","Long","Short","RollLong","RollShort")
   if(is.na(l$pricecols["Mark"]))

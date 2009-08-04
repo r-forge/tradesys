@@ -72,10 +72,9 @@ library(TTR)
 tstsp(x)$el <- quote(SMA(Close, 60) >= SMA(Close, 120))
 tstsp(x)$es <- quote(SMA(Close, 60) < SMA(Close, 120))
 
-##tstsp(x)$exprcols <- quote(Foobar=Close * 2)
+##tstsp(x)$formulae <- quote(Foobar=Close * 2)
 
 tail(signals(x))
-##tail(exprcols(x))
 delta(x)
 tail(size.at(x))
 tail(roll.at(x))
