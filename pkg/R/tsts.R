@@ -2,12 +2,16 @@ tsts <- function(data, order.by=index(data), pricecols=1, el=FALSE, es=FALSE,
                  xl=FALSE, xs=FALSE, delta=1, size.at=as.logical(c(St[1], diff(St))),
                  roll.at=FALSE, exprcols=NULL, percent=TRUE, entrywins=FALSE,
                  entrycond=FALSE){
+  if(!is.matrix(data))
+    data <- matrix(data, dimnames=list(NULL, "Price"))
+  data <- as.matrix(data)
+  if(is.null(colnames(data)))
+    stop("colnames(data) cannot be NULL")
   ## Process data args
   if(length(order.by) != length(unique(order.by)))
     stop("all order.by must be unique.")
   if(length(order.by) != nrow(data))
     stop("length(order.by) must equal nrow(data)")
-  data <- as.matrix(data)
   if(length(colnames(data)) != unique(length(colnames(data))))
     stop("data must have unique column names.")
   l <- list(pricecols=processPriceCols(data, pricecols))
