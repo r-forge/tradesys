@@ -103,6 +103,29 @@ tsts <- function(data, order.by=index(data), pricecols=colnames(data)[1], el=FAL
   as.matrix(x)[i, j, drop=drop]
 }
 
+## "[.tsts" <- function(x, i, j, ..., drop=TRUE){
+##   y <- as.matrix(x)
+##   if(missing(i))
+##     i <- 1:nrow(y)
+##   if(missing(j))
+##     j <- 1:ncol(y)
+##   if(is.numeric(j))
+##     j <- colnames(x)[j]
+##   ## deal with non-existent character j's
+##   ## deal with non-existent numeric j's
+##   KlasCols <- c(tstsp(x)$pricecols, "St", "Equity")
+##   if(all(KlasCols %in% j)){
+##     TSYS <- tstsp(x)
+##     TSYS$order.by <- index(x)
+##     as.tsts(y[, j[-match(c("St","Equity"), j)]], index(x), TSYS)
+##   }
+##   if(length(colnames(y)[-j]) > 0){ 
+##     if(any(colnames(y)[-j] %in% c(tstsp(x)$pricecols, "St", "Equity")))
+##       return(zoo(y[, j], order.by=index(x)))
+##   }
+  
+## }
+
 print.tsts <- function(x, ...){
   print(as.zoo(x, ...))
 }
