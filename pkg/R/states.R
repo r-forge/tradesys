@@ -6,7 +6,8 @@ states <- function(x){
   y
 }
 
-"states<-" <- function(x, value){
-  tstsp(x)$states <- value
-  x
-}
+## RE-WRITE
+## "states<-" <- function(x, value){
+##   tsys(x)$states <- value
+##   x
+## }

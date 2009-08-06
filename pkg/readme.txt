@@ -1,8 +1,5 @@
 Todo
 
-- Incorporate signals into return of solvets.
-- Let solvets take 'tsts' objects.. or make it a generic?
-- Remove tstsp.
 - Write tsys.Rd and rewrite tsts.R, tsts.Rd to incorporate tsys class.
 - Remove convenience functions and document states and prices seperately.
 - Code limited class-preserving subsetting to [.tsts and code its

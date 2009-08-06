@@ -11,7 +11,7 @@ cbind.tsts <- function(..., deparse.level=1){
       colnames(y)[ncol(y)] <- names(l)[i]
     }
   }
-  k <- tstsp(x)
+  k <- tsys(x)
   if(length(formulae) > 0)
     k$formulae <- c(k$formulae, formulae)
   do.call("tsts", c(list(data=y), list(order.by=index(x)), k))

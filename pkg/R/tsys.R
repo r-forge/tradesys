@@ -38,6 +38,8 @@ tradesys <- function(datacols, pricecols=datacols[1], el=FALSE, es=FALSE,
     if(any(unlist(lapply(formulae, class)) != "call"))
       stop("formulae must be a list of call objects")
     l$formulae <- formulae
+  }else{
+    l["formulae"] <- list(NULL)
   }
   ## Process expression args
   l$el <- substitute(el)
@@ -71,7 +73,8 @@ solvets <- function(x, data, order.by=index(data)){
   data <- as.matrix(data)
   rownames(data) <- NULL
   ## Evaluate formulae
-  data <- cbind(data, do.call("cbind", lapply(x$formulae, eval, as.list(as.data.frame(data)))))
+  dataf <- do.call("cbind", lapply(x$formulae, eval, as.list(as.data.frame(data))))
+  data <- cbind(data, dataf)
   ## Evaluate signals
   Frame <- as.list(as.data.frame(data))
   Frame$index <- order.by
@@ -88,7 +91,8 @@ solvets <- function(x, data, order.by=index(data)){
   roll.at <- cbind(eval(x$roll.at, Frame), data)[, 1]
   ## Calculate equity
   Equity <- equity(prices(cbind(data, St), x$pricecols), St, delta, size.at, roll.at, x$percent)[, "Equity"]
-  list(St=St, Equity=Equity, el=Signals$el, es=Signals$es, xl=Signals$xl, xs=Signals$xs, delta=delta, size.at=size.at, roll.at=roll.at)
+  list(St=St, Equity=Equity, el=Signals$el, es=Signals$es, xl=Signals$xl, xs=Signals$xs,
+       delta=delta, size.at=size.at, roll.at=roll.at, formulae=dataf)
 }
 
 ##
@@ -96,13 +100,31 @@ solvets <- function(x, data, order.by=index(data)){
 ##
 
 print.tsys <- function(x, ...){
-  for(i in 1:length(x))
-    cat(names(x)[i],":", format(x[[i]]), "\n")
+  cat("datacols: ", x$datacols, "\n")
+  cat("pricecols:", x$pricecols, "\n")
+  cat("el:", format(x$el), "\n")
+  cat("es:", format(x$es), "\n")
+  cat("xl:", format(x$xl), "\n")
+  cat("xs:", format(x$xs), "\n")
+  if(!is.null(x$formulae)){
+    cat("** formulae **\n")
+    for(i in 1:length(x$formulae))
+      cat(names(x$formulae)[i],":", format(x$formulae[[i]]), "\n")
+  }
+  cat("delta:  ", format(x$delta), "\n")
+  cat("size.at:", format(x$size.at), "\n")
+  cat("roll.at:", format(x$roll.at), "\n")
+  cat("percent:  ", format(x$percent), "\n")
+  cat("entrywins:", format(x$entrywins), "\n")
+  cat("entrycond:", format(x$entrycond), "\n")
 }
 
-"$<-.tsys" <- function(x, name, value){
+"$<-.tsys" <- function(x, name=NULL, value){
   y <- x
-  y[[name]] <- value
+  if(is.null(name))
+    y <- value
+  else
+    y[[name]] <- value
   y <- try(do.call("tradesys", y))
   if(class(y) == "try-error")
     return(x)
@@ -125,12 +147,5 @@ tsys <- function(x){
 }
 
 "tsys<-" <- function(x, value){
-  if(is.tsts(x)){
-    attr(x, "tsys") <- value
-    return(as.tsts.default(x))
-  }
-  ARGS <- value
-  ARGS$data <- x
-  ARGS$order.by <- index(x)
-  do.call("tsts", ARGS)
+  do.call("tsts", c(list(data=coredata(x), order.by=index(x)), as.list(value)))
 }
