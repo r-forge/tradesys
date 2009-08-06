@@ -6,5 +6,8 @@ coredata.tsts <- function(x, ...){
 }
 
 "coredata<-.tsts" <- function(x, value){
-  as.tsts(value)
+  l <- as.list(tsys(x))
+  l$data <- value
+  l$order.by <- index(value)
+  do.call("tsts", l)
 }

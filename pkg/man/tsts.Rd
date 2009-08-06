@@ -117,7 +117,6 @@ states(x)
 
 tsys(x)$el <- quote(SMA(Close, 30) >= SMA(Close, 10))
 tsys(x)$entrycond <- TRUE
-##as.tsts(x)
 }
 
 \author{Robert Sams \email{robert@sanctumfi.com}}

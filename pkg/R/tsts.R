@@ -34,7 +34,7 @@ tsts <- function(data, order.by=index(data), datacols=colnames(data), ...){
 ##   if(all(KlasCols %in% j)){
 ##     TSYS <- tstsp(x)
 ##     TSYS$order.by <- index(x)
-##     as.tsts(y[, j[-match(c("St","Equity"), j)]], index(x), TSYS)
+##     as.tsts(y[, j[-match(c("St","Equity"), j)]], index(x), TSYS) # remove as.tsts usage
 ##   }
 ##   if(length(colnames(y)[-j]) > 0){ 
 ##     if(any(colnames(y)[-j] %in% c(tstsp(x)$pricecols, "St", "Equity")))
