@@ -75,7 +75,9 @@ solvets <- function(x, data, order.by=index(data)){
   ## Evaluate signals
   Frame <- as.list(as.data.frame(data))
   Frame$index <- order.by
-  St <- do.call("signalmap", lapply(c(x["el"], x["es"], x["xl"], x["xs"], x["entrycond"], x["entrywins"]), eval, Frame))
+  Signals <- lapply(c(x["el"], x["es"], x["xl"], x["xs"]), eval, Frame)
+  Signals <- lapply(Signals, function(x, y) as.logical(cbind(x, y)[, 1]), data)
+  St <- do.call("signalmap", c(Signals, x["entrycond"], x["entrywins"]))
   St <- cbind(St, data)[, 1]
   ## Evaluate delta, roll.at, size.at
   Frame <- as.list(as.data.frame(data))
@@ -86,7 +88,7 @@ solvets <- function(x, data, order.by=index(data)){
   roll.at <- cbind(eval(x$roll.at, Frame), data)[, 1]
   ## Calculate equity
   Equity <- equity(prices(cbind(data, St), x$pricecols), St, delta, size.at, roll.at, x$percent)[, "Equity"]
-  list(St=St, Equity=Equity, delta=delta, size.at=size.at, roll.at=roll.at)
+  list(St=St, Equity=Equity, el=Signals$el, es=Signals$es, xl=Signals$xl, xs=Signals$xs, delta=delta, size.at=size.at, roll.at=roll.at)
 }
 
 ##
