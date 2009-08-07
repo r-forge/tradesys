@@ -105,15 +105,16 @@ as.list.tsys <- function(x, ...){
 }
 
 ##
-## Extractors
+## New Generic
 ##
 
-tsys <- function(x){
-  if(!is.tsts(x))
-    return(invisible(NULL))
-  attr(x, "tsys")
+as.tradesys <- function(x, ...){
+  UseMethod("as.tradesys", x)
 }
 
-"tsys<-" <- function(x, value){
-  do.call("tsts", c(list(data=coredata(x), order.by=index(x)), as.list(value)))
+as.tradesys.default <- function(x, ...){
+  if(is.list(x))
+    return(do.call("tradesys", x))
+  else
+    stop("the default method currently coerces only lists.")
 }

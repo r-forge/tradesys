@@ -87,3 +87,17 @@ as.matrix.tsts <- function(x, ...){
 as.zoo.tsts <- function(x, ...){
   zoo(as.matrix.tsts(x), order.by=attr(x, "index"))
 }
+
+##
+## Extractors/Assignors
+##
+
+tsys <- function(x){
+  if(!is.tsts(x))
+    return(invisible(NULL))
+  attr(x, "tsys")
+}
+
+"tsys<-" <- function(x, value){
+  do.call("tsts", c(list(data=coredata(x), order.by=index(x)), as.list(value)))
+}
