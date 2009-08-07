@@ -14,5 +14,5 @@ cbind.tsts <- function(..., deparse.level=1){
   k <- tsys(x)
   if(length(formulae) > 0)
     k$formulae <- c(k$formulae, formulae)
-  do.call("tsts", c(list(data=y), list(order.by=index(x)), k))
+  tsts(y, index(x), tsys=k)
 }

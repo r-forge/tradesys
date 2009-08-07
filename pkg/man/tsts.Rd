@@ -27,7 +27,7 @@
 
 \usage{
 
-tsts(data, order.by=index(data), datacols=colnames(data), ...)
+tsts(data, order.by=index(data), ..., tsys=NULL)
 
 }
 
@@ -36,8 +36,8 @@ tsts(data, order.by=index(data), datacols=colnames(data), ...)
   \item{data}{numeric vector or matrix.}
   \item{order.by}{an index vector with unique entries by which the observations
     in 'data' are ordered.}
-  \item{datacols}{character or named list. see below.}  
   \item{\dots}{args passed to \code{tradesys}.}
+  \item{tsys}{object of class 'tsys'.}  
 
 }
 
