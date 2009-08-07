@@ -12,7 +12,7 @@
 
 \usage{
 
-trades(x, delta=NULL, percent=FALSE)
+trades(x, delta=1, percent=FALSE)
 
 }
 

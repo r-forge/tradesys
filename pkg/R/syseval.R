@@ -18,8 +18,8 @@ syseval <- function(x, data, order.by=index(data)){
   Frame$St <- St
   Frame$index <- order.by
   delta <- cbind(eval(x$delta, Frame), data)[, 1]
-  size.at <- cbind(eval(x$size.at, Frame), data)[, 1]
-  roll.at <- cbind(eval(x$roll.at, Frame), data)[, 1]
+  size.at <- as.logical(cbind(eval(x$size.at, Frame), data)[, 1])
+  roll.at <- as.logical(cbind(eval(x$roll.at, Frame), data)[, 1])
   ## Calculate equity
   Equity <- equity(prices(cbind(data, St), x$pricecols), St, delta, size.at, roll.at, x$percent)[, "Equity"]
   list(St=St, Equity=Equity, el=Signals$el, es=Signals$es, xl=Signals$xl, xs=Signals$xs,

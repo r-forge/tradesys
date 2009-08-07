@@ -4,7 +4,7 @@ Todo
 - Remove convenience functions and document states and prices seperately.
 - Code limited class-preserving subsetting to [.tsts and code its
   assingment method to enforce 'formulae' restrictions.
-- Fix trades.
+- Fix trades.. DONE.
 - Fix states (assignment method should calc signals).
 - Optimize equity by vectorizing all calculations.
 - Improve print.tsys.
