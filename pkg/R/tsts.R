@@ -1,6 +1,6 @@
 tsts <- function(data, order.by=index(data), datacols=colnames(data), ...){
   lt <- tradesys(datacols=datacols, ...)
-  lv <- solvets(lt, data, order.by)
+  lv <- syseval(lt, data, order.by)
   data <- cbind(St=lv$St, Equity=lv$Equity, coredata(data), lv$formulae)
   attr(data, "index") <- order.by
   attr(data, "tsys") <- lt  

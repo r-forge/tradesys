@@ -23,7 +23,7 @@ tradesys(datacols, pricecols=datacols[1], el=FALSE, es=FALSE, xl=FALSE, xs=FALSE
 \arguments{
 
   \item{datacols}{character vector.}
-  \item{pricecols}{character or named list. see below.}
+  \item{pricecols}{named character vector. see below.}
   \item{el,es,xl,xs}{entry and exit signals as expressions. see below.}
   \item{delta}{a vector or expression that evaluates to a
     vector that is numeric and a multiple of \code{nrow(data)} in length.}
@@ -34,16 +34,16 @@ tradesys(datacols, pricecols=datacols[1], el=FALSE, es=FALSE, xl=FALSE, xs=FALSE
 }
 
 \details{
-  
-  \code{order.by} defines the ordering index of \code{data}. It is a
-  vector of unique values and must have a length equal the number of
-  rows in \code{data}. The values can be anything so long as they work
-  with \code{sort} and artithmetic operations. \code{Date} objects are
-  an obvious choice when \code{data} is a daily time
-  series. \code{POSIXct} objects are an obvious choice when it is a
-  higher resolution series like tick data.
 
-  \code{pricecols} specifies via column names or indices which columns
+  A 'tsys' object is a complete description of a trading
+  system. \code{tradesys} returns its formal arguments as a named list
+  with class attribute 'tsys'. The argument values are first checked for
+  consistency. 
+
+  \code{datacols} is a character vector defining the names by which the
+  system's expresions refer to its data. 
+  
+  \code{pricecols} specifies via column name which columns
   hold price information. There are five categories of price
   information.
   \itemize{
