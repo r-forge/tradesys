@@ -5,9 +5,3 @@ states <- function(x){
   names(y) <- NULL
   y
 }
-
-## RE-WRITE
-## "states<-" <- function(x, value){
-##   tsys(x)$states <- value
-##   x
-## }

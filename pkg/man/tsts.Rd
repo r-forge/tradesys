@@ -78,19 +78,19 @@ tsts(data, order.by=index(data), ..., tsys=NULL)
 % }
 
 \examples{
-data(spx)
-spx <- window(spx, start="2005-01-01")
-library(TTR)
+##data(spx)
+##spx <- window(spx, start="2005-01-01")
+##library(TTR)
 
-x <- tsts(spx, el=SMA(Close, 20) >= SMA(Close, 10),
-          es=SMA(Close, 20) < SMA(Close, 10), pricecols="Close")
+##x <- tsts(spx, el=SMA(Close, 20) >= SMA(Close, 10),
+##          es=SMA(Close, 20) < SMA(Close, 10), pricemap="Close")
 
-is.tsts(x)
-tail(x)
-tail(coredata(x))
+##is.tsts(x)
+##tail(x)
+##tail(coredata(x))
 
-class(x[1:10, ]) ## row indexing strips tsts attribute
-class(x[, 1:2])  ## ... so does column indexing
+##class(x[1:10, ]) ## row indexing strips tsts attribute
+##class(x[, 1:2])  ## ... so does column indexing
 
 ## some meaningless edge cases
 ##tsts(pi)
@@ -98,25 +98,25 @@ class(x[, 1:2])  ## ... so does column indexing
 
 ## Basic methods
 ## print(x)
-head(x)
-tail(x)
-start(x)
-end(x)
+##head(x)
+##tail(x)
+##start(x)
+##end(x)
 
 ## Coercion methods
-tail(as.matrix(x))
-tail(as.zoo(x))
+##tail(as.matrix(x))
+##tail(as.zoo(x))
 
 ## Extractor/assignment functions
-index(x) <- index(x) + 1
-tail(index(x))
-states(x)
+##index(x) <- index(x) + 1
+##tail(index(x))
+##states(x)
 ##states(x) <- 1
 ##phases(x)
 ##phases(x) <- phases(x)
 
-tsys(x)$el <- quote(SMA(Close, 30) >= SMA(Close, 10))
-tsys(x)$entrycond <- TRUE
+##tsys(x)$el <- quote(SMA(Close, 30) >= SMA(Close, 10))
+##tsys(x)$entrycond <- TRUE
 }
 
 \author{Robert Sams \email{robert@sanctumfi.com}}

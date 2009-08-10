@@ -1,6 +1,6 @@
-prices <- function(x, pricecols=tsys(x)$pricecols, roll.at=FALSE){
-  y <- as.matrix(x)[, unlist(lapply(pricecols, function(x, y) if(is.numeric(x)) colnames(y)[x] else x, x)), drop=FALSE]
-  colnames(y) <- names(pricecols)
+prices <- function(x, pricemap=tsys(x)$pricemap, roll.at=FALSE){
+  y <- as.matrix(x)[, pricemap, drop=FALSE]
+  colnames(y) <- names(pricemap)
   if(any(is.na(y[, "Mark"]))){ ## fill NA's in Mark column
     message("NA's in 'Mark' column.. filling with previous value")
     y[, "Mark"] <- na.locf(y[, "Mark"])

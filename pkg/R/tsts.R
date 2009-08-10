@@ -1,12 +1,12 @@
 tsts <- function(data, order.by=index(data), ..., tsys=NULL){
   if(is.null(tsys)){
-    lt <- tradesys(datacols=colnames(data), ...)
+    lt <- tradesys(datavars=colnames(data), ...)
   }else{
-    tsys$datacols <- colnames(data)
+    tsys$datavars <- colnames(data)
     lt <- tsys
   }
-  lv <- syseval(lt, data, order.by)
-  data <- cbind(St=lv$St, Equity=lv$Equity, coredata(data), lv$formulae)
+  lv <- tsys.frame(lt, data, order.by)
+  data <- cbind(St=lv$states, Eq=lv$equity, coredata(data), lv$formulae)
   attr(data, "index") <- order.by
   attr(data, "tsys") <- lt  
   class(data) <- "tsts"

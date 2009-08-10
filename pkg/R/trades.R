@@ -9,10 +9,10 @@ trades <- function(x, delta=1, percent=FALSE){
   if(d$ETime[nrow(d)] == end(x))
     d <- d[-nrow(d),] ## ignore entries done on last day
   d$XTime <- c(d$ETime[-1], end(x))
-  d$EPrice[d$Phase == "EL"] <- x[match(d$ETime[d$Phase == "EL"], index(x)), tsys(x)$pricecols["Long"]]
-  d$EPrice[d$Phase == "ES"] <- x[match(d$ETime[d$Phase == "ES"], index(x)), tsys(x)$pricecols["Short"]]
-  d$XPrice[d$Phase == "EL"] <- x[match(d$XTime[d$Phase == "EL"], index(x)), tsys(x)$pricecols["Short"]]
-  d$XPrice[d$Phase == "ES"] <- x[match(d$XTime[d$Phase == "ES"], index(x)), tsys(x)$pricecols["Long"]]
+  d$EPrice[d$Phase == "EL"] <- x[match(d$ETime[d$Phase == "EL"], index(x)), tsys(x)$pricemap["Long"]]
+  d$EPrice[d$Phase == "ES"] <- x[match(d$ETime[d$Phase == "ES"], index(x)), tsys(x)$pricemap["Short"]]
+  d$XPrice[d$Phase == "EL"] <- x[match(d$XTime[d$Phase == "EL"], index(x)), tsys(x)$pricemap["Short"]]
+  d$XPrice[d$Phase == "ES"] <- x[match(d$XTime[d$Phase == "ES"], index(x)), tsys(x)$pricemap["Long"]]
   if(any(roll.at)){ ## create roll trades if needed
     roll.n <- match(roll.at, index(x))
     roll.n <- roll.n[which(states(x)[roll.n] != 0)]
@@ -23,12 +23,12 @@ trades <- function(x, delta=1, percent=FALSE){
       n <- which(rdate >= d$ETime & rdate < d$XTime)
       if(d$Phase[n] == "EL"){
         roll.phase <- "EL"
-        roll.coli <- attr(x, "tsts")$tsys(x)$pricecols["RollLong"]
-        roll.colo <- attr(x, "tsts")$tsys(x)$pricecols["Short"]
+        roll.coli <- attr(x, "tsts")$tsys(x)$pricemap["RollLong"]
+        roll.colo <- attr(x, "tsts")$tsys(x)$pricemap["Short"]
       }else{
         roll.phase <- "ES"
-        roll.coli <- attr(x, "tsts")$tsys(x)$pricecols["RollShort"]
-        roll.colo <- attr(x, "tsts")$tsys(x)$pricecols["Long"]
+        roll.coli <- attr(x, "tsts")$tsys(x)$pricemap["RollShort"]
+        roll.colo <- attr(x, "tsts")$tsys(x)$pricemap["Long"]
       }
       ## roll-in trade
       dd <- data.frame(Phase=roll.phase, ETime=rdate, XTime=d$XTime[n], Time=NA, Numb=NA,

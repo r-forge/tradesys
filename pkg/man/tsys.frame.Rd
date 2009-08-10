@@ -1,27 +1,28 @@
-\name{syseval}
+\name{tsys.frame}
 
-\alias{syseval}
+\alias{tsys.frame}
 
 \title{Evaluate a Trading System with Data}
 
 \description{
 
-  \code{syseval} calculates state, equity, signal and other
-  vectors of system \code{x} by evaluating its expressions with
-  \code{data}.
+  \code{tsys.frame} returns a data.frame containing the evaluations of
+  \code{x} using the variables in \code{data}. In addition, the states
+  and equity vectors are calculated.
 
 }
 
 \usage{
 
-syseval(x, data, order.by=index(data))
+tsys.frame(x, data, order.by=index(data))
 
 }
 
 \arguments{
 
   \item{x}{a 'tsys' object.}
-  \item{data}{a numeric matrix.}
+  \item{data}{a numeric matrix, data.frame, list or environment
+    containing the variables in \code{datavars}.}
   \item{order.by}{an index vector with unique entries by which the observations
     in 'data' are ordered.}
   
@@ -36,10 +37,10 @@ syseval(x, data, order.by=index(data))
   expression.
 
   The evaluation frame of the expression is actually just the frame of
-  the \code{syseval} function call with the data vectors added to it. In
+  the \code{tsys.frame} function call with the data vectors added to it. In
   this document we'll refer to this simply as "the frame".
 
-  \code{data} must be a numeric matrix and \code{x$datacols} must be a
+  \code{data} must be a numeric matrix and \code{x$datavars} must be a
   subset of \code{colnames(data)}. The length of \code{order.by} must
   equal the number of rows in \code{data}.
 
@@ -62,15 +63,15 @@ syseval(x, data, order.by=index(data))
   \emph{cannot} refer to each other.
 
   Finally, the equity vector is calculated using the values in the frame
-  plus \code{x$percent} and \code{x$pricecols}. See its documentation
+  plus \code{x$percent} and \code{x$pricemap}. See its documentation
   for details.
 
   The results are collected into a named list and returned.
 
-  \code{syseval} is called by \code{tsts}. As the trading system time
+  \code{tsys.frame} is called by \code{tsts}. As the trading system time
   series returned by that function includes only the 'St' and 'Equity'
   vectors in its result, a user may wish to use the construct
-  \code{syseval(tsys(x), coredata(x))} to extract the other evaluations
+  \code{tsys.frame(tsys(x), coredata(x))} to extract the other evaluations
   implicit in a 'tsts' object \code{x}.
   
 }
@@ -85,7 +86,7 @@ syseval(x, data, order.by=index(data))
 \examples{
 x <- tradesys(c("Foo","Bar"), el=Foo > Bar, es=Foo <= Bar)
 m <- matrix(rnorm(100), ncol=2, dimnames=list(NULL, c("Foo","Bar")))
-syseval(x, m)
+tsys.frame(x, m)
 }
 
 \author{Robert Sams \email{robert@sanctumfi.com}}

@@ -1,40 +1,40 @@
-tradesys <- function(datacols, pricecols=datacols[1], el=FALSE, es=FALSE, 
-                     xl=FALSE, xs=FALSE, delta=1, size.at=as.logical(c(St[1], diff(St))),
+tradesys <- function(datavars, pricemap=c(Mark=datavars[1]), el=FALSE, es=FALSE, 
+                     xl=FALSE, xs=FALSE, delta=1, size.at=as.logical(c(states[1], diff(states))),
                      roll.at=FALSE, formulae=NULL, percent=TRUE, entrywins=FALSE,
                      entrycond=FALSE){
   l <- list()
-  ## Process datacols
-  if(any(duplicated(datacols)))
-    stop("datacols be unique.")
-  l$datacols <- datacols
-  ## Process pricecols arg
-  if(!is.vector(pricecols) | !is.character(pricecols))
-    stop("pricecols must be a character vector of column names.")
-  pricecols <- pricecols[1:min(length(pricecols), 5)]
-  if(length(pricecols) == 1) ## everyone gets what's passed
-    names(pricecols) <- NULL
-  if(is.null(names(pricecols))) ## order determines mapping
-    names(pricecols) <- c("Mark","Long","Short","RollLong","RollShort")[1:length(pricecols)]
-  if(any(!names(pricecols) %in% c("Mark","Long","Short","RollLong","RollShort")))
-    stop("All names(pricecols) must be among 'Mark','Long','Short','RollLong','RollShort'")
-  if(any(!pricecols %in% datacols))
-    stop("all pricecols must be in datacols or names(formulae)")
-  l$pricecols <- c(pricecols["Mark"], pricecols["Long"], pricecols["Short"], pricecols["RollLong"], pricecols["RollShort"])
-  names(l$pricecols) <- c("Mark","Long","Short","RollLong","RollShort")
-  if(is.na(l$pricecols["Mark"]))
-    stop("pricecols must be passed a value for 'Mark'")
-  if(is.na(l$pricecols["Long"]))
-    l$pricecols["Long"] <- l$pricecols["Mark"]
-  if(is.na(l$pricecols["Short"]))
-    l$pricecols["Short"] <- l$pricecols["Mark"]
-  if(is.na(l$pricecols["RollShort"]))
-    l$pricecols["RollShort"] <- l$pricecols["Short"]
-  if(is.na(l$pricecols["RollLong"]))
-    l$pricecols["RollLong"] <- l$pricecols["Long"]
+  ## Process datavars
+  if(any(duplicated(datavars)))
+    stop("datavars be unique.")
+  l$datavars <- datavars
+  ## Process pricemap arg
+  if(!is.vector(pricemap) | !is.character(pricemap))
+    stop("pricemap must be a character vector of column names.")
+  pricemap <- pricemap[1:min(length(pricemap), 5)]
+  if(length(pricemap) == 1) ## everyone gets what's passed
+    names(pricemap) <- NULL
+  if(is.null(names(pricemap))) ## order determines mapping
+    names(pricemap) <- c("Mark","Long","Short","RollLong","RollShort")[1:length(pricemap)]
+  if(any(!names(pricemap) %in% c("Mark","Long","Short","RollLong","RollShort")))
+    stop("All names(pricemap) must be among 'Mark','Long','Short','RollLong','RollShort'")
+  if(any(!pricemap %in% datavars))
+    stop("all pricemap must be in datavars or names(formulae)")
+  l$pricemap <- c(pricemap["Mark"], pricemap["Long"], pricemap["Short"], pricemap["RollLong"], pricemap["RollShort"])
+  names(l$pricemap) <- c("Mark","Long","Short","RollLong","RollShort")
+  if(is.na(l$pricemap["Mark"]))
+    stop("pricemap must be passed a value for 'Mark'")
+  if(is.na(l$pricemap["Long"]))
+    l$pricemap["Long"] <- l$pricemap["Mark"]
+  if(is.na(l$pricemap["Short"]))
+    l$pricemap["Short"] <- l$pricemap["Mark"]
+  if(is.na(l$pricemap["RollShort"]))
+    l$pricemap["RollShort"] <- l$pricemap["Short"]
+  if(is.na(l$pricemap["RollLong"]))
+    l$pricemap["RollLong"] <- l$pricemap["Long"]
   ## Process formulae arg (we expect a named list of calls)
   if(!is.null(formulae)){
-    if(!is.list(formulae) | is.null(names(formulae)) | any(duplicated(names(formulae))) | any(names(formulae) %in% datacols))
-      stop("formulae must be a list with names that are unique and not in datacols")
+    if(!is.list(formulae) | is.null(names(formulae)) | any(duplicated(names(formulae))) | any(names(formulae) %in% datavars))
+      stop("formulae must be a list with names that are unique and not in datavars")
     if(any(unlist(lapply(formulae, class)) != "call"))
       stop("formulae must be a list of call objects")
     l$formulae <- formulae
@@ -68,8 +68,8 @@ tradesys <- function(datacols, pricecols=datacols[1], el=FALSE, es=FALSE,
 ##
 
 print.tsys <- function(x, ...){
-  cat("datacols: ", x$datacols, "\n")
-  cat("pricecols:", x$pricecols, "\n")
+  cat("datavars: ", x$datavars, "\n")
+  cat("pricemap:", x$pricemap, "\n")
   cat("el:", format(x$el), "\n")
   cat("es:", format(x$es), "\n")
   cat("xl:", format(x$xl), "\n")
@@ -79,24 +79,38 @@ print.tsys <- function(x, ...){
     for(i in 1:length(x$formulae))
       cat(names(x$formulae)[i],":", format(x$formulae[[i]]), "\n")
   }
-  cat("delta:  ", format(x$delta), "\n")
+  cat("delta:", format(x$delta), "\n")
   cat("size.at:", format(x$size.at), "\n")
   cat("roll.at:", format(x$roll.at), "\n")
-  cat("percent:  ", format(x$percent), "\n")
+  cat("percent:", format(x$percent), "\n")
   cat("entrywins:", format(x$entrywins), "\n")
   cat("entrycond:", format(x$entrycond), "\n")
 }
 
-"$<-.tsys" <- function(x, name=NULL, value){
-  y <- x
-  if(is.null(name))
+"$<-.tsys" <- function(x, i=NULL, value){
+  y <- as.list.tsys(x)
+  if(is.null(i))
     y <- value
   else
-    y[[name]] <- value
+    y[[i]] <- value
   y <- try(do.call("tradesys", y))
   if(class(y) == "try-error")
     return(x)
   y
+}
+
+"[[<-.tsys" <- function(x, i, value){
+  "$<-.tsys"(x, i, value)
+}
+
+"[<-.tsys" <- function(x, i, value){
+  y <- as.list.tsys(x)
+  y[i] <- value
+  y <- try(do.call("tradesys", y))
+  if(class(y) == "try-error")
+    return(x)
+  y
+  
 }
 
 as.list.tsys <- function(x, ...){

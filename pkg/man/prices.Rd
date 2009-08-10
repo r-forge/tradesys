@@ -12,13 +12,13 @@
 
 \usage{
 
-prices(x, pricecols=tsys(x)$pricecols, roll.at=FALSE)
+prices(x, pricemap=tsys(x)$pricemap, roll.at=FALSE)
 
 }
 
 \arguments{
   \item{x}{a tsts object.}
-  \item{pricecols}{list. see below.}
+  \item{pricemap}{list. see below.}
   \item{roll.at}{logical vector.}
 }
 
