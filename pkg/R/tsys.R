@@ -10,11 +10,12 @@ tradesys <- function(datavars, pricemap=c(Mark=datavars[1]), el=FALSE, es=FALSE,
   ## Process pricemap arg
   if(!is.vector(pricemap) | !is.character(pricemap))
     stop("pricemap must be a character vector of column names.")
-  pricemap <- pricemap[1:min(length(pricemap), 5)]
-  if(length(pricemap) == 1) ## everyone gets what's passed
-    names(pricemap) <- NULL
-  if(is.null(names(pricemap))) ## order determines mapping
+  if(length(pricemap) > 5)
+    stop("length(pricemap) must be <= 5")
+  if(is.null(names(pricemap))) ## .. then order determines mapping when no names
     names(pricemap) <- c("Mark","Long","Short","RollLong","RollShort")[1:length(pricemap)]
+  if(any(duplicated(names(pricemap))))
+    stop("names(pricemap) must be unique")
   if(any(!names(pricemap) %in% c("Mark","Long","Short","RollLong","RollShort")))
     stop("All names(pricemap) must be among 'Mark','Long','Short','RollLong','RollShort'")
   if(any(!pricemap %in% datavars))
@@ -69,7 +70,7 @@ tradesys <- function(datavars, pricemap=c(Mark=datavars[1]), el=FALSE, es=FALSE,
 
 print.tsys <- function(x, ...){
   cat("datavars: ", x$datavars, "\n")
-  cat("pricemap:", x$pricemap, "\n")
+  cat("pricemap:", paste(names(x$pricemap), x$pricemap, sep="="), "\n")
   cat("el:", format(x$el), "\n")
   cat("es:", format(x$es), "\n")
   cat("xl:", format(x$xl), "\n")

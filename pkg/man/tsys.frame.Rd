@@ -29,57 +29,39 @@ tsys.frame(x, data, order.by=index(data))
 }
 
 \details{
-  The states and equity vectors of a system applied to data are
-  calculated by evaluating its expressions in a specific and
-  straight-forward way. The expressions are evaluated in a frame that
-  includes each column of \code{data} as a vector named by its column
-  name. A vector is computed on by including its name in an
-  expression.
+  
+  The states and equity values of a system when it is applied to data
+  are calculated by evaluating its expressions in a certain way. The
+  expressions are evaluated in a new environment that includes
+  {data}. \code{data} is any numeric matrix, data.frame, list or
+  environment containing all of the variables in \code{datavars} and
+  where all of the variables have the same length.
 
-  The evaluation frame of the expression is actually just the frame of
-  the \code{tsys.frame} function call with the data vectors added to it. In
-  this document we'll refer to this simply as "the frame".
+  \code{order.by} is any vector whose objects can be computed by the
+  \code{-} operator (its value is understood to be a measure of time
+  interval) and is equal the number of rows in \code{data}.
 
-  \code{data} must be a numeric matrix and \code{x$datavars} must be a
-  subset of \code{colnames(data)}. The length of \code{order.by} must
-  equal the number of rows in \code{data}.
+  The evaluation procedure is as follows.
 
-  The evaluation procedure is as follows. First, if \code{x$formulae} is
-  non-null, its list of expressions are evaluated in order and the
-  resulting vectors are placed in the frame so they can be referred to
-  by the other expressions.
-
-  Second, the entry and exit
-  signal expressions \code{x$el}, \code{x$es}, \code{x$xl}, and
-  \code{x$xs} are evaluated. The resulting four vectors are passed to
-  the function \code{signalmap} to compute the states
-  vector. \code{x$entrycond} and \code{x$entrywins} are logical options
-  that modify this calculation. See the documentation of
-  \code{signalmap} for details. The states vector is given the name 'St'
-  and included in the frame.
-
-  Third, delta, size.at, and roll.at are evaluated. Their results are
-  included in the frame only after each is evaluated, so the expressions
-  \emph{cannot} refer to each other.
-
-  Finally, the equity vector is calculated using the values in the frame
-  plus \code{x$percent} and \code{x$pricemap}. See its documentation
-  for details.
-
-  The results are collected into a named list and returned.
-
-  \code{tsys.frame} is called by \code{tsts}. As the trading system time
-  series returned by that function includes only the 'St' and 'Equity'
-  vectors in its result, a user may wish to use the construct
-  \code{tsys.frame(tsys(x), coredata(x))} to extract the other evaluations
-  implicit in a 'tsts' object \code{x}.
+  \enumerate{
+    \item Place \bold{data} and \bold{index} in a new environment \emph{env}.
+    \item Evaluate and assign \bold{el}, \bold{es}, \bold{xl} and \bold{xs} in \emph{env}.
+    \item Call \code{signalmap} and assign \bold{states} to \emph{env}.
+    \item Evaluate and assign \bold{roll.at} in \emph{env}.
+    \item Call \code{prices} and assign its variables to \emph{env}.
+    \item Evaluate and assign \bold{size.at} and \bold{delta} in \emph{env}.
+    \item Call \code{equity} and assign \bold{equity} to \emph{env}.
+  }
+  
+  Each variable is checked to ensure it has the correct length and
+  type. Then all variables are combined into a data frame and returned.
   
 }
 
 \value{
 
-  A named list consisting of the calculated vectors: states, equity,
-  entry and exit signals, delta, size.at, roll.at and formulae matrix.
+  data.frame consisting of the calculated vectors: states, equity,
+  entry and exit signals, delta, size.at, roll.at and exprvars.
 
 }
 

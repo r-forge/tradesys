@@ -1,4 +1,4 @@
-test.randomprice <- function(){
+test.equity <- function(){
 
   randPrice <- function(number){
     1 + rnorm(number, sd=.01)
@@ -45,4 +45,4 @@ test.randomprice <- function(){
   checkEquals(((prices[12] / prices[11] - 1) * -.25 + 1) * x[11, "Equity"], x[12, "Equity"], checkNames=FALSE)
 }
 
-test.randomprice()
+test.equity()
