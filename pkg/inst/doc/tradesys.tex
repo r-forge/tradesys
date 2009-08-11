@@ -16,12 +16,51 @@
 %% \VignetteKeywords{trading systems, backtesting}
 %% \VignettePackage{tradesys}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} \label{sec:intro}
-Design goals: maximum expressibility and tight integration with core R.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The \code{tradesys} package is for modelling trading systems in R. The
+key functionality of the package is centered around the 'tsys'
+class. A 'tsys' object collects all of the information needed to
+completely define a trading system. The key ideas behind the system,
+like the entry and exit signals, are written by the user in R and
+stored as unevaluated R expressions in the appropriate 'tsys'
+slot. The object can subsequently be applied to any timeseries data
+with the appropriate variables, the logic of the system encoded in the
+stored expressions are evaluated on this data, and the system's
+long/short/flat \emph{states} and the resulting \emph{equity curve}
+are calculated. In short, a trading system consists of certain
+R-encoded logic and meta-data, defined in an object of class 'tsys',
+and evaluated on any data of the appropriate structure to calculate
+the system's states and equity.
 
-Mention other related packages like blotter, TTR, xts, etc...
+As the above description implies, \code{tradesys} is about
+\emph{modelling} a trading system, not analyzing its \emph{results},
+the latter being what is properly referred to as ``backtesting''....
 
-\subsection{A formal definition of ``trading system''}
+So, the functionality of the package is modest in its scope. It is,
+however, ambitious in the implementation. The above model is needed in
+almost all trading system research and thus represents a problem in
+need of a common, well-designed solution. This package aims to do this
+to the highest standard, so that trading system builders who chose R
+as an important tool of analysis can confidently use this package a
+key component of their work.
+
+There are three main design goals of the package. First, the package
+should be \emph{trustworthy}, in the sense elaborated by Chambers 
+
+Second, \emph{discoverability}. The logic behind every calculation
+should not only be scrupulously documented, but also discoverable, in
+the sense that the key computations done on 'tsys' objects are
+encapsulated in functions that the user can call and explore. So the
+package contains a number of functions that are not strictly speaking
+part of the user interface (the usage of the package can be had
+without ever calling them), but are documented seperately and exported
+by the package's namespace to be explored at will.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{A formal definition of ``trading system''}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 A \emph{trading system} is an algorithm on a timeseries $X_{t}$ that
 specifies, for each time \emph{t}, whether the system's state is long,
 short or flat. Mathematically, it is a function $f(X_{t})$ that
@@ -36,205 +75,17 @@ trading system time series is represented as class \code{tsts}.
 
 But what about $f(X_{t})$, what form does it take?...
 
-\subsection{Example: Dual-moving average system}
-\begin{Schunk}
-\begin{Sinput}
-> library(tradesys)
-> library(TTR)
-\end{Sinput}
-\end{Schunk}
-This system is long whenever the 60-day moving average of price is
-above the 120-day moving average and short otherwise. We test it on
-the S\&P 500 index dataset \code{spx}, which is a zoo matrix and
-contains daily OHLC and open interest data for about 60 years.
-\begin{Schunk}
-\begin{Sinput}
-> data(spx)
-> tail(spx)
-\end{Sinput}
-\begin{Soutput}
-             Open   High    Low  Close     Volume
-2009-05-12 910.52 915.57 896.46 908.35 6871750400
-2009-05-13 905.40 905.40 882.80 883.92 7091820000
-2009-05-14 884.24 898.36 882.52 893.07 6134870000
-2009-05-15 892.76 896.97 878.94 882.88 5439720000
-2009-05-18 886.07 910.00 886.07 909.71 5702150000
-2009-05-19 909.67 916.39 905.22 908.13 6616270000
-\end{Soutput}
-\end{Schunk}
-The system can be defined in three lines.
-\begin{Schunk}
-\begin{Sinput}
-> x <- tsts(spx)
-> addsig(x, "el", SMA(Close, 60) >= SMA(Close, 120))
-> addsig(x, "es", SMA(Close, 60) < SMA(Close, 120))
-\end{Sinput}
-\end{Schunk}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introductory Examples}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\code{addsig}--''add signal''--defines the long and short entry
-criteria, respectively. They take expression objects that must
-evaluate to logical vectors equal in length to \code{nrow(x)}.  The
-expressions are evaluated in the normal way using R's \emph{lazy
-  evaluation} scheme, although \code{addsig} first puts the columns of
-\code{x} into the evaluation frame as named vectors, so \code{Close}
-in the above expression evaluates as if it were \code{data[,
-    `Close']}.
-
-The states vector is now defined and we can do some backtesting.
-\begin{Schunk}
-\begin{Sinput}
-> tail(x)
-\end{Sinput}
-\begin{Soutput}
-             Open   High    Low  Close     Volume St
-2009-05-12 910.52 915.57 896.46 908.35 6871750400 -1
-2009-05-13 905.40 905.40 882.80 883.92 7091820000 -1
-2009-05-14 884.24 898.36 882.52 893.07 6134870000 -1
-2009-05-15 892.76 896.97 878.94 882.88 5439720000 -1
-2009-05-18 886.07 910.00 886.07 909.71 5702150000 -1
-2009-05-19 909.67 916.39 905.22 908.13 6616270000 -1
-\end{Soutput}
-\end{Schunk}
-The analysis function \code{equity} is used to calculate period
-returns and the equity curve.
-\begin{Schunk}
-\begin{Sinput}
-> y <- equity(x, uselog = TRUE)
-> tail(y)
-\end{Sinput}
-\begin{Soutput}
-           Trade St    Delta    Price          RoR   Equity
-2009-05-12   112 -1 1.331220 6.814016  0.018107970 38.02601
-2009-05-13   112 -1 1.307543 6.808377  0.007373275 38.30638
-2009-05-14   112 -1 1.297973 6.784729  0.030694874 39.48219
-2009-05-15   112 -1 1.259318 6.794318 -0.012075942 39.00541
-2009-05-18   112 -1 1.274712 6.786796  0.009588169 39.37940
-2009-05-19   112 -1 1.262606 6.813082 -0.033188777 38.07244
-\end{Soutput}
-\begin{Sinput}
-> EquityStats(y[, c("Equity")])
-\end{Sinput}
-\begin{Soutput}
-    RORC     CAGR     ROR%       R2     VOLA    MAXDD 
-37.07244  0.06317  0.06213  0.84731  0.14157 -0.59800 
-\end{Soutput}
-\begin{Sinput}
-> plot(y[, c("RoR", "Equity")], main = "60/120 DMA -- SPX")
-\end{Sinput}
-\end{Schunk}
-\includegraphics{tradesys-intro4}
-Use \code{trades} to enumerate system trades and their holding
-period returns.
-\begin{Schunk}
-\begin{Sinput}
-> z <- trades(x, uselog = TRUE)
-> tail(z)
-\end{Sinput}
-\begin{Soutput}
-    Phase      ETime      XTime Time Numb  EPrice  XPrice    PnL          RoR
-107    EL 2006-09-21 2007-09-12  356  244 1324.89 1471.10 146.21  0.264117052
-108    ES 2007-09-12 2007-11-09   58   42 1471.10 1467.59   3.51  0.006027153
-109    EL 2007-11-09 2008-01-03   55   36 1467.59 1447.55 -20.04 -0.034689959
-110    ES 2008-01-03 2008-06-10  159  109 1447.55 1358.98  88.57  0.159301490
-111    EL 2008-06-10 2008-07-21   41   28 1358.98 1261.82 -97.16 -0.187159273
-112    ES 2008-07-21 2009-05-19  302  209 1261.82  909.67 352.15  0.825619186
-\end{Soutput}
-\end{Schunk}
-What prices are assumed in these calcuations, as \code{spx} contains
-columns for open, high, low and close prices? By default, the prices
-used in these performance calculations is the left-most column, which
-is this case, is the open price. 
-\begin{Schunk}
-\begin{Sinput}
-> unlist(pricecols(x))
-\end{Sinput}
-\begin{Soutput}
- valuation  enterlong entershort   exitlong  exitshort   rolllong  rollshort 
-         1          1          1          1          1          1          1 
-\end{Soutput}
-\end{Schunk}
-This won't due. We can't calculate our signal on Monday's closing
-price whilst trading on that signal using Monday's open price!
-
-The \code{'tsts'} class has a very flexible mechanism for defining the
-price context of a trading system timeseries. 
-\begin{Schunk}
-\begin{Sinput}
-> pricecols(x) <- "Close"
-> unlist(pricecols(x))
-\end{Sinput}
-\begin{Soutput}
- valuation  enterlong entershort   exitlong  exitshort   rolllong  rollshort 
-   "Close"    "Close"    "Close"    "Close"    "Close"    "Close"    "Close" 
-\end{Soutput}
-\end{Schunk}
-This specifies that the system will assume that all trades are
-executed at the closing price. This is an improvement. But let's say
-that we want the system to compute signals on closing prices, position
-valuations at closing prices, and trades on the \emph{following day's}
-open price. This is a good place to introduce to the \code{addcol}
-function, for it is our solution to this problem.
-\begin{Schunk}
-\begin{Sinput}
-> addcol(x, "Next", c(embed(Open, 2)[, 1], NA))
-> tail(x)
-\end{Sinput}
-\begin{Soutput}
-             Open   High    Low  Close     Volume   Next St
-2009-05-12 910.52 915.57 896.46 908.35 6871750400 905.40 -1
-2009-05-13 905.40 905.40 882.80 883.92 7091820000 884.24 -1
-2009-05-14 884.24 898.36 882.52 893.07 6134870000 892.76 -1
-2009-05-15 892.76 896.97 878.94 882.88 5439720000 886.07 -1
-2009-05-18 886.07 910.00 886.07 909.71 5702150000 909.67 -1
-2009-05-19 909.67 916.39 905.22 908.13 6616270000     NA -1
-\end{Soutput}
-\end{Schunk}
-So now \code{x} has an additional column named ``Next'', which
-contains the open price of the \emph{next} day. Like the signal
-expressions, the expression that defines this column is stored in
-\code{x} so that the column is recalculated everytime new data is
-assigned to \code{x} via \code{coredata}. Now we can update our
-pricing assumptions with another call to \code{pricecols}.
-\begin{Schunk}
-\begin{Sinput}
-> pricecols(x) <- list(valuation = "Close", entry = "Next", exit = "Next")
-\end{Sinput}
-\end{Schunk}
-Let's Re-run \code{trades} and examine an arbitrary example, say trade 109.
-\begin{Schunk}
-\begin{Sinput}
-> trades(x)[109, ]
-\end{Sinput}
-\begin{Soutput}
-    Phase      ETime      XTime Time Numb  EPrice  XPrice    PnL RoR
-109    EL 2007-11-09 2008-01-03   55   36 1467.59 1444.01 -23.58  NA
-\end{Soutput}
-\end{Schunk}
-You can confirm for yourself that the trade entry on 11-09 is done 
-at the Open price on 11-12...
-\begin{Schunk}
-\begin{Sinput}
-> window(spx, start = "2007-11-09", end = "2007-11-12")
-\end{Sinput}
-\begin{Soutput}
-              Open    High     Low   Close     Volume
-2007-11-09 1467.59 1474.09 1448.51 1453.70 4587050000
-2007-11-12 1453.66 1464.94 1438.53 1439.18 4192520000
-\end{Soutput}
-\begin{Sinput}
-> window(spx, start = "2008-01-03", end = "2008-01-04")
-\end{Sinput}
-\begin{Soutput}
-              Open    High     Low   Close     Volume
-2008-01-03 1447.55 1456.80 1443.73 1447.16 3429500000
-2008-01-04 1444.01 1444.01 1411.19 1411.63 4166000000
-\end{Soutput}
-\end{Schunk}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Splicing Timeseries}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Computational details}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The results in this paper were obtained using R
 2.8.0 with the packages
 \code{tradesys} 0.1 

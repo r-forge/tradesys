@@ -16,12 +16,51 @@
 %% \VignetteKeywords{trading systems, backtesting}
 %% \VignettePackage{tradesys}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} \label{sec:intro}
-Design goals: maximum expressibility and tight integration with core R.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The \code{tradesys} package is for modelling trading systems in R. The
+key functionality of the package is centered around the 'tsys'
+class. A 'tsys' object collects all of the information needed to
+completely define a trading system. The key ideas behind the system,
+like the entry and exit signals, are written by the user in R and
+stored as unevaluated R expressions in the appropriate 'tsys'
+slot. The object can subsequently be applied to any timeseries data
+with the appropriate variables, the logic of the system encoded in the
+stored expressions are evaluated on this data, and the system's
+long/short/flat \emph{states} and the resulting \emph{equity curve}
+are calculated. In short, a trading system consists of certain
+R-encoded logic and meta-data, defined in an object of class 'tsys',
+and evaluated on any data of the appropriate structure to calculate
+the system's states and equity.
 
-Mention other related packages like blotter, TTR, xts, etc...
+As the above description implies, \code{tradesys} is about
+\emph{modelling} a trading system, not analyzing its \emph{results},
+the latter being what is properly referred to as ``backtesting''....
 
-\subsection{A formal definition of ``trading system''}
+So, the functionality of the package is modest in its scope. It is,
+however, ambitious in the implementation. The above model is needed in
+almost all trading system research and thus represents a problem in
+need of a common, well-designed solution. This package aims to do this
+to the highest standard, so that trading system builders who chose R
+as an important tool of analysis can confidently use this package a
+key component of their work.
+
+There are three main design goals of the package. First, the package
+should be \emph{trustworthy}, in the sense elaborated by Chambers 
+
+Second, \emph{discoverability}. The logic behind every calculation
+should not only be scrupulously documented, but also discoverable, in
+the sense that the key computations done on 'tsys' objects are
+encapsulated in functions that the user can call and explore. So the
+package contains a number of functions that are not strictly speaking
+part of the user interface (the usage of the package can be had
+without ever calling them), but are documented seperately and exported
+by the package's namespace to be explored at will.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{A formal definition of ``trading system''}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 A \emph{trading system} is an algorithm on a timeseries $X_{t}$ that
 specifies, for each time \emph{t}, whether the system's state is long,
 short or flat. Mathematically, it is a function $f(X_{t})$ that
@@ -36,104 +75,17 @@ trading system time series is represented as class \code{tsts}.
 
 But what about $f(X_{t})$, what form does it take?...
 
-\subsection{Example: Dual-moving average system}
-<<intro,results=HIDE>>=
-library(tradesys)
-library(TTR)
-@ 
-This system is long whenever the 60-day moving average of price is
-above the 120-day moving average and short otherwise. We test it on
-the S\&P 500 index dataset \code{spx}, which is a zoo matrix and
-contains daily OHLC and open interest data for about 60 years.
-<<intro1>>=
-data(spx)
-tail(spx)
-@ 
-The system can be defined in three lines.
-<<intro2>>=
-x <- tsts(spx)
-addsig(x, "el", SMA(Close, 60) >= SMA(Close, 120))
-addsig(x, "es", SMA(Close, 60) < SMA(Close, 120))
-@ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introductory Examples}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\code{addsig}--''add signal''--defines the long and short entry
-criteria, respectively. They take expression objects that must
-evaluate to logical vectors equal in length to \code{nrow(x)}.  The
-expressions are evaluated in the normal way using R's \emph{lazy
-  evaluation} scheme, although \code{addsig} first puts the columns of
-\code{x} into the evaluation frame as named vectors, so \code{Close}
-in the above expression evaluates as if it were \code{data[,
-    `Close']}.
-
-The states vector is now defined and we can do some backtesting.
-<<intro3>>=
-tail(x)
-@ 
-The analysis function \code{equity} is used to calculate period
-returns and the equity curve.
-<<intro4,fig=TRUE>>=
-y <- equity(x, uselog=TRUE)
-tail(y)
-EquityStats(y[, c("Equity")])
-plot(y[, c("RoR", "Equity")], main="60/120 DMA -- SPX")
-@ 
-Use \code{trades} to enumerate system trades and their holding
-period returns.
-<<intro4>>=
-z <- trades(x, useror=TRUE)
-tail(z)
-prod(1 + z$RoR)^(1/nrow(z)) - 1 ## geomean trade return
-@ 
-What prices are assumed in these calcuations, as \code{spx} contains
-columns for open, high, low and close prices? By default, the prices
-used in these performance calculations is the left-most column, which
-is this case, is the open price. 
-<<intro5>>=
-unlist(pricecols(x))
-@ 
-This won't due. We can't calculate our signal on Monday's closing
-price whilst trading on that signal using Monday's open price!
-
-The \code{'tsts'} class has a very flexible mechanism for defining the
-price context of a trading system timeseries. 
-<<intro6>>=
-pricecols(x) <- "Close"
-unlist(pricecols(x))
-@ 
-This specifies that the system will assume that all trades are
-executed at the closing price. This is an improvement. But let's say
-that we want the system to compute signals on closing prices, position
-valuations at closing prices, and trades on the \emph{following day's}
-open price. This is a good place to introduce to the \code{addcol}
-function, for it is our solution to this problem.
-<<intro7>>=
-addcol(x, "Next", c(embed(Open, 2)[, 1], NA))
-tail(x)
-@ 
-So now \code{x} has an additional column named ``Next'', which
-contains the open price of the \emph{next} day. Like the signal
-expressions, the expression that defines this column is stored in
-\code{x} so that the column is recalculated everytime new data is
-assigned to \code{x} via \code{coredata}. Now we can update our
-pricing assumptions with another call to \code{pricecols}.
-<<intro8>>=
-pricecols(x) <- list(valuation="Close", entry="Next", exit="Next")
-@ 
-Let's Re-run \code{trades} and examine an arbitrary example, say trade 109.
-<<intro9>>=
-trades(x)[109,]
-@ 
-You can confirm for yourself that the trade entry on 11-09 is done 
-at the Open price on 11-12...
-<<intro10>>=
-window(spx, start="2007-11-09", end="2007-11-12")
-window(spx, start="2008-01-03", end="2008-01-04")
-@ 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Splicing Timeseries}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Computational details}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The results in this paper were obtained using R
 \Sexpr{paste(R.Version()[6:7], collapse = ".")} with the packages
 \code{tradesys} \Sexpr{gsub("-", "--", packageDescription("tradesys")$Version)} 
