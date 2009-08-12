@@ -1,5 +1,7 @@
 test.equity <- function(){
 
+  set.seed(8091)
+
   randPrice <- function(number){
     1 + rnorm(number, sd=.01)
   }

@@ -1,26 +1,43 @@
 \name{equity}
 
 \alias{equity}
+\alias{trades}
+\alias{prices}
 
-\title{Equity Curve}
+\title{Equity Curve, Trades, and Prices}
 
 \description{
   
-  Calculate an equity curve given prices and states.
-
+  \code{equity} calculates an equity curve from \emph{prices},
+  \emph{states}, and \emph{delta}.
+  
+  \code{trades} calculates a data.frame of trades from \emph{prices},
+  \emph{states}, and \emph{delta}.
+  
+  \code{prices} extracts a price context matrix from \code{data}.
+  
 }
 
 \usage{
 
-equity(prices, states, delta=1, size.at=as.logical(c(states[1], diff(states))),
-       roll.at=FALSE, percent=TRUE)
+equity(data, states, delta=1, size.at=as.logical(c(states[1], diff(states))),
+       roll.at=FALSE, percent=TRUE, pricemap=colnames(data)[1])
+
+trades(data, states, delta=1, roll.at=FALSE, percent=FALSE,
+       order.by=index(data), pricemap=colnames(data)[1])
+
+prices(data, states, pricemap=colnames(data)[1], roll.at=FALSE)
 
 }
 
 \arguments{
   
-  \item{prices}{numeric vector or matrix of prices.}
+  \item{data}{numeric matrix or coerciable via \code{as.matrix}.}
   \item{states}{numeric vector of states.}
+  \item{order.by}{an index vector with unique entries by which the observations
+    in 'data' are ordered.}
+  \item{pricemap}{named character vector defining the mapping between
+    price types and data variable names.}
   \item{delta}{numeric vector of delta coefficients.}
   \item{size.at}{logical. see below.}
   \item{roll.at}{logical. see below.}
@@ -33,15 +50,13 @@ equity(prices, states, delta=1, size.at=as.logical(c(states[1], diff(states))),
   \code{equity} computes an equity value at each time \eqn{t} for a
   given pair of prices and states.
   
-  If \code{prices} is a matrix, it should have five columns named
-  "Mark", "Long", "Short", "RollLong" and "RollShort". Columns not
-  so-named are ignored and missing columns are given the value in
-  "Mark". An error is raised if that column is missing. If \code{prices}
-  is a vector, it is converted into a such matrix with identical column
-  values.
+  \code{data} should be coercable using \code{as.matrix} and
+  \code{pricemap} should define the mapping between the columnames in
+  \code{data} and the price variables "Mark", "Long", "Short",
+  "RollLong" and "RollShort".
   
   \code{states} must be a vector consist of 1s, 0s, and -1s only.  Its
-  length must be a multiple of \code{nrow(prices)} and is generally
+  length must be a multiple of \code{nrow(data)} and is generally
   identical to it.
 
   \code{delta} defines the percentage change in equity given a
@@ -49,7 +64,7 @@ equity(prices, states, delta=1, size.at=as.logical(c(states[1], diff(states))),
   system's leverage parameter. If passed a scalar, the system follows a
   fixed fractional leveraging scheme. A variable leverage scheme is
   followed if a vector is passed. \code{delta} must have length that is
-  a multiple of \code{nrow(prices)}.
+  a multiple of \code{nrow(data)}.
   
   \code{size.at} is a logical vector that causes the equity to have
   delta sensitivity at each point where this vector is TRUE. By default,
@@ -60,7 +75,7 @@ equity(prices, states, delta=1, size.at=as.logical(c(states[1], diff(states))),
   scheme whereby a constant equity fraction is risked at each
   period. Any scheme can be defined by passing its appropriate vector,
   which must have length that is a multiple of length
-  \code{nrow(prices)}.
+  \code{nrow(data)}.
 
   Equity is initially normalised to 1, \eqn{E_{0} = 1}{E(0) = 1} and
   calculated thereafter as:\deqn{ E_{t} = \left(\frac{p_{t}}{p_{i}} -
@@ -81,9 +96,44 @@ equity(prices, states, delta=1, size.at=as.logical(c(states[1], diff(states))),
   If any \code{roll.at} are true, roll price adjustments are made. It is
   a logical vector, and if it is TRUE at \eqn{t}, \eqn{R_{t} -
   P_{t}}{R(t) - P(t)} is added to \eqn{P_{i}}{P(i)}, where
-  \eqn{R_{t}}{R(t)} is the price in \code{prices[t, "RollLong"]} when
-  \eqn{s_{t}=1}{s(t)=1} and \code{prices[t, "RollShort"]} when
-  \eqn{s_{t}=-1}{s(t)=-1}.
+  \eqn{R_{t}}{R(t)} is the roll price at \code{t}.
+
+  \code{prices} returns a matrix of \emph{Long}, \emph{Short},
+  \emph{Mark}, \emph{RollLong}, and \emph{RollShort} prices, where
+  \code{pricemap} defines the mapping between these and the column names
+  in \code{data}.
+
+  The return also contains a column \emph{Price}, which contains at each
+  time one of Long, Short, or Mark columns, depending upon the state,
+  and a column \emph{Roll}, which contains one of Price, RollLong or
+  RollShort prices, depending upon the state and \code{roll.at} value.
+  
+  \code{trades} is passed a tsts object and returns a data frame of
+  the system's trades. Each row describes a long or short entry with its
+  entry and exit times and prices, the realised P\&L of the trade and
+  holding period return.
+  
+  \code{delta} is a numeric constant \eqn{\Delta}{d} that defines equity
+  return per \emph{change in price} (or \emph{percentage change in price} if
+  \code{percent=TRUE}). It defines the system's leverage.
+
+  Trade holding period returns are defined as: \deqn{r = (p_{x} - p_{e})
+  s_{e}\Delta}{r = [px - pe] * se * d} where \eqn{\Delta}{d} is the
+  value passed to \code{delta} and \eqn{s_{e}}{se} is the state defining
+  the trade's entry (1 or -1). If \code{percent} is TRUE, holding period
+  returns are defined as: \deqn{r = (p_{x} / p_{e} - 1) s_{e}\Delta}{r =
+  [px / pe -1] * se * d}. If \code{delta} is null, \eqn{\Delta}{d} is
+  chosen so that the cumulative product of the holding period returns so
+  defined is maximised.
+  
+  Roll trades are calculated when \code{roll.at} has at least one TRUE
+  value. Rolls are used when a system runs on a continuous, or spliced
+  timeseries (e.g., futures contracts). A roll at time \emph{t} is a
+  pair of exit and entry trades that close out an existing position at
+  the exit price and re-open it at the roll price, both at time
+  \emph{t}. So, a roll time that falls within a trade's entry and exit
+  times will be split into two such trades in the return. These are
+  identified as such with an additional column named "roll".  
   
 }
   
@@ -99,7 +149,7 @@ equity(prices, states, delta=1, size.at=as.logical(c(states[1], diff(states))),
   A matrix with columns "States", "Trade", "Size", "Roll", "Delta",
   "Prices", "PnL", "RoR", and "Equity". 
   
-}
+p}
 
 \author{Robert Sams \email{robert@sanctumfi.com}}
 

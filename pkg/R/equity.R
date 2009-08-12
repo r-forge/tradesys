@@ -1,16 +1,19 @@
-equity <- function(prices, states, delta=1, size.at=as.logical(c(states[1], diff(states))), roll.at=FALSE, percent=TRUE){
-  if(is.matrix(prices)){
-    rrices <- as.vector(prices[, "Roll"])
-    prices <- as.vector(prices[, "Price"])
-  }else{
-    rrices <- prices
-  }
-  ## states, delta, size.at and roll.at must be multiples of price
-  states <- cbind(states, prices)[, 1]
-  delta <- cbind(delta, prices)[, 1]
-  roll.at <- cbind(roll.at, prices)[, 1]
-  size.at <- cbind(size.at, prices)[, 1]
-  Trade <- cumsum(as.logical(c(states[1], diff(states)))) ## trades at state change
+equity <- function(data, states, delta=1, size.at=as.logical(c(states[1], diff(states))), roll.at=FALSE, percent=TRUE, pricemap=colnames(data)[1]){
+  data <- as.matrix(data)
+  if(is.null(colnames(data)))
+    colnames(data) <- paste("C", seq(1, ncol(data)), sep="")
+  ## states, delta, size.at and roll.at length must be multiple of price
+  states <- cbind(states, data)[, 1]
+  delta <- as.logical(cbind(delta, data)[, 1])
+  roll.at <- as.logical(cbind(roll.at, data)[, 1])
+  size.at <- as.logical(cbind(size.at, data)[, 1])
+  ## process data
+  if(any(!pricemap %in% colnames(data)))
+    stop("all pricemap pmust be in colnames(data)")
+  pricemap <- pricemapper(pricemap)
+  data <- prices(data, states, pricemap, roll.at)
+  rrices <- as.vector(data[, "Roll"])
+  prices <- as.vector(data[, "Price"])
   pricesLag <- prices
   pricesLag[which(!size.at & !roll.at)] <- NA
   pricesLag[1] <- prices[1]
@@ -40,5 +43,6 @@ equity <- function(prices, states, delta=1, size.at=as.logical(c(states[1], diff
       assign("EquityLag", elag, inherits=TRUE)
     })
   }
-  cbind(States=states, Trade, Size=size.at, Roll=roll.at, Delta=delta, Prices=prices, PnL, RoR, Equity)
+  cbind(States=states, Trade=cumsum(as.logical(c(states[1], diff(states)))),
+        Size=size.at, Roll=roll.at, Delta=delta, Prices=prices, PnL, RoR, Equity)
 }

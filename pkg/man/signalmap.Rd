@@ -80,9 +80,8 @@ signalmap(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE,
     \code{1110} \tab 14\tab \eqn{min(s_{t-1}, 0)}{min[s(t-1), 0]} \cr
     \code{1111} \tab 15\tab 0\cr
   }
-  Binaries 12-15 will raise a notice to the user pointing out that it is
-  a nonesense to have both \code{el[i]} and \code{es[i]} as TRUE. As the
-  above table implies, they are both treated as FALSE in this case.
+  Binaries 12-15 will be treated like 0-3, as it is a nonesense to have
+  both \code{el[i]} and \code{es[i]} as TRUE.   
   
   When \code{entrywins} is TRUE, binary 5 and 7 map to -1 and binary 10
   and 11 map to 1.

@@ -1,9 +1,14 @@
-prices <- function(x, pricemap, states, roll.at=FALSE){
-  y <- as.matrix(x)[, pricemap, drop=FALSE]
-  if(length(states) %% nrow(x) != 0)
-    stop("length(states) must be a multiple of nrow(x)")
-  states <- cbind(states, x)[, 1]
+prices <- function(data, states, pricemap=colnames(data)[1], roll.at=FALSE){
+  ## process data
+  if(any(!pricemap %in% colnames(data)))
+    stop("all pricemap must be in colnames(data)")
+  pricemap <- pricemapper(pricemap)
+  y <- as.matrix(data)[, pricemap, drop=FALSE]
   colnames(y) <- names(pricemap)
+  ## process states
+  if(length(states) %% nrow(data) != 0)
+    stop("length(states) must be a multiple of nrow(data)")
+  states <- cbind(states, data)[, 1]
   if(any(is.na(y[, "Mark"]))){ ## fill NA's in Mark column
     message("NA's in 'Mark' column.. filling with previous value")
     y[, "Mark"] <- na.locf(y[, "Mark"])
@@ -23,5 +28,5 @@ prices <- function(x, pricemap, states, roll.at=FALSE){
   y[which(h == "XS"), "Price"] <- y[which(h == "XS"), "Long"]
   RollAt <- which(as.logical(cbind(roll.at, y[, "Price"])[, 1]))
   y[which(RollAt & states == -1), "Roll"] <- y[which(RollAt & states == -1), "RollShort"]
-  zoo(y, order.by=index(x))
+  zoo(y, order.by=index(data))
 }

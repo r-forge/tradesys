@@ -8,30 +8,9 @@ tradesys <- function(datavars, pricemap=c(Mark=datavars[1]), el=FALSE, es=FALSE,
     stop("datavars be unique.")
   l$datavars <- datavars
   ## Process pricemap arg
-  if(!is.vector(pricemap) | !is.character(pricemap))
-    stop("pricemap must be a character vector of column names.")
-  if(length(pricemap) > 5)
-    stop("length(pricemap) must be <= 5")
-  if(is.null(names(pricemap))) ## .. then order determines mapping when no names
-    names(pricemap) <- c("Mark","Long","Short","RollLong","RollShort")[1:length(pricemap)]
-  if(any(duplicated(names(pricemap))))
-    stop("names(pricemap) must be unique")
-  if(any(!names(pricemap) %in% c("Mark","Long","Short","RollLong","RollShort")))
-    stop("All names(pricemap) must be among 'Mark','Long','Short','RollLong','RollShort'")
   if(any(!pricemap %in% c(datavars, names(exprvars))))
     stop("all pricemap must be in datavars or names(exprvars)")
-  l$pricemap <- c(pricemap["Mark"], pricemap["Long"], pricemap["Short"], pricemap["RollLong"], pricemap["RollShort"])
-  names(l$pricemap) <- c("Mark","Long","Short","RollLong","RollShort")
-  if(is.na(l$pricemap["Mark"]))
-    stop("pricemap must be passed a value for 'Mark'")
-  if(is.na(l$pricemap["Long"]))
-    l$pricemap["Long"] <- l$pricemap["Mark"]
-  if(is.na(l$pricemap["Short"]))
-    l$pricemap["Short"] <- l$pricemap["Mark"]
-  if(is.na(l$pricemap["RollShort"]))
-    l$pricemap["RollShort"] <- l$pricemap["Short"]
-  if(is.na(l$pricemap["RollLong"]))
-    l$pricemap["RollLong"] <- l$pricemap["Long"]
+  l$pricemap <- pricemapper(pricemap)
   ## Process formulae arg (we expect a named list of calls)
   if(!is.null(exprvars)){
     if(any(unlist(lapply(exprvars, class)) != "call"))

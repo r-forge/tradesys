@@ -38,7 +38,7 @@ tsys.frame <- function(x, data, order.by=index(data)){
   roll.at <- eval(x$roll.at, env)
   assign("roll.at", roll.at, envir=env)
   ## Call prices and assign its variables in env
-  prices <- prices(do.call("cbind", data), x$pricemap, states, roll.at)
+  prices <- prices(do.call("cbind", data), states, x$pricemap, roll.at)
   Prices <- as.list(as.data.frame(prices))
   for(i in seq(1, length(Prices)))
     assign(names(Prices)[i], Prices[[i]], envir=env)
@@ -49,7 +49,7 @@ tsys.frame <- function(x, data, order.by=index(data)){
   delta <- eval(x$delta, env)
   assign("delta", delta, envir=env)
   ## Call equity and assign equity in env
-  equity <- equity(prices, states, delta, size.at, roll.at, x$percent)[, "Equity"]
+  equity <- equity(do.call("cbind", data), states, delta, size.at, roll.at, x$percent, names(data))[, "Equity"]
   d <- data.frame(states, equity, el=Signals$el, es=Signals$es, xl=Signals$xl, xs=Signals$xs,
                   delta=delta, size.at=size.at, roll.at=roll.at)
   if(!is.null(x$exprvars))

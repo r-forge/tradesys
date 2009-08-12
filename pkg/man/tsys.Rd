@@ -13,15 +13,17 @@
 
 \description{
 
-  Create a "tsys" object, a trading system.
+  Create a "tsys" object, a complete definition of trading system.
 
 }
 
 \usage{
 
-tradesys(datavars, pricemap=c(Mark=datavars[1]), el=FALSE, es=FALSE, xl=FALSE, xs=FALSE,
+tradesys(datavars, pricemap=c(Mark=datavars[1]),
+         el=FALSE, es=FALSE, xl=FALSE, xs=FALSE,
          delta=1, size.at=as.logical(c(states[1], diff(states))),
-         roll.at=FALSE, percent=TRUE, entrywins=FALSE, entrycond=FALSE, exprvars=NULL)
+         roll.at=FALSE, percent=TRUE, entrywins=FALSE, entrycond=FALSE,
+         exprvars=NULL)
 
 }
 
@@ -82,7 +84,7 @@ tradesys(datavars, pricemap=c(Mark=datavars[1]), el=FALSE, es=FALSE, xl=FALSE, x
   }  
   
   These are the names of the vector passed to \code{pricemap}. The
-  corresponding values are the variable names to which they are
+  corresponding values are the data variable names to which they are
   mapped. The meaning of this mapping is pretty transparent. A long
   entry or short exit is assumed to trade at the price in the
   \emph{Long} variable, a short entry or long exit is assumed to trade
@@ -104,7 +106,8 @@ tradesys(datavars, pricemap=c(Mark=datavars[1]), el=FALSE, es=FALSE, xl=FALSE, x
   \code{signalmap} documentation for details.
 
   \code{delta} defines the system's leveraging scheme. When
-  \code{tsys.frame} is called it must evaluate to a numeric vector. 
+  \code{tsys.frame} is called it must evaluate to a numeric vector. See
+  the documentation for \code{equity} for details.
   
   \code{size.at} defines the times when the effect of price change on
   equity is re-sized to delta. By default these evaluate to those times
@@ -127,9 +130,9 @@ tradesys(datavars, pricemap=c(Mark=datavars[1]), el=FALSE, es=FALSE, xl=FALSE, x
   
   \itemize{
     \item successfully evaluate on \emph{data}, where \emph{data} is any
-    set of numeric variables with names equal \code{datavars} and all of
-    the same length,
-    \item result in a vector whose length is equal to the length of data
+    set of numeric variables whose names are in \code{datavars} and are
+    all of the same length,
+    \item result in a vector whose length is equal to the length of \emph{data}
     or 1,
     \item and return its correct type (logical or numeric).
   }
