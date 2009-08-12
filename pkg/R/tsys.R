@@ -1,7 +1,7 @@
 tradesys <- function(datavars, pricemap=c(Mark=datavars[1]), el=FALSE, es=FALSE, 
                      xl=FALSE, xs=FALSE, delta=1, size.at=as.logical(c(states[1], diff(states))),
-                     roll.at=FALSE, formulae=NULL, percent=TRUE, entrywins=FALSE,
-                     entrycond=FALSE){
+                     roll.at=FALSE, percent=TRUE, entrywins=FALSE,
+                     entrycond=FALSE, exprvars=NULL){
   l <- list()
   ## Process datavars
   if(any(duplicated(datavars)))
@@ -18,8 +18,8 @@ tradesys <- function(datavars, pricemap=c(Mark=datavars[1]), el=FALSE, es=FALSE,
     stop("names(pricemap) must be unique")
   if(any(!names(pricemap) %in% c("Mark","Long","Short","RollLong","RollShort")))
     stop("All names(pricemap) must be among 'Mark','Long','Short','RollLong','RollShort'")
-  if(any(!pricemap %in% datavars))
-    stop("all pricemap must be in datavars or names(formulae)")
+  if(any(!pricemap %in% c(datavars, names(exprvars))))
+    stop("all pricemap must be in datavars or names(exprvars)")
   l$pricemap <- c(pricemap["Mark"], pricemap["Long"], pricemap["Short"], pricemap["RollLong"], pricemap["RollShort"])
   names(l$pricemap) <- c("Mark","Long","Short","RollLong","RollShort")
   if(is.na(l$pricemap["Mark"]))
@@ -33,14 +33,18 @@ tradesys <- function(datavars, pricemap=c(Mark=datavars[1]), el=FALSE, es=FALSE,
   if(is.na(l$pricemap["RollLong"]))
     l$pricemap["RollLong"] <- l$pricemap["Long"]
   ## Process formulae arg (we expect a named list of calls)
-  if(!is.null(formulae)){
-    if(!is.list(formulae) | is.null(names(formulae)) | any(duplicated(names(formulae))) | any(names(formulae) %in% datavars))
-      stop("formulae must be a list with names that are unique and not in datavars")
-    if(any(unlist(lapply(formulae, class)) != "call"))
-      stop("formulae must be a list of call objects")
-    l$formulae <- formulae
+  if(!is.null(exprvars)){
+    if(any(unlist(lapply(exprvars, class)) != "call"))
+      stop("exprvars must be a list of call objects")
+    if(any(names(exprvars) == ""))
+      stop("all exprvars must be named")
+    if(any(duplicated(names(exprvars))))
+      stop("names(exprvars) be unique")
+    if(any(names(exprvars) %in% datavars))
+      stop("exprvars cannot have a name matching datavars.")
+    l$exprvars <- exprvars
   }else{
-    l["formulae"] <- list(NULL)
+    l["exprvars"] <- list(NULL)
   }
   ## Process expression args
   l$el <- substitute(el)
@@ -75,10 +79,10 @@ print.tsys <- function(x, ...){
   cat("es:", format(x$es), "\n")
   cat("xl:", format(x$xl), "\n")
   cat("xs:", format(x$xs), "\n")
-  if(!is.null(x$formulae)){
-    cat("** formulae **\n")
-    for(i in 1:length(x$formulae))
-      cat(names(x$formulae)[i],":", format(x$formulae[[i]]), "\n")
+  if(!is.null(x$exprvars)){
+    cat("** exprvars **\n")
+    for(i in 1:length(x$exprvars))
+      cat(names(x$exprvars)[i],":", format(x$exprvars[[i]]), "\n")
   }
   cat("delta:", format(x$delta), "\n")
   cat("size.at:", format(x$size.at), "\n")
@@ -131,5 +135,5 @@ as.tradesys.default <- function(x, ...){
   if(is.list(x))
     return(do.call("tradesys", x))
   else
-    stop("the default method currently coerces only lists.")
+    stop("the default method coerces only lists.")
 }

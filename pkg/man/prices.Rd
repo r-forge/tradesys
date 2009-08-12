@@ -2,23 +2,24 @@
 
 \alias{prices}
 
-\title{Time Series Prices}
+\title{Time Series Prices Context}
 
 \description{
 
-  Extract prices from a trading system time series.
+  \code{prices} extracts from \code{x} a price context matrix.
   
 }
 
 \usage{
 
-prices(x, pricemap=tsys(x)$pricemap, roll.at=FALSE)
+prices(x, pricemap, states, roll.at=FALSE)
 
 }
 
 \arguments{
   \item{x}{a tsts object.}
-  \item{pricemap}{list. see below.}
+  \item{pricemap}{named character vector. see below.}
+  \item{states}{numeric vector. must be multiple of nrow(x).}
   \item{roll.at}{logical vector.}
 }
 

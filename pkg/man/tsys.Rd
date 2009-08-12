@@ -21,7 +21,7 @@
 
 tradesys(datavars, pricemap=c(Mark=datavars[1]), el=FALSE, es=FALSE, xl=FALSE, xs=FALSE,
          delta=1, size.at=as.logical(c(states[1], diff(states))),
-         roll.at=FALSE, percent=TRUE, entrywins=FALSE, entrycond=FALSE, \dots)
+         roll.at=FALSE, percent=TRUE, entrywins=FALSE, entrycond=FALSE, exprvars=NULL)
 
 }
 
@@ -47,8 +47,7 @@ tradesys(datavars, pricemap=c(Mark=datavars[1]), el=FALSE, es=FALSE, xl=FALSE, x
   \item{percent}{logical. defines \code{delta} as percentage or absolute
     change in price.}
   \item{entrywins,entrycond}{logical. see \code{signalmap}.}
-  \item{\dots}{optional, arbitrary number of quoted expressions with
-    named arguments.}
+  \item{exprvars}{a named list of quoted expressions.}
 
 }
 

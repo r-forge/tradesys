@@ -33,7 +33,7 @@ tsys.frame(x, data, order.by=index(data))
   The states and equity values of a system when it is applied to data
   are calculated by evaluating its expressions in a certain way. The
   expressions are evaluated in a new environment that includes
-  {data}. \code{data} is any numeric matrix, data.frame, list or
+  \code{data}, which is any numeric matrix, data.frame, list or
   environment containing all of the variables in \code{datavars} and
   where all of the variables have the same length.
 
@@ -47,6 +47,7 @@ tsys.frame(x, data, order.by=index(data))
     \item Place \bold{data} and \bold{index} in a new environment \emph{env}.
     \item Evaluate and assign \bold{el}, \bold{es}, \bold{xl} and \bold{xs} in \emph{env}.
     \item Call \code{signalmap} and assign \bold{states} to \emph{env}.
+    \item Evaluate and assign \bold{exprvars} to \emph{env}.
     \item Evaluate and assign \bold{roll.at} in \emph{env}.
     \item Call \code{prices} and assign its variables to \emph{env}.
     \item Evaluate and assign \bold{size.at} and \bold{delta} in \emph{env}.

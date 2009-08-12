@@ -1,5 +1,8 @@
-prices <- function(x, pricemap=tsys(x)$pricemap, roll.at=FALSE){
+prices <- function(x, pricemap, states, roll.at=FALSE){
   y <- as.matrix(x)[, pricemap, drop=FALSE]
+  if(length(states) %% nrow(x) != 0)
+    stop("length(states) must be a multiple of nrow(x)")
+  states <- cbind(states, x)[, 1]
   colnames(y) <- names(pricemap)
   if(any(is.na(y[, "Mark"]))){ ## fill NA's in Mark column
     message("NA's in 'Mark' column.. filling with previous value")
@@ -13,12 +16,12 @@ prices <- function(x, pricemap=tsys(x)$pricemap, roll.at=FALSE){
     }
   }
   y <- cbind(Price=y[, "Mark"], Roll=y[, "RollLong"], y)
-  h <- phasemap(states(x))
+  h <- phasemap(states)
   y[which(h == "EL"), "Price"] <- y[which(h == "EL"), "Long"]
   y[which(h == "ES"), "Price"] <- y[which(h == "ES"), "Short"]
   y[which(h == "XL"), "Price"] <- y[which(h == "XL"), "Short"]
   y[which(h == "XS"), "Price"] <- y[which(h == "XS"), "Long"]
   RollAt <- which(as.logical(cbind(roll.at, y[, "Price"])[, 1]))
-  y[which(RollAt & states(x) == -1), "Roll"] <- y[which(RollAt & states(x) == -1), "RollShort"]
+  y[which(RollAt & states == -1), "Roll"] <- y[which(RollAt & states == -1), "RollShort"]
   zoo(y, order.by=index(x))
 }
