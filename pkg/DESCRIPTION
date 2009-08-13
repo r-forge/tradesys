@@ -8,6 +8,6 @@ Description: A framework for encoding and backtesting trading systems in R
 License: GPL
 Depends: zoo, RUnit
 Recomends: TTR
-
+LazyData: Yes
 
 

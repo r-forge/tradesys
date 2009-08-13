@@ -2,9 +2,8 @@
 
 \alias{equity}
 \alias{trades}
-\alias{prices}
 
-\title{Equity Curve, Trades, and Prices}
+\title{Equity Curve and Trades}
 
 \description{
   
@@ -14,30 +13,24 @@
   \code{trades} calculates a data.frame of trades from \emph{prices},
   \emph{states}, and \emph{delta}.
   
-  \code{prices} extracts a price context matrix from \code{data}.
-  
 }
 
 \usage{
 
-equity(data, states, delta=1, size.at=as.logical(c(states[1], diff(states))),
-       roll.at=FALSE, percent=TRUE, pricemap=colnames(data)[1])
+equity(prices, states, delta=1, size.at=as.logical(c(states[1], diff(states))),
+       roll.at=FALSE, percent=TRUE)
 
-trades(data, states, delta=1, roll.at=FALSE, percent=FALSE,
-       order.by=index(data), pricemap=colnames(data)[1])
-
-prices(data, states, pricemap=colnames(data)[1], roll.at=FALSE)
+trades(prices, states, delta=1, roll.at=FALSE, percent=FALSE,
+       order.by=index(prices))
 
 }
 
 \arguments{
   
-  \item{data}{numeric matrix or coerciable via \code{as.matrix}.}
+  \item{prices}{numeric matrix or coerciable via \code{as.matrix}.}
   \item{states}{numeric vector of states.}
   \item{order.by}{an index vector with unique entries by which the observations
     in 'data' are ordered.}
-  \item{pricemap}{named character vector defining the mapping between
-    price types and data variable names.}
   \item{delta}{numeric vector of delta coefficients.}
   \item{size.at}{logical. see below.}
   \item{roll.at}{logical. see below.}
@@ -50,10 +43,12 @@ prices(data, states, pricemap=colnames(data)[1], roll.at=FALSE)
   \code{equity} computes an equity value at each time \eqn{t} for a
   given pair of prices and states.
   
-  \code{data} should be coercable using \code{as.matrix} and
-  \code{pricemap} should define the mapping between the columnames in
-  \code{data} and the price variables "Mark", "Long", "Short",
-  "RollLong" and "RollShort".
+  \code{prices} should be coercable using \code{as.matrix}. The first
+  column are prices and the second column are roll prices. (Use
+  \code{"Price"} and \code{"Roll"} in the return of the \code{prices}
+  function to construct these vectors out of data and states.) Any
+  additional columns are ignored. If only a vector is passed, prices and
+  roll prices are identical.
   
   \code{states} must be a vector consist of 1s, 0s, and -1s only.  Its
   length must be a multiple of \code{nrow(data)} and is generally
@@ -95,19 +90,9 @@ prices(data, states, pricemap=colnames(data)[1], roll.at=FALSE)
 
   If any \code{roll.at} are true, roll price adjustments are made. It is
   a logical vector, and if it is TRUE at \eqn{t}, \eqn{R_{t} -
-  P_{t}}{R(t) - P(t)} is added to \eqn{P_{i}}{P(i)}, where
+    P_{t}}{R(t) - P(t)} is added to \eqn{P_{i}}{P(i)}, where
   \eqn{R_{t}}{R(t)} is the roll price at \code{t}.
 
-  \code{prices} returns a matrix of \emph{Long}, \emph{Short},
-  \emph{Mark}, \emph{RollLong}, and \emph{RollShort} prices, where
-  \code{pricemap} defines the mapping between these and the column names
-  in \code{data}.
-
-  The return also contains a column \emph{Price}, which contains at each
-  time one of Long, Short, or Mark columns, depending upon the state,
-  and a column \emph{Roll}, which contains one of Price, RollLong or
-  RollShort prices, depending upon the state and \code{roll.at} value.
-  
   \code{trades} is passed a tsts object and returns a data frame of
   the system's trades. Each row describes a long or short entry with its
   entry and exit times and prices, the realised P\&L of the trade and
@@ -127,13 +112,13 @@ prices(data, states, pricemap=colnames(data)[1], roll.at=FALSE)
   defined is maximised.
   
   Roll trades are calculated when \code{roll.at} has at least one TRUE
-  value. Rolls are used when a system runs on a continuous, or spliced
-  timeseries (e.g., futures contracts). A roll at time \emph{t} is a
-  pair of exit and entry trades that close out an existing position at
-  the exit price and re-open it at the roll price, both at time
-  \emph{t}. So, a roll time that falls within a trade's entry and exit
-  times will be split into two such trades in the return. These are
-  identified as such with an additional column named "roll".  
+  value, just as with the \code{equity} function. A roll at time
+  \emph{t} is a pair of exit and entry trades--both at time
+  \emph{t}--that close out an existing position with \eqn{P_{t}}{P(t)}
+  and re-open it with \eqn{R_{t}}{R(t)}. So, a roll time that falls
+  \emph{on or after} a trade's entry time and \emph{before} its exit
+  time will be split into two such trades in the return. These are
+  identified as such with an additional column named "roll".
   
 }
   

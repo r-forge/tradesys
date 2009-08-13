@@ -78,7 +78,6 @@ tsts(data, order.by=index(data), ..., tsys=NULL)
 % }
 
 \examples{
-##data(spx)
 ##spx <- window(spx, start="2005-01-01")
 ##library(TTR)
 

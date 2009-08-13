@@ -1,52 +1,45 @@
-trades <- function(data, states, delta=1, roll.at=FALSE, percent=FALSE, order.by=index(data), pricemap=colnames(data)[1]){
-  ## process pricemap
-  if(any(!pricemap %in% colnames(data)))
-    stop("all pricemap must be in colnames(data)")
-  pricemap <- pricemapper(pricemap)
+trades <- function(prices, states, delta=1, roll.at=FALSE, percent=FALSE, order.by=index(prices)){
+  ## process prices
+  prices <- as.matrix(prices)
+  if(ncol(prices) == 1)
+    prices <- cbind(prices, prices) 
+  rrices <- as.vector(prices[, 2])
+  prices <- as.vector(prices[, 1])
   ## process states
   if(any(!states %in% c(1,0,-1)))
-    stop("states must consist of 1s, 0s, and -1s")
+    stop("all states must be in c(1,0,-1)")
+  states <- cbind(states, prices)[, 1]
+  ## process roll.at
+  roll.at <- as.logical(cbind(roll.at, prices)[, 1])
   ## process delta
   if(!is.numeric(delta))
-    stop("states must a be numeric vector")
-  d <- data.frame(Phase=phases(states), ETime=order.by)
-  d <- cbind(d, XTime=NA, Time=NA, Numb=NA, EPrice=NA, XPrice=NA, PnL=NA, RoR=NA)
+    stop("delta must a be numeric vector")
+  d <- data.frame(Trade=cumsum(as.logical(c(states[1], diff(states)))),
+                  Phase=phasemap(states), ETime=order.by, EPrice=prices)
+  d <- cbind(d, XTime=NA, Time=NA, Numb=NA, XPrice=NA, PnL=NA, RoR=NA)
   d <- d[-which(as.vector(d$Phase) == "UC"),]
-  if(all(states == 0)){ ## return empty df if no trades
+  if(all(states == 0)) ## return empty df if no trades
     return(d)
-  }
-  if(d$ETime[nrow(d)] == end(data))
+  if(d$ETime[nrow(d)] == order.by[length(order.by)])
     d <- d[-nrow(d),] ## ignore entries done on last day
-  d$XTime <- c(d$ETime[-1], end(data))
-  d$EPrice[d$Phase == "EL"] <- data[match(d$ETime[d$Phase == "EL"], order.by), pricemap["Long"]]
-  d$EPrice[d$Phase == "ES"] <- data[match(d$ETime[d$Phase == "ES"], order.by), pricemap["Short"]]
-  d$XPrice[d$Phase == "EL"] <- data[match(d$XTime[d$Phase == "EL"], order.by), pricemap["Short"]]
-  d$XPrice[d$Phase == "ES"] <- data[match(d$XTime[d$Phase == "ES"], order.by), pricemap["Long"]]
+  d$XTime <- c(d$ETime[-1], order.by[length(order.by)])
+  d$XPrice[match(d$XTime, order.by)] <- prices[match(d$XTime, order.by)]
+  d <- d[d$Phase %in% c("EL","ES"), ] ## remove exit rows
   if(any(roll.at)){ ## create roll trades if needed
-    roll.n <- match(roll.at, order.by)
-    roll.n <- roll.n[which(states[roll.n] != 0)]
-    if(length(roll.n) > 0)
-      d <- cbind(d, roll=0)
-    for(i in roll.n){
-      rdate <- order.by[i]
-      n <- which(rdate >= d$ETime & rdate < d$XTime)
-      if(d$Phase[n] == "EL"){
-        roll.phase <- "EL"
-        roll.coli <- pricemap["RollLong"]
-        roll.colo <- pricemap["Short"]
-      }else{
-        roll.phase <- "ES"
-        roll.coli <- pricemap["RollShort"]
-        roll.colo <- pricemap["Long"]
+    d <- cbind(d, roll=0)
+    for(i in which(roll.at)){
+      ## A roll trade is insert between an entry and exit if roll date is on
+      ## or after entry time and before exit time.
+      if(length(n <- which(order.by[i] >= d$ETime & order.by[i] < d$XTime)) > 0){
+        ## roll-in trade
+        dd <- data.frame(Phase=d$Phase[n], ETime=order.by[i], XTime=d$XTime[n], Time=NA, Numb=NA,
+                         EPrice=rrices[i], XPrice=d$XPrice[n], PnL=NA, RoR=NA, roll=1)
+        ## roll-out trade
+        d$XTime[n] <- order.by[i]    
+        d$XPrice[n] <- prices[i]
+        d$roll[n] <- -1
+        d <- rbind(d[1:n,], dd, d[(n+1):nrow(d),])
       }
-      ## roll-in trade
-      dd <- data.frame(Phase=roll.phase, ETime=rdate, XTime=d$XTime[n], Time=NA, Numb=NA,
-                       EPrice=data[i, roll.coli], XPrice=d$XPrice[n], PnL=NA, RoR=NA, roll=1)
-      ## roll-out trade
-      d$XTime[n] <- rdate    
-      d$XPrice[n] <- data[i, roll.colo]
-      d$roll[n] <- -1
-      d <- rbind(d[1:n,], dd, d[(n+1):nrow(d),])
     }
   }
   ## duration calcs

@@ -43,7 +43,6 @@
 }
 
 \examples{
-##data(spx)
 ##spx <- window(spx, start="2005-01-01")
 ##x <- tsts(spx)
 ##identical(coredata(x), spx)
