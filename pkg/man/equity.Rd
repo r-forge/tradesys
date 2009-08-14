@@ -58,19 +58,19 @@ trades(prices, states, delta=1, roll.at=FALSE, percent=FALSE,
   percentage change in price at each size.at point. It specifies the
   system's leverage parameter. If passed a scalar, the system follows a
   fixed fractional leveraging scheme. A variable leverage scheme is
-  followed if a vector is passed. \code{delta} must have length that is
-  a multiple of \code{nrow(data)}.
+  followed if a vector of varying values is passed. \code{delta} must
+  have length that is a multiple of \code{nrow(data)}.
   
   \code{size.at} is a logical vector that causes the equity to have
   delta sensitivity at each point where this vector is TRUE. By default,
   TRUE values are inserted wherever a state change occurs, thus
   implementing the common scheme whereby trades are sized to delta
-  equity at initiation and held constant throughout the trade
-  horizon. \code{size.at=TRUE} will implement a dynamic leveraging
-  scheme whereby a constant equity fraction is risked at each
-  period. Any scheme can be defined by passing its appropriate vector,
-  which must have length that is a multiple of length
-  \code{nrow(data)}.
+  equity at initiation and held constant throughout the trade horizon,
+  resized only when a new trade entry occurs. \code{size.at=TRUE} will
+  implement a dynamic leveraging scheme whereby a constant equity
+  fraction is risked at each period. Any scheme can be defined by
+  passing its appropriate vector, which must have length that is a
+  multiple of length \code{nrow(data)}.
 
   Equity is initially normalised to 1, \eqn{E_{0} = 1}{E(0) = 1} and
   calculated thereafter as:\deqn{ E_{t} = \left(\frac{p_{t}}{p_{i}} -
@@ -78,15 +78,15 @@ trades(prices, states, delta=1, roll.at=FALSE, percent=FALSE,
   s(t-1) * delta * E(i) + E(i)}, where \eqn{i} is the time of the last
   trade re-size prior to \eqn{t}, as specified in \code{size.at}.
 
-  As described above, the default meaning of delta is percentage change
-  in equity for percentage change in price (at size.at points). If
-  \code{percent} is false, \eqn{\Delta}{delta} is re-defined to mean:
-  percentage change in equity given unit change in price (at size.at
-  points). Equity is therefore calculated as\deqn{ E_{t} = (p_{t} -
-  p_{i}) s_{t-1} \Delta E_{i} + E_{i} }{E(t) = [p(t) - p(i)] * s(t-1) *
-  delta * E(i) + E(i)} . Using absolute rather than relative change is
-  sensible in many contexts and necessary when price can take negative
-  values (eg many spreads and derivative positions).
+  As described above, the default meaning of \code{delta} is percentage
+  change in equity for percentage change in price (at size.at
+  points). If \code{percent} is false, \eqn{\Delta}{delta} is re-defined
+  to mean: percentage change in equity given unit change in price (at
+  size.at points). Equity is therefore calculated as\deqn{ E_{t} =
+  (p_{t} - p_{i}) s_{t-1} \Delta E_{i} + E_{i} }{E(t) = [p(t) - p(i)] *
+  s(t-1) * delta * E(i) + E(i)} . Using absolute rather than relative
+  change is sensible in many contexts and necessary when price can take
+  negative values (eg many spreads and derivative positions).
 
   If any \code{roll.at} are true, roll price adjustments are made. It is
   a logical vector, and if it is TRUE at \eqn{t}, \eqn{R_{t} -
