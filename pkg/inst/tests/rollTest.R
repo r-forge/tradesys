@@ -51,8 +51,11 @@ test.roll <- function(){
   checkEquals(prices(ed, 0, prcmap, roll.at)[4, "Roll"], 98.945, checkNames=FALSE)  ## Price[4] = 98.945 (RollLong price).
 
   ## equity
-  ## equity(prices(ed, 1, prcmap, roll.at), states=1, roll.at=roll.at, percent=FALSE)
 
+  ## PnL at roll+1 (index 5)
+  prc <- prices(ed, 1, prcmap, roll.at)
+  checkEquals(equity(prc, states=1, roll.at=roll.at, percent=FALSE)[5, "PnL"], prc[5, 1] - (prc[1, 1] + prc[4, 2] - prc[4, 1]), checkNames=FALSE)
+  
   ## trades
   ## trades(prices(ed, 1, prcmap, roll.at), states=1, roll.at=roll.at, percent=FALSE)
 }
