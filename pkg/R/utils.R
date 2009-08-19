@@ -23,3 +23,26 @@ pricemapper <- function(pricemap){
     x["RollLong"] <- x["Long"]
   x
 }
+
+## Labels each consecutive string of 1s or -1s with 1, 2, 3, ..., etc. 0s get 0.
+## TradeID(c(0,1,1,1,-1,-1,0,0,1,1))
+## TradeID(c(0,0,0,0,0,0,0,0,0,0))
+## TradeID(c(1,1,1,1,1,0,1,1,1,1))
+
+TradeID <- function(states){
+  cumsum(as.numeric(as.logical(abs(c(states[1], diff(states)))) & abs(states))) * abs(states)
+}
+
+## TradeTable(c(0,1,1,1,-1,-1,0,0,1,1))
+## TradeTable(c(0,0,0,0,0,0,0,0,0,0))
+## TradeTable(c(1,1,1,1,1,0,1,1,1,1))
+
+TradeTable <- function(states){
+  if(sum(states) == 0)
+    return(NULL)
+  ID <- TradeID(states)
+  Tr <- unique(ID[ID != 0])
+  Ei <- sapply(Tr, function(x) min(which(x == ID)))
+  Xi <- sapply(Tr, function(x) max(which(x == ID)) + 1)
+  cbind(ID=Tr, LS=states[Ei], Ei, Xi)
+}

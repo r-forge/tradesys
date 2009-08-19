@@ -115,10 +115,10 @@ trades(prices, states, delta=1, roll.at=FALSE, percent=FALSE,
   the trade's entry (1 or -1). If \code{percent} is TRUE, holding period
   returns are defined as:
 
-  \deqn{r = (p_{x} / p_{e} - 1) s_{e}\Delta}
-  {r = [px / pe -1] * se * d}. If \code{delta} is null, \eqn{\Delta}{d} is
-  chosen so that the cumulative product of the holding period returns so
-  defined is maximised.
+  \deqn{r = (p_{x} / p_{e} - 1) s_{e}\Delta}{r = [px / pe -1] * se *
+  d}. If \code{delta} is null, \eqn{\Delta}{d} is chosen so that the
+  cumulative product of the holding period returns so defined is
+  maximised.
   
   Roll trades are calculated when \code{roll.at} has at least one TRUE
   value, just as with the \code{equity} function. A roll at time
@@ -140,10 +140,13 @@ trades(prices, states, delta=1, roll.at=FALSE, percent=FALSE,
 
 \value{
 
-  A matrix with columns "States", "Trade", "Size", "Roll", "Delta",
+  Equity returns a matrix with columns "States", "Trade", "Size", "Roll", "Delta",
   "Prices", "PnL", "RoR", and "Equity". 
-  
-p}
+
+  Trades returns a dataframe with columns "Trade", "LS", "ETime",
+  "XTime", "Numb", "Time", "EPrice", "XPrice", "Delta", "PnL", and
+  "RoR".
+}
 
 \author{Robert Sams \email{robert@sanctumfi.com}}
 

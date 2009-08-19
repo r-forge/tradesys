@@ -14,44 +14,30 @@ trades <- function(prices, states, delta=1, roll.at=FALSE, percent=FALSE, order.
   ## process delta
   if(!is.numeric(delta))
     stop("delta must a be numeric vector")
-  d <- data.frame(Trade=cumsum(as.logical(c(states[1], diff(states)))),
-                  Phase=phasemap(states), ETime=order.by, EPrice=prices)
-  d <- cbind(d, XTime=NA, Time=NA, Numb=NA, XPrice=NA, PnL=NA, RoR=NA)
-  d <- d[-which(as.vector(d$Phase) == "UC"),]
-  if(all(states == 0)) ## return empty df if no trades
-    return(d)
-  if(d$ETime[nrow(d)] == order.by[length(order.by)])
-    d <- d[-nrow(d),] ## ignore entries done on last day
-  d$XTime <- c(d$ETime[-1], order.by[length(order.by)])
-  d$XPrice[match(d$XTime, order.by)] <- prices[match(d$XTime, order.by)]
-  d <- d[d$Phase %in% c("EL","ES"), ] ## remove exit rows
-  if(any(roll.at)){ ## create roll trades if needed
-    d <- cbind(d, roll=0)
-    for(i in which(roll.at)){
-      ## A roll trade is insert between an entry and exit if roll date is on
-      ## or after entry time and before exit time.
-      if(length(n <- which(order.by[i] >= d$ETime & order.by[i] < d$XTime)) > 0){
-        ## roll-in trade
-        dd <- data.frame(Phase=d$Phase[n], ETime=order.by[i], XTime=d$XTime[n], Time=NA, Numb=NA,
-                         EPrice=rrices[i], XPrice=d$XPrice[n], PnL=NA, RoR=NA, roll=1)
-        ## roll-out trade
-        d$XTime[n] <- order.by[i]    
-        d$XPrice[n] <- prices[i]
-        d$roll[n] <- -1
-        d <- rbind(d[1:n,], dd, d[(n+1):nrow(d),])
-      }
+  delta <- cbind(delta, prices)[, 1]
+  d <- as.data.frame(TradeTable(states))
+  colnames(d) <- c("Trade","LS","ETime","XTime")
+  d[d$XTime > length(states), "XTime"] <- length(states)
+  d <- cbind(d, EPrice=prices[d$ETime], XPrice=prices[d$XTime], Delta=delta[d$ETime])
+  ## handle roll trades
+  if(any(roll.at)){
+    Rtm <- which(roll.at)
+    Rtr <- sapply(Rtm, function(x) max(which(x >= d$ETime)))
+    for(i in seq(1, length(Rtm))){
+      if(d[Rtr[i]]$XTime > Rtm[i])
+        d$EPrice[Rtr[i]] <- d$EPrice[Rtr[i]] + rrices[Rtm[i]] - prices[Rtm[i]]
     }
   }
-  ## duration calcs
-  d$Time <- as.integer(d$XTime - d$ETime)
-  d$Numb <- match(d$XTime, order.by) - match(d$ETime, order.by)
-  ## PnL/RoR calcs
-  d$PnL <- (d$XPrice - d$EPrice) * c(1,-1)[match(d$Phase, c("EL","ES"))]
+  ## calculate pnl and ror
+  d <- cbind(d, PnL=(d$XPrice - d$EPrice) * d$LS)
   if(percent)
-    d$RoR <- (d$XPrice / d$EPrice - 1) * c(1,-1)[match(d$Phase, c("EL","ES"))]
+    d <- cbind(d, RoR=((d$XPrice / d$EPrice) - 1) * d$LS * d$Delta)
   else
-    d$RoR <- d$PnL
-  d$RoR <- d$RoR * delta
-  rownames(d) <- as.character(1:nrow(d))
-  d
+    d <- cbind(d, RoR=(d$XPrice - d$EPrice) * d$LS * d$Delta)
+  ## duration calcs
+  d <- cbind(d, Numb=d$XTime - d$ETime)
+  d$ETime <- order.by[d$ETime]
+  d$XTime <- order.by[d$XTime]
+  d <- cbind(d, Time=as.numeric(d$XTime - d$ETime))
+  d[, c("Trade","LS","ETime","XTime","Numb","Time","EPrice","XPrice","Delta","PnL","RoR")]
 }
