@@ -12,13 +12,12 @@
   
   \code{trades} calculates a data.frame of trades from \emph{prices},
   \emph{states}, and \emph{delta}.
-  
+n  
 }
 
 \usage{
 
-equity(prices, states, delta=1, size.at=as.logical(c(states[1], diff(states))),
-       roll.at=FALSE, percent=TRUE)
+equity(prices, states, delta=1, size.at=FALSE, roll.at=FALSE, percent=TRUE)
 
 trades(prices, states, delta=1, roll.at=FALSE, percent=FALSE,
        order.by=index(prices))
@@ -32,8 +31,8 @@ trades(prices, states, delta=1, roll.at=FALSE, percent=FALSE,
   \item{order.by}{an index vector with unique entries by which the observations
     in 'data' are ordered.}
   \item{delta}{numeric vector of delta coefficients.}
-  \item{size.at}{logical. see below.}
   \item{roll.at}{logical. see below.}
+  \item{size.at}{logical. see below.}
   \item{percent}{logical. \emph{percentage} or \emph{absolute} change in price.}
 
 }
@@ -66,11 +65,10 @@ trades(prices, states, delta=1, roll.at=FALSE, percent=FALSE,
   TRUE values are inserted wherever a state change occurs, thus
   implementing the common scheme whereby trades are sized to delta
   equity at initiation and held constant throughout the trade horizon,
-  resized only when a new trade entry occurs. \code{size.at=TRUE} will
-  implement a dynamic leveraging scheme whereby a constant equity
-  fraction is risked at each period. Any scheme can be defined by
-  passing its appropriate vector, which must have length that is a
-  multiple of length \code{nrow(data)}.
+  resized only when a new trade entry occurs. Additional sizing times
+  are specified with this parameter. A limiting case is
+  \code{size.at=TRUE}, which implements a dynamic leveraging scheme
+  whereby a constant equity fraction is risked at each period. 
 
   Equity is initially normalised to 1, \eqn{E_{0} = 1}{E(0) = 1} and
   calculated thereafter as:
@@ -78,18 +76,15 @@ trades(prices, states, delta=1, roll.at=FALSE, percent=FALSE,
   \deqn{
     E_{t} = \left(\frac{p_{t}}{p_{i}} - 1\right) s_{t-1} \Delta E_{i} + E_{i} 
   }{E(t) = [p(t) / p(i) - 1] * s(t-1) * delta * E(i) + E(i)},
-  where \eqn{i} is the time of the most recent \code{size.at} prior to
-  \eqn{t}.
+  where \eqn{i} is the time of the most recent trade entry or
+  \code{size.at} prior to \eqn{t}.
 
   As described above, the default meaning of \code{delta} is percentage
   change in equity for percentage change in price (at size.at
   times). If \code{percent} is false, \eqn{\Delta}{delta} is re-defined
   to mean: percentage change in equity given unit change in price (at
-  size.at times). Equity is therefore calculated as:
-
-  \deqn{
-    E_{t} = (p_{t} - p_{i}) s_{t-1} \Delta E_{i} + E_{i}
-  }{E(t) = [p(t) - p(i)] * s(t-1) * delta * E(i) + E(i)}.
+  size.at times), and the first term in the above equation is replaced with
+  \deqn{p_{t} - p_{i}}{p(t) - p(i)}.
   Using absolute rather than relative change is sensible in many
   contexts and necessary when price can take negative values (eg
   spreads).  
@@ -105,20 +100,13 @@ trades(prices, states, delta=1, roll.at=FALSE, percent=FALSE,
   entry and exit times and prices, the realised P\&L of the trade and
   holding period return.
   
-  \code{delta} is a numeric constant \eqn{\Delta}{d} that defines equity
-  return per \emph{change in price} (or \emph{percentage change in price} if
-  \code{percent=TRUE}). It defines the system's leverage.
-
-  Trade holding period returns are defined as: \deqn{r = (p_{x} - p_{e})
-  s_{e}\Delta}{r = [px - pe] * se * d} where \eqn{\Delta}{d} is the
-  value passed to \code{delta} and \eqn{s_{e}}{se} is the state defining
-  the trade's entry (1 or -1). If \code{percent} is TRUE, holding period
-  returns are defined as:
-
-  \deqn{r = (p_{x} / p_{e} - 1) s_{e}\Delta}{r = [px / pe -1] * se *
-  d}. If \code{delta} is null, \eqn{\Delta}{d} is chosen so that the
-  cumulative product of the holding period returns so defined is
-  maximised.
+  Trade holding period returns are defined are implicit in the above
+  equation that defines equity. Just replace \eqn{i} with the trade
+  entry time and \eqn{t} with the trade exit time:
+  \deqn{HPR = \left( \frac{P_{x}}{P_{e}} - 1 \right) S_{e} \delta_{e} =
+    \frac{E_{x}}{E_{e}}}{
+    HPR = (p(x) / p(i) - 1) * s(e) * d(e) = E(x) / E(e)
+  }
   
   Roll trades are calculated when \code{roll.at} has at least one TRUE
   value, just as with the \code{equity} function. A roll at time
@@ -126,8 +114,7 @@ trades(prices, states, delta=1, roll.at=FALSE, percent=FALSE,
   \emph{t}--that close out an existing position with \eqn{P_{t}}{P(t)}
   and re-open it with \eqn{R_{t}}{R(t)}. So, a roll time that falls
   \emph{on or after} a trade's entry time and \emph{before} its exit
-  time will be split into two such trades in the return. These are
-  identified as such with an additional column named "roll".
+  will add \eqn{R_{t} - P_{t}}{R(t) - P(t)} to \eqn{P_{i}}.
   
 }
   
@@ -140,9 +127,9 @@ trades(prices, states, delta=1, roll.at=FALSE, percent=FALSE,
 
 \value{
 
-  Equity returns a matrix with columns "States", "Trade", "Size", "Roll", "Delta",
-  "Prices", "PnL", "RoR", and "Equity". 
-
+  Equity returns a matrix with columns "Trade", "Pt", "St", "HPR",
+  "Equity".
+  
   Trades returns a dataframe with columns "Trade", "LS", "ETime",
   "XTime", "Numb", "Time", "EPrice", "XPrice", "Delta", "PnL", and
   "RoR".

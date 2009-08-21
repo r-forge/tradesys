@@ -38,7 +38,7 @@ TradeID <- function(states){
 ## TradeTable(c(1,1,1,1,1,0,1,1,1,1))
 
 TradeTable <- function(states){
-  if(sum(states) == 0)
+  if(all(states == 0))
     return(NULL)
   ID <- TradeID(states)
   Tr <- unique(ID[ID != 0])
@@ -46,3 +46,12 @@ TradeTable <- function(states){
   Xi <- sapply(Tr, function(x) max(which(x == ID)) + 1)
   cbind(ID=Tr, LS=states[Ei], Ei, Xi)
 }
+
+TradeEntries <- function(states){ ## Entry at i when s(i) != s(i-1) and s(i) != 0
+  as.logical(as.logical(c(states[1], diff(states))) * states)
+}
+
+TradeExits <- function(states){   ## Exit at i when s(i) != s(i-1) and s(i-1) != 0
+  c(FALSE, as.logical(diff(states) * states[-length(states)]))
+}
+

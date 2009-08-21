@@ -67,9 +67,12 @@ tsys.frame(x, data, order.by=index(data))
 }
 
 \examples{
-x <- tradesys(c("Foo","Bar"), el=Foo > Bar, es=Foo <= Bar)
-m <- matrix(rnorm(100), ncol=2, dimnames=list(NULL, c("Foo","Bar")))
-tsys.frame(x, m)
+library(TTR)
+x <- tradesys(c("Open","Close"))
+x$el <- quote(SMA(Close, 60) > SMA(Close, 120))
+x$es <- quote(SMA(Close, 60) <= SMA(Close, 120))
+y <- tsys.frame(x, spx)
+tail(y)
 }
 
 \author{Robert Sams \email{robert@sanctumfi.com}}

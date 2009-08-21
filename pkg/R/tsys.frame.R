@@ -49,7 +49,7 @@ tsys.frame <- function(x, data, order.by=index(data)){
   delta <- eval(x$delta, env)
   assign("delta", delta, envir=env)
   ## Call equity and assign equity in env
-  equity <- equity(prices[, 1:2], states, delta, size.at, roll.at, x$percent)[, "Equity"]
+  equity <- equity(prices[, 1:2], states, delta, roll.at, x$percent)[, "Equity"]
   d <- data.frame(states, equity, el=Signals$el, es=Signals$es, xl=Signals$xl, xs=Signals$xs,
                   delta=delta, size.at=size.at, roll.at=roll.at)
   if(!is.null(x$exprvars))
