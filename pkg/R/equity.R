@@ -5,25 +5,24 @@ equity <- function(prices, states, delta=1, size.at=FALSE, roll.at=FALSE, percen
     prices <- cbind(prices, prices) 
   Rt <- as.vector(prices[, 2])
   Pt <- as.vector(prices[, 1])
-  ## states, delta, size.at and roll.at length must be multiple of price
+  ## proces states, delta, size.at and roll.at
   states <- cbind(states, Pt)[, 1]
   delta <- cbind(delta, Pt)[, 1]
   size.at <- as.logical(cbind(size.at, Pt)[, 1])
   roll.at <- as.logical(cbind(roll.at, Pt)[, 1])
+  size.at <- TradeEntries(states) | size.at
+  size.at[length(size.at)] <- FALSE ## ignore TRUE on last obs
+  roll.at[length(roll.at)] <- FALSE
   ## calculate Pi
-  Entries <- TradeEntries(states)
-  Entries <- Entries | size.at
-  Entries[length(Entries)] <- FALSE ## ignore entry on last obs
-  roll.at[length(roll.at)] <- FALSE 
-  Exits <- TradeExits(states)
   Pi <- rep(NA, length(Pt))
-  Pi[which(Entries) + 1] <- Pt[which(Entries)]
-  Pi[which(roll.at) + 1] <- na.locf(Pi, na.rm=FALSE)[which(roll.at)] + Rt[which(roll.at)] - Pt[which(roll.at)]
+  Pi[which(size.at) + 1] <- Pt[which(size.at)]
+  for(i in which(roll.at))
+    Pi[i + 1] <- na.locf(Pi, na.rm=FALSE)[i] + Rt[i] - Pt[i]
   Pi <- na.locf(Pi, na.rm=FALSE)
   Pi[is.na(Pi)] <- Pt[is.na(Pi)]
   ## calculate Di
   Di <- rep(NA, length(delta))
-  Di[which(Entries) + 1] <- delta[which(Entries)] 
+  Di[which(size.at) + 1] <- delta[which(size.at)] 
   Di <- na.locf(Di, na.rm=FALSE)
   Di[is.na(Di)] <- delta[is.na(Di)]
   ## calculate HPR
@@ -31,11 +30,11 @@ equity <- function(prices, states, delta=1, size.at=FALSE, roll.at=FALSE, percen
     HPR <- (Pt / Pi - 1) * c(0, states[-length(states)]) * Di
   else        
     HPR <- (Pt - Pi) * c(0, states[-length(states)]) * Di
-  ## calculate equity at entries: Et
+  ## calculate Et (equity at size.at times)
   Et <- rep(NA, length(HPR))
   Et[1] <- 1
-  Et[Exits] <- cumprod(HPR[Exits] + 1)
+  Et[size.at] <- cumprod(HPR[size.at] + 1)
   Et <- na.locf(Et, na.rm=FALSE)
-  Et[!Exits] <- Et[!Exits] * (HPR[!Exits] + 1)
-  cbind(Trade=TradeID(states), Pt, St=states, HPR, Equity=Et)
+  Et[!size.at] <- Et[!size.at] * (HPR[!size.at] + 1)
+  cbind(Trade=TradeID(states), Pt, states, delta=Di, size.at, roll.at, HPR, Equity=Et)
 }
