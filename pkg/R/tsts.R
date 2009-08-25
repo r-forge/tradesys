@@ -1,14 +1,14 @@
 tsts <- function(data, order.by=index(data), ..., tsys=NULL){
   if(is.null(tsys)){
-    lt <- tradesys(datavars=colnames(data), ...)
+    l <- tradesys(datavars=colnames(data), ...)
   }else{
     tsys$datavars <- colnames(data)
-    lt <- tsys
+    l <- tsys
   }
-  lv <- tradesys.frame(lt, data, order.by)
-  data <- cbind(St=lv$states, Eq=lv$equity, coredata(data), lv$formulae)
+  x <- tradesys.frame(l, data, order.by)
+  data <- cbind(States=x$States, Equity=x$Equity, coredata(data))
   attr(data, "index") <- order.by
-  attr(data, "tsys") <- lt  
+  attr(data, "tsys") <- l  
   class(data) <- "tsts"
   data
 }
