@@ -1,11 +1,11 @@
-\name{tsys}
+\name{tradesys}
 
 \alias{tradesys}
-\alias{print.tsys}
-\alias{as.list.tsys}
-\alias{$<-.tsys}
-\alias{[[<-.tsys}
-\alias{[<-.tsys}
+\alias{print.tradesys}
+\alias{as.list.tradesys}
+\alias{$<-.tradesys}
+\alias{[[<-.tradesys}
+\alias{[<-.tradesys}
 \alias{as.tradesys}
 \alias{as.tradesys.default}
 
@@ -13,17 +13,16 @@
 
 \description{
 
-  Create a "tsys" object, a complete definition of trading system.
+  Create a "tradesys" object, a complete definition of trading system.
 
 }
 
 \usage{
 
 tradesys(datavars, pricemap=c(Mark=datavars[1]),
-         el=FALSE, es=FALSE, xl=FALSE, xs=FALSE,
-         delta=1, size.at=as.logical(c(states[1], diff(states))),
-         roll.at=FALSE, percent=TRUE, entrywins=FALSE, entrycond=FALSE,
-         exprvars=NULL)
+         el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, delta=1,
+         size.at=FALSE, roll.at=FALSE, percent=TRUE, 
+         entrywins=FALSE, entrycond=FALSE, exprvars=NULL)
 
 }
 
@@ -55,19 +54,19 @@ tradesys(datavars, pricemap=c(Mark=datavars[1]),
 
 \details{
 
-  A 'tsys' object is a complete description of a trading
+  A 'tradesys' object is a complete description of a trading
   system. \code{tradesys} returns its formal arguments as a named list
-  with class attribute 'tsys'. The argument values are first checked for
-  consistency. A 'tsys' object can be subsetted in the usual list way
-  (the 'tsys' class is stripped) and the \code{[.tsys<-} and
-  \code{$.tsys<-} assignment methods call \code{tradesys} with the
+  with class attribute 'tradesys'. The argument values are first checked for
+  consistency. A 'tradesys' object can be subsetted in the usual list way
+  (the 'tradesys' class is stripped) and the \code{[.tradesys<-} and
+  \code{$.tradesys<-} assignment methods call \code{tradesys} with the
   modified value. A \code{print} method prints the contents in a
   sensible manner and the \code{as.list} method and \code{as.tradesys}
   default method allow for translation to and from plain lists.
   
   \code{datavars} is a character vector defining the data variable names
-  the 'tsys' object gets evaluated with in a call to
-  \code{tsys.frame}. Any of the expressions passed to \code{tradesys}
+  the 'tradesys' object gets evaluated with in a call to
+  \code{tradesys.frame}. Any of the expressions passed to \code{tradesys}
   can refer to such data by including one or more of these names in the
   expression.
   
@@ -98,7 +97,7 @@ tradesys(datavars, pricemap=c(Mark=datavars[1]),
 
   \code{el}, \code{es}, \code{xl}, and \code{xs} encode the system's
   enterlong, entershort, exitlong and exitshort signals respectively.
-  When \code{tsys.frame} is called, these must be expressions that
+  When \code{tradesys.frame} is called, these must be expressions that
   evaluate to a logical vector. Those logical vectors are used to
   calculate the system's states using \code{signalmap}. \code{entrywins}
   and \code{entrycond} are logical values that redefine the meaning of
@@ -106,7 +105,7 @@ tradesys(datavars, pricemap=c(Mark=datavars[1]),
   \code{signalmap} documentation for details.
 
   \code{delta} defines the system's leveraging scheme. When
-  \code{tsys.frame} is called it must evaluate to a numeric vector. See
+  \code{tradesys.frame} is called it must evaluate to a numeric vector. See
   the documentation for \code{equity} for details.
   
   \code{size.at} defines the times when the effect of price change on
@@ -126,7 +125,7 @@ tradesys(datavars, pricemap=c(Mark=datavars[1]),
   variables. The other expressions (except the entry/exit signals) may
   refer to them by name. They must evaluate to a numeric vector. 
   
-  Upon being evaluated by \code{tsys.frame}, all of these expressions must:
+  Upon being evaluated by \code{tradesys.frame}, all of these expressions must:
   
   \itemize{
     \item successfully evaluate on \emph{data}, where \emph{data} is any
@@ -140,14 +139,14 @@ tradesys(datavars, pricemap=c(Mark=datavars[1]),
   An expression can contain any valid function or operator (SEE README
   RE NEEDED CHANGES TO ENVIRONMENT CONSTRUCTION), but names are
   restricted to those in \code{datavars}, \code{exprvars}, the price
-  variables, and the special name "index" (see \code{tsys.frame}
+  variables, and the special name "index" (see \code{tradesys.frame}
   documentation for details).
 
 }
 
 \value{
 
-  A tsys object.
+  A tradesys object.
 
 }
 

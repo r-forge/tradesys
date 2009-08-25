@@ -5,7 +5,7 @@ tsts <- function(data, order.by=index(data), ..., tsys=NULL){
     tsys$datavars <- colnames(data)
     lt <- tsys
   }
-  lv <- tsys.frame(lt, data, order.by)
+  lv <- tradesys.frame(lt, data, order.by)
   data <- cbind(St=lv$states, Eq=lv$equity, coredata(data), lv$formulae)
   attr(data, "index") <- order.by
   attr(data, "tsys") <- lt  

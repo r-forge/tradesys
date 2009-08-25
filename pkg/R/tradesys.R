@@ -1,7 +1,6 @@
 tradesys <- function(datavars, pricemap=c(Mark=datavars[1]), el=FALSE, es=FALSE, 
-                     xl=FALSE, xs=FALSE, delta=1, size.at=as.logical(c(states[1], diff(states))),
-                     roll.at=FALSE, percent=TRUE, entrywins=FALSE,
-                     entrycond=FALSE, exprvars=NULL){
+                     xl=FALSE, xs=FALSE, delta=1, size.at=FALSE, roll.at=FALSE, 
+                     percent=TRUE, entrywins=FALSE, entrycond=FALSE, exprvars=NULL){
   l <- list()
   ## Process datavars
   if(any(duplicated(datavars)))
@@ -43,7 +42,7 @@ tradesys <- function(datavars, pricemap=c(Mark=datavars[1]), el=FALSE, es=FALSE,
   l$percent <- percent
   l$entrywins <- entrywins
   l$entrycond <- entrycond
-  class(l) <- "tsys"
+  class(l) <- "tradesys"
   l
 }
 
@@ -51,7 +50,7 @@ tradesys <- function(datavars, pricemap=c(Mark=datavars[1]), el=FALSE, es=FALSE,
 ## Methods
 ##
 
-print.tsys <- function(x, ...){
+print.tradesys <- function(x, ...){
   cat("datavars: ", x$datavars, "\n")
   cat("pricemap:", paste(names(x$pricemap), x$pricemap, sep="="), "\n")
   cat("el:", format(x$el), "\n")
@@ -71,8 +70,8 @@ print.tsys <- function(x, ...){
   cat("entrycond:", format(x$entrycond), "\n")
 }
 
-"$<-.tsys" <- function(x, i=NULL, value){
-  y <- as.list.tsys(x)
+"$<-.tradesys" <- function(x, i=NULL, value){
+  y <- as.list.tradesys(x)
   if(is.null(i))
     y <- value
   else
@@ -83,12 +82,12 @@ print.tsys <- function(x, ...){
   y
 }
 
-"[[<-.tsys" <- function(x, i, value){
-  "$<-.tsys"(x, i, value)
+"[[<-.tradesys" <- function(x, i, value){
+  "$<-.tradesys"(x, i, value)
 }
 
-"[<-.tsys" <- function(x, i, value){
-  y <- as.list.tsys(x)
+"[<-.tradesys" <- function(x, i, value){
+  y <- as.list.tradesys(x)
   y[i] <- value
   y <- try(do.call("tradesys", y))
   if(class(y) == "try-error")
@@ -97,7 +96,7 @@ print.tsys <- function(x, ...){
   
 }
 
-as.list.tsys <- function(x, ...){
+as.list.tradesys <- function(x, ...){
   class(x) <- NULL
   x
 }

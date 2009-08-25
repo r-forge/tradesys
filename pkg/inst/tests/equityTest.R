@@ -52,3 +52,4 @@ test.equity <- function(){
   checkEquals(equity(cbind(c(100,100,50,12), c(55,50,10,NA)), c(1,1,1,1), roll.at=c(FALSE,TRUE,TRUE,FALSE), delta=1)[, "Equity"], c(1,1,1,1.2))
 
 }
+

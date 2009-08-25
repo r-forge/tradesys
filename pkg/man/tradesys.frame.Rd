@@ -1,12 +1,12 @@
-\name{tsys.frame}
+\name{tradesys.frame}
 
-\alias{tsys.frame}
+\alias{tradesys.frame}
 
 \title{Evaluate a Trading System with Data}
 
 \description{
 
-  \code{tsys.frame} returns a data.frame containing the evaluations of
+  \code{tradesys.frame} returns a data.frame containing the evaluations of
   \code{x} using the variables in \code{data}. In addition, the states
   and equity vectors are calculated.
 
@@ -14,13 +14,13 @@
 
 \usage{
 
-tsys.frame(x, data, order.by=index(data))
+tradesys.frame(x, data, order.by=index(data))
 
 }
 
 \arguments{
 
-  \item{x}{a 'tsys' object.}
+  \item{x}{a 'tradesys' object.}
   \item{data}{a numeric matrix, data.frame, list or environment
     containing the variables in \code{datavars}.}
   \item{order.by}{an index vector with unique entries by which the observations
@@ -61,8 +61,9 @@ tsys.frame(x, data, order.by=index(data))
 
 \value{
 
-  data.frame consisting of the calculated vectors: states, equity,
-  entry and exit signals, delta, size.at, roll.at and exprvars.
+  data.frame consisting of the calculated vectors: States, Equity,
+  EL, ES, XL, XS, Delta, Size, Roll, Price, Roll, Mark, Long, Short,
+  RollLong, RollShort and \emph{exprvars}.
 
 }
 
@@ -71,7 +72,8 @@ library(TTR)
 x <- tradesys(c("Open","Close"))
 x$el <- quote(SMA(Close, 60) > SMA(Close, 120))
 x$es <- quote(SMA(Close, 60) <= SMA(Close, 120))
-y <- tsys.frame(x, spx)
+x$exprvars <- list(Ratio=quote(SMA(Close, 120) / SMA(Close, 60)))
+y <- tradesys.frame(x, spx)
 tail(y)
 }
 

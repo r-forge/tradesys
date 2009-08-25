@@ -41,17 +41,17 @@ test.roll <- function(){
   ## prices()
   
   ## Case #1: Long at roll time 
-  checkEquals(prices(ed, 1, prcmap, roll.at)[4, "Price"], 99.245, checkNames=FALSE) ## Short price
-  checkEquals(prices(ed, 1, prcmap, roll.at)[4, "Roll"],  98.945, checkNames=FALSE) ## RollLong price
-  checkEquals(prices(ed, 1, prcmap, roll.at)[5, "Price"], 98.935, checkNames=FALSE) ## Mark price
+  checkEquals(prices(ed, 1, prcmap, roll.at)[4, "Price"],     99.245, checkNames=FALSE) ## Short price
+  checkEquals(prices(ed, 1, prcmap, roll.at)[4, "RollPrice"], 98.945, checkNames=FALSE) ## RollLong price
+  checkEquals(prices(ed, 1, prcmap, roll.at)[5, "Price"],     98.935, checkNames=FALSE) ## Mark price
   ## Case #2: Short at roll time 
-  checkEquals(prices(ed, -1, prcmap, roll.at)[4, "Price"], 99.285, checkNames=FALSE) ## Long price
-  checkEquals(prices(ed, -1, prcmap, roll.at)[4, "Roll"],  98.930, checkNames=FALSE) ## RollShort price
-  checkEquals(prices(ed, -1, prcmap, roll.at)[5, "Price"], 98.935, checkNames=FALSE) ## Mark price
+  checkEquals(prices(ed, -1, prcmap, roll.at)[4, "Price"],     99.285, checkNames=FALSE) ## Long price
+  checkEquals(prices(ed, -1, prcmap, roll.at)[4, "RollPrice"], 98.930, checkNames=FALSE) ## RollShort price
+  checkEquals(prices(ed, -1, prcmap, roll.at)[5, "Price"],     98.935, checkNames=FALSE) ## Mark price
   ## Case #3: Flat at roll time 
-  checkEquals(prices(ed, 0, prcmap, roll.at)[4, "Price"], 99.265, checkNames=FALSE) ## Mark price
-  checkEquals(prices(ed, 0, prcmap, roll.at)[4, "Roll"],  98.945, checkNames=FALSE) ## RollLong price
-  checkEquals(prices(ed, 0, prcmap, roll.at)[5, "Price"], 98.935, checkNames=FALSE) ## Mark price
+  checkEquals(prices(ed, 0, prcmap, roll.at)[4, "Price"],     99.265, checkNames=FALSE) ## Mark price
+  checkEquals(prices(ed, 0, prcmap, roll.at)[4, "RollPrice"], 98.945, checkNames=FALSE) ## RollLong price
+  checkEquals(prices(ed, 0, prcmap, roll.at)[5, "Price"],     98.935, checkNames=FALSE) ## Mark price
 
   ## equity
 

@@ -89,7 +89,7 @@ x <- matrix(rnorm(150), ncol=3, dimnames=list(NULL, c("Bid","Ask","Close")))
 
 \value{
 
-  A matrix with columns "Price", "Roll", "Mark", "Long", "Short",
+  A matrix with columns "Price", "RollPrice", "Mark", "Long", "Short",
   "RollLong", and "RollShort".
   
 }

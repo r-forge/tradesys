@@ -1,4 +1,4 @@
-tsys.frame <- function(x, data, order.by=index(data)){
+tradesys.frame <- function(x, data, order.by=index(data)){
   ## validate data and order.by
   if(any(duplicated(order.by)))
     stop("all order.by must be unique.")
@@ -49,9 +49,10 @@ tsys.frame <- function(x, data, order.by=index(data)){
   delta <- eval(x$delta, env)
   assign("delta", delta, envir=env)
   ## Call equity and assign equity in env
-  equity <- equity(prices[, 1:2], states, delta, roll.at, x$percent)[, "Equity"]
-  d <- data.frame(states, equity, el=Signals$el, es=Signals$es, xl=Signals$xl, xs=Signals$xs,
-                  delta=delta, size.at=size.at, roll.at=roll.at)
+  equity <- equity(prices[, 1:2], states, delta, size.at, roll.at, x$percent)[, "Equity"]
+  d <- data.frame(States=states, Equity=equity, EL=Signals$el, ES=Signals$es, XL=Signals$xl, XS=Signals$xs,
+                  Delta=delta, Size=size.at, Roll=roll.at)
+  d <- cbind(d, prices)
   if(!is.null(x$exprvars))
     d <- cbind(d, do.call("cbind", expv))
   d

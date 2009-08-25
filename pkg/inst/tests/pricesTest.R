@@ -54,10 +54,10 @@ test.prices <- function(){
   ## Price gets 'Short' when phase is short entry or long exit
   checkEquals(y[Phases %in% c("ES","XL"), "Price"], x[Phases %in% c("ES","XL"), "C3"])
 
-  ## Roll gets 'RollLong' when state is 1 or 0
-  checkEquals(y[States == 1, "Roll"], x[States == 1, "C4"])
-  checkEquals(y[States == 0, "Roll"], x[States == 0, "C4"])
+  ## RollPrice gets 'RollLong' when state is 1 or 0
+  checkEquals(y[States == 1, "RollPrice"], x[States == 1, "C4"])
+  checkEquals(y[States == 0, "RollPrice"], x[States == 0, "C4"])
   
-  ## Roll gets 'RollShort' when state is -1
-  checkEquals(y[States == -1, "Roll"], x[States == -1, "C5"])
+  ## RollPrice gets 'RollShort' when state is -1
+  checkEquals(y[States == -1, "RollPrice"], x[States == -1, "C5"])
 }

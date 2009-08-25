@@ -27,7 +27,7 @@ prices <- function(x, states, pricemap, roll.at=FALSE){
       y[n, i] <- y[n, "Mark"]
     }
   }
-  y <- cbind(Price=y[, "Mark"], Roll=y[, "RollLong"], y)
+  y <- cbind(Price=y[, "Mark"], RollPrice=y[, "RollLong"], y)
   h <- phasemap(states)
   y[h == "EL", "Price"] <- y[h == "EL", "Long"]
   y[h == "ES", "Price"] <- y[h == "ES", "Short"]
@@ -35,6 +35,6 @@ prices <- function(x, states, pricemap, roll.at=FALSE){
   y[h == "XS", "Price"] <- y[h == "XS", "Long"]
   y[roll.at & states == 1, "Price"] <-   y[roll.at & states == 1, "Short"]
   y[roll.at & states == -1, "Price"] <-   y[roll.at & states == -1, "Long"] 
-  y[states == -1, "Roll"] <- y[states == -1, "RollShort"]
+  y[states == -1, "RollPrice"] <- y[states == -1, "RollShort"]
   y
 }
