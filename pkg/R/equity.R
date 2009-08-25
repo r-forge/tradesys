@@ -36,5 +36,5 @@ equity <- function(prices, states, delta=1, size.at=FALSE, roll.at=FALSE, percen
   Et[size.at] <- cumprod(HPR[size.at] + 1)
   Et <- na.locf(Et, na.rm=FALSE)
   Et[!size.at] <- Et[!size.at] * (HPR[!size.at] + 1)
-  cbind(Trade=TradeID(states), Pt, states, delta=Di, size.at, roll.at, HPR, Equity=Et)
+  cbind(Trade=TradeID(states), Price=Pt, States=states, Delta=Di, Size=size.at, Roll=roll.at, HPR, Equity=Et)
 }

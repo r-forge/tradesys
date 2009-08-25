@@ -19,7 +19,7 @@ n
 
 equity(prices, states, delta=1, size.at=FALSE, roll.at=FALSE, percent=TRUE)
 
-trades(prices, states, delta=1, roll.at=FALSE, percent=FALSE,
+trades(prices, states, delta=1, roll.at=FALSE, percent=TRUE,
        order.by=index(prices))
 
 }
@@ -127,12 +127,12 @@ trades(prices, states, delta=1, roll.at=FALSE, percent=FALSE,
 
 \value{
 
-  Equity returns a matrix with columns "Trade", "Pt", "St", "HPR",
-  "Equity".
+  Equity returns a matrix with columns "Trade", "Price", "States",
+  "Delta", "Size", "Roll","HPR","Equity".
   
   Trades returns a dataframe with columns "Trade", "LS", "ETime",
   "XTime", "Numb", "Time", "EPrice", "XPrice", "Delta", "PnL", and
-  "RoR".
+  "HPR".
 }
 
 \author{Robert Sams \email{robert@sanctumfi.com}}

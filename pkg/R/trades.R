@@ -1,4 +1,4 @@
-trades <- function(prices, states, delta=1, roll.at=FALSE, percent=FALSE, order.by=index(prices)){
+trades <- function(prices, states, delta=1, roll.at=FALSE, percent=TRUE, order.by=index(prices)){
   ## process prices
   prices <- as.matrix(prices)
   if(ncol(prices) == 1)
@@ -28,16 +28,17 @@ trades <- function(prices, states, delta=1, roll.at=FALSE, percent=FALSE, order.
         d$EPrice[Rtr[i]] <- d$EPrice[Rtr[i]] + rrices[Rtm[i]] - prices[Rtm[i]]
     }
   }
+  
   ## calculate pnl and ror
   d <- cbind(d, PnL=(d$XPrice - d$EPrice) * d$LS)
   if(percent)
-    d <- cbind(d, RoR=((d$XPrice / d$EPrice) - 1) * d$LS * d$Delta)
+    d <- cbind(d, HPR=((d$XPrice / d$EPrice) - 1) * d$LS * d$Delta)
   else
-    d <- cbind(d, RoR=(d$XPrice - d$EPrice) * d$LS * d$Delta)
+    d <- cbind(d, HPR=(d$XPrice - d$EPrice) * d$LS * d$Delta)
   ## duration calcs
   d <- cbind(d, Numb=d$XTime - d$ETime)
   d$ETime <- order.by[d$ETime]
   d$XTime <- order.by[d$XTime]
   d <- cbind(d, Time=as.numeric(d$XTime - d$ETime))
-  d[, c("Trade","LS","ETime","XTime","Numb","Time","EPrice","XPrice","Delta","PnL","RoR")]
+  d[, c("Trade","LS","ETime","XTime","Numb","Time","EPrice","XPrice","Delta","PnL","HPR")]
 }
