@@ -8,5 +8,5 @@ coredata.tsts <- function(x, ...){
 }
 
 "coredata<-.tsts" <- function(x, value){
-  tsts(value, index(value), tsys=tsys(x))
+  tsts(value, index(value), tsys=tsys(x), tsysvars=tsysvars(x))
 }

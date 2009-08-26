@@ -1,4 +1,4 @@
-tsts <- function(data, order.by=index(data), ..., tsys=NULL){
+tsts <- function(data, order.by=index(data), ..., tsys=NULL, tsysvars=c("States","Equity")){
   if(is.null(tsys)){
     l <- tradesys(datavars=colnames(data), ...)
   }else{
@@ -6,52 +6,34 @@ tsts <- function(data, order.by=index(data), ..., tsys=NULL){
     l <- tsys
   }
   x <- tradesys.frame(l, data, order.by)
-  data <- cbind(States=x$States, Equity=x$Equity, coredata(data))
-  attr(data, "index") <- order.by
-  attr(data, "tsys") <- l  
-  class(data) <- "tsts"
-  data
+  if(is.null(tsysvars))
+    tsysvars <- colnames(x)
+  else
+    tsysvars <- unique(tsysvars)
+  if(any(!tsysvars %in% colnames(x)))
+    stop("all tsysvars must be a column in the return of tradesys.frame.")
+  x <- cbind(as.matrix(x)[, tsysvars], coredata(data))
+  attr(x, "index") <- order.by
+  attr(x, "tsys") <- l
+  attr(x, "tsysvars") <- tsysvars
+  class(x) <- c("tsts","zoo")
+  x
 }
 
 ###
 ### METHODS CLASS 'tsts'
 ###
 
-"[.tsts" <- function(x, i, j, ..., drop=TRUE){
-  
-}
-
-print.tsts <- function(x, ...){
-  print(as.zoo(x, ...))
-}
-
-index.tsts <- function(x, ...){
-  attr(x, "index")
-}
-
-"index<-.tsts" <- function(x, ..., value){
-  if(length(value) != length(index(x)))
-    stop("index(x) and value must be the same length.")
-  if(class(index(x))[1] != class(value)[1])
-    warning("index(x) and value are not of the same class.")
-  attr(x, "index") <- value
-  x
-}
-
-start.tsts <- function(x, ...){
-  attr(x, "index")[1]
-}
-
-end.tsts <- function(x, ...){
-  attr(x, "index")[nrow(x)]
-}
-
 head.tsts <- function(x, ...){
-  head(as.zoo(x), ...)
+  head(as.zoo.tsts(x))
 }
 
 tail.tsts <- function(x, ...){
-  tail(as.zoo(x), ...)
+  tail(as.zoo.tsts(x))
+}
+
+print.tsts <- function(x, ...){
+  print(as.zoo.tsts(x))
 }
 
 as.matrix.tsts <- function(x, ...){
@@ -78,4 +60,12 @@ tsys <- function(x){
 
 "tsys<-" <- function(x, value){
   tsts(coredata(x), index(x), tsys=value)
+}
+
+tsysvars <- function(x){
+  attr(x, "tsysvars")
+}
+
+"tsysvars<-" <- function(x, value){
+  tsts(coredata(x), index(x), tsys=tsys(x), tsysvars=value)
 }

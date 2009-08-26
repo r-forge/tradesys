@@ -1,12 +1,20 @@
 Todo
 
-- Rewrite tsys.eval with new evaluation procedure.
-- Rename 'tsys' classname to 'tradesys'?
-- Make tsts a subclass of zoo and re-write its .Rd.
+- Unit Tests: tsts and its methods.
+- Unit Tests: tradesys.frame.
+- Unit Tests: signalmap, statemap, and phasemap.
+- Document unit tests.
 - Add tradesys check to call tsys.frame with random data.
-- Optimize equity by vectorizing all calculations.
 - Improve print.tsys.
 - Write summary.tsts.
+- Optimize equity, signalmap, statemap, and phasemap.
+- Complete draft of vignette.
+
+*** New Stuff**
+
+- Update or remove 'Optimal Leverage' code.
+- Add splice code.
+- Include some equity analysis tools?
 
 Ideas and Problems 
 

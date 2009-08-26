@@ -1,6 +1,6 @@
 \documentclass[a4]{article}
-\usepackage{G:/robert/tex/sty/Sweave} % Mayfair machine needs this..
-%\usepackage{Sweave} 
+%\usepackage{G:/robert/tex/sty/Sweave} % Mayfair machine needs this..
+\usepackage{Sweave} 
 \usepackage{url}
 
 \newcommand{\code}[1]{\texttt{#1}}

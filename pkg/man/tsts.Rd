@@ -1,19 +1,16 @@
 \name{tsts}
 
 \alias{tsts}
-\alias{print.tsts}
-\alias{index.tsts}
-\alias{index<-.tsts} 
-\alias{start.tsts}
-\alias{end.tsts}
-\alias{head.tsts}
-\alias{tail.tsts}
 \alias{as.matrix.tsts}
 \alias{as.zoo.tsts}
-\alias{[.tsts}
 \alias{is.tsts}
+\alias{head.tsts}
+\alias{tail.tsts}
+\alias{print.tsts}
 \alias{tsys}
 \alias{tsys<-}
+\alias{tsysvars}
+\alias{tsysvars<-}
 
 \title{Trading System Time Series}
 
@@ -25,7 +22,7 @@
 
 \usage{
 
-tsts(data, order.by=index(data), ..., tsys=NULL)
+tsts(data, order.by=index(data), ..., tsys=NULL, tsysvars=c("States","Equity"))
 
 }
 
@@ -35,29 +32,32 @@ tsts(data, order.by=index(data), ..., tsys=NULL)
   \item{order.by}{an index vector with unique entries by which the observations
     in 'data' are ordered.}
   \item{\dots}{args passed to \code{tradesys}.}
-  \item{tsys}{object of class 'tsys'.}  
+  \item{tsys}{object of class 'tsys'.}
+  \item{tsysvars}{character vector of tradesys.frame variables.}
 
 }
 
 \details{
-  
-  \code{tsts} returns \code{data} with class attribute "tsts", an index
-  attribute containing \code{order.by}, and a "tsys" attribute
-  containing a "tsys" object constructed from a call to
-  \code{tradesys(datacols=datacols, ...)}. The value passed to
-  \code{data} should be a numeric matrix with unique column names. It
-  will be coerced via \code{as.matrix}.
-  
-  \code{order.by} defines the ordering index of \code{data}. It is a
-  vector of unique values and must have a length equal the number of
-  rows in \code{data}. The values can be anything so long as they work
-  with \code{sort} and artithmetic operations. \code{Date} objects are
-  an obvious choice when \code{data} is a daily time
-  series. \code{POSIXct} objects are an obvious choice when it is a
-  higher resolution series like tick data.
 
-  \dots are \code{tradesys} parameters. At first a trading system is
-  constructed, .... NEED TO COMPLETE.
+  \code{tsts} returns an object of class 'tsts', which subclasses the
+  class 'zoo'. It is a mechanism for combining tradesys objects and data
+  into a single object. \code{tsts} either takes a tradesys object
+  passed to the \code{tsys} parameter, or it constructs one by passing
+  \dots to \code{tradesys}. Then \code{tradesys.frame} is called with
+  \code{data} and the return coerced into a zoo object, with columns
+  subsetted with \code{tsysvars}. The trading system itself is stored in
+  the 'tsys' slot.
+  
+  The value passed to \code{data} should be a numeric matrix with unique
+  column names. It will be coerced via \code{as.matrix}.
+  
+  \code{order.by} works as it does with ordinary zoo objects in that the
+  the values can be anything so long as they are unique and work with
+  \code{sort}. Here they should also work with the \eqn{-} operator, as
+  the difference between two indices is interpreted as a measure of
+  period time. \code{Date} objects are an obvious choice when
+  \code{data} is a daily time series. \code{POSIXct} objects are an
+  obvious choice when it is a higher resolution series like tick data.
   
   It is not necessary to define the desired system in a single call to
   \code{tsts}. Configuration can be altered later by changing the
@@ -68,15 +68,11 @@ tsts(data, order.by=index(data), ..., tsys=NULL)
 
 \value{
 
-  A tsts object.
+  A tsts object, which is a subclass of zoo.
 
 }
 
-% \seealso{
-% }
-
 \examples{
-##spx <- window(spx, start="2005-01-01")
 library(TTR)
 
 x <- tsts(spx, el=SMA(Close, 20) >= SMA(Close, 10),
@@ -106,6 +102,11 @@ tail(index(x))
 tsys(x)
 tsys(x)$el <- quote(SMA(Close, 60) >= SMA(Close, 120))
 tsys(x)$es <- quote(SMA(Close, 60) <  SMA(Close, 120))
+tail(x)
+tsysvars(x)
+tsysvars(x) <- c("States","EL","ES","Delta")
+tail(x)
+coredata(x) <- coredata(x)[, c("Open","Close")]
 tail(x)
 }
 
