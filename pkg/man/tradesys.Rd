@@ -47,7 +47,8 @@ tradesys(datavars, pricemap=c(Mark=datavars[1]),
     re-sized to \code{delta}.}
   \item{percent}{logical. defines \code{delta} as percentage or absolute
     change in price.}
-  \item{entrywins,entrycond}{logical. see \code{signalmap}.}
+  \item{entrywins}{logical. see \code{signalmap}.}
+  \item{entrycond}{logical. see \code{signalmap}.}
   \item{exprvars}{a named list of quoted expressions.}
 
 }
@@ -71,32 +72,10 @@ tradesys(datavars, pricemap=c(Mark=datavars[1]),
   expression.
   
   \code{pricemap} specifies which data variables contain price
-  information. There are five categories of price information that need
-  to be mapped to data variables:
+  information. Consult the documentation for \code{prices} for details.
   
-  \itemize{
-    \item Mark
-    \item Long
-    \item Short
-    \item RollLong
-    \item RollShort
-  }  
-  
-  These are the names of the vector passed to \code{pricemap}. The
-  corresponding values are the data variable names to which they are
-  mapped. The meaning of this mapping is pretty transparent. A long
-  entry or short exit is assumed to trade at the price in the
-  \emph{Long} variable, a short entry or long exit is assumed to trade
-  at the price in the \emph{Short} variable, and unchanged periods are
-  valued using the price in the \emph{Mark} variable. The vector need
-  not specify all five. By default, 'Long' and 'Short' are keyed to
-  'Mark', 'RollLong' to 'Long' and 'RollShort' to 'Short'. At least
-  'Mark' must be defined, but a scalar may be passed, in which case all
-  five are given that value. An error is raised if \code{datavars} does
-  not contain a column identifier that you pass.
-
   \code{el}, \code{es}, \code{xl}, and \code{xs} encode the system's
-  enterlong, entershort, exitlong and exitshort signals respectively.
+  enter long, enter short, exit long and exit short signals, respectively.
   When \code{tradesys.frame} is called, these must be expressions that
   evaluate to a logical vector. Those logical vectors are used to
   calculate the system's states using \code{signalmap}. \code{entrywins}
@@ -104,13 +83,13 @@ tradesys(datavars, pricemap=c(Mark=datavars[1]),
   the signal-to-state mapping in certain edge cases. Consult the
   \code{signalmap} documentation for details.
 
-  \code{delta} defines the system's leveraging scheme. When
-  \code{tradesys.frame} is called it must evaluate to a numeric vector. See
-  the documentation for \code{equity} for details.
+  \code{delta} defines the system's leveraging scheme. It must evaluate
+  to a numeric vector. See the documentation for \code{equity} for
+  details.
   
   \code{size.at} defines the times when the effect of price change on
-  equity is re-sized to delta. By default these evaluate to those times
-  when there is a change in state. \code{roll.at} is optional and
+  equity is re-sized to equal delta. By default these evaluate to those
+  times when there is a change in state. \code{roll.at} is optional and
   defines the times when a "roll trade" is performed. Both are
   expressions that evaluate to logical vectors. \code{percent} is a
   logical value that specifies whether delta is defined over percentage
@@ -118,29 +97,11 @@ tradesys(datavars, pricemap=c(Mark=datavars[1]),
   calculating the system's equity vector. Consult documentation of
   \code{equity} for details.
   
-  \dots is optional. If it is passed anything, it must be passed one or
-  more quoted expressions with unique argument names. These are stored
-  collectively as a list in the \code{exprvars} slot. These provide a
-  convienent way to define an arbitrary number of ad-hoc "derived"
-  variables. The other expressions (except the entry/exit signals) may
-  refer to them by name. They must evaluate to a numeric vector. 
-  
-  Upon being evaluated by \code{tradesys.frame}, all of these expressions must:
-  
-  \itemize{
-    \item successfully evaluate on \emph{data}, where \emph{data} is any
-    set of numeric variables whose names are in \code{datavars} and are
-    all of the same length,
-    \item result in a vector whose length is equal to the length of \emph{data}
-    or 1,
-    \item and return its correct type (logical or numeric).
-  }
-  
-  An expression can contain any valid function or operator (SEE README
-  RE NEEDED CHANGES TO ENVIRONMENT CONSTRUCTION), but names are
-  restricted to those in \code{datavars}, \code{exprvars}, the price
-  variables, and the special name "index" (see \code{tradesys.frame}
-  documentation for details).
+  \code{exprvars} must a list of one or more quoted expressions with
+  unique argument names. These provide a convienent way to define an
+  arbitrary number of ad-hoc "derived" variables. The other expressions
+  (except the entry/exit signals) may refer to them by name. They must
+  evaluate to numeric.
 
 }
 

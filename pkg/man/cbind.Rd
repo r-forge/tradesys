@@ -25,7 +25,8 @@
 \details{
 
   The numeric vectors being cbind'd must have a length that is a
-  multiple of the number of rows in the 'tsts' object.
+  multiple of the number of rows in the 'tsts' object. All but the first
+  arguments must be tagged with unique column names. 
   
 }
 
@@ -36,9 +37,9 @@
 }
 
 \examples{
-##x <- matrix(rnorm(20), ncol=2, dimnames=list(NULL, c("Foo","Bar")))
-##x <- tsts(x)
-##cbind(x, Bam=1:10) 
+x <- matrix(rnorm(20), ncol=2, dimnames=list(NULL, c("Foo","Bar")))
+x <- tsts(x)
+cbind(x, Bam=1:10) 
 }
 
 \author{Robert Sams \email{robert@sanctumfi.com}}

@@ -1,9 +1,5 @@
 prices <- function(x, states, pricemap, roll.at=FALSE){
   ## process x
-  if(is.tsts(x)){
-    states <- x[, "St"]
-    pricemap <- tsys(x)$pricemap
-  }
   x <- as.matrix(x)
   if(any(!pricemap %in% colnames(x)))
     stop("all pricemap must be in colnames(x)")

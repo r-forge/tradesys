@@ -12,7 +12,7 @@
   
   \code{trades} calculates a data.frame of trades from \emph{prices},
   \emph{states}, and \emph{delta}.
-n  
+
 }
 
 \usage{
@@ -39,17 +39,16 @@ trades(prices, states, delta=1, roll.at=FALSE, percent=TRUE,
 
 \details{
   
-  \code{equity} computes an equity value at each time \eqn{t} for a
-  given pair of prices and states.
+  \code{equity} computes an equity value at each time \eqn{t}.
   
   \code{prices} should be coercable using \code{as.matrix}. The first
   column are prices and the second column are roll prices. (Use
-  \code{"Price"} and \code{"Roll"} in the return of the \code{prices}
+  \code{"Price"} and \code{"RollPrice"} in the return of the \code{prices}
   function to construct these vectors out of data and states.) Any
   additional columns are ignored. If only a vector is passed, prices and
   roll prices are identical.
   
-  \code{states} must be a vector consist of 1s, 0s, and -1s only.  Its
+  \code{states} must be a vector consisting of 1s, 0s, and -1s only.  Its
   length must be a multiple of \code{nrow(data)} and is generally
   identical to it.
 
@@ -100,10 +99,10 @@ trades(prices, states, delta=1, roll.at=FALSE, percent=TRUE,
   entry and exit times and prices, the realised P\&L of the trade and
   holding period return.
   
-  Trade holding period returns are defined are implicit in the above
-  equation that defines equity. Just replace \eqn{i} with the trade
-  entry time and \eqn{t} with the trade exit time:
-  \deqn{HPR = \left( \frac{P_{x}}{P_{e}} - 1 \right) S_{e} \delta_{e} =
+  Trade holding period returns are implicit in the above equation. Just
+  replace \eqn{i} with the trade entry time and \eqn{t} with the trade
+  exit time:  
+  \deqn{HPR = \left( \frac{P_{x}}{P_{e}} - 1 \right) S_{e} \Delta_{e} + 1=
     \frac{E_{x}}{E_{e}}}{
     HPR = (p(x) / p(i) - 1) * s(e) * d(e) = E(x) / E(e)
   }
@@ -114,7 +113,7 @@ trades(prices, states, delta=1, roll.at=FALSE, percent=TRUE,
   \emph{t}--that close out an existing position with \eqn{P_{t}}{P(t)}
   and re-open it with \eqn{R_{t}}{R(t)}. So, a roll time that falls
   \emph{on or after} a trade's entry time and \emph{before} its exit
-  will add \eqn{R_{t} - P_{t}}{R(t) - P(t)} to \eqn{P_{i}}.
+  will add \eqn{R_{t} - P_{t}}{R(t) - P(t)} to \eqn{P_{e}}.
   
 }
   
@@ -127,8 +126,8 @@ trades(prices, states, delta=1, roll.at=FALSE, percent=TRUE,
 
 \value{
 
-  Equity returns a matrix with columns "Trade", "Price", "States",
-  "Delta", "Size", "Roll","HPR","Equity".
+  Equity returns a matrix with columns "Trade", "Price", "RollPrice",
+  "States", "Delta", "Size", "Roll", "HPR", "Equity".
   
   Trades returns a dataframe with columns "Trade", "LS", "ETime",
   "XTime", "Numb", "Time", "EPrice", "XPrice", "Delta", "PnL", and

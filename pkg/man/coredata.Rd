@@ -27,14 +27,15 @@
   
 }
 
-\details{
-  \code{coredata} strips the 'St', 'Equity', and (if there are any)
-  exprvars columns from the data matrix and returns a zoo matrix. It
-  differs from \code{as.zoo.tsts} only by excluding these columns.
+\details{ \code{coredata} strips the non-core columns from the data
+  matrix and returns a zoo matrix. It differs from \code{as.zoo.tsts}
+  only by excluding these columns.
 
-  The assignment method calls \code{tsts} with \code{value} and the tsys
-  object passed to it. \code{index(value)} should return the desired
-  index, so zoo objects are the natural thing to assign.  }
+  The assignment method calls \code{tsts} with \code{value} and the
+  tradesys object contained in \code{x}. \code{index(value)} should
+  return the desired index, so zoo objects are the natural thing to
+  assign.
+}
 
 \value{
   
@@ -43,11 +44,10 @@
 }
 
 \examples{
-##spx <- window(spx, start="2005-01-01")
-##x <- tsts(spx)
-##identical(coredata(x), spx)
-## coredata(x) <- window(coredata(x), start="2009-05-01")
-##x
+x <- tsts(spx)
+stopifnot(identical(coredata(x), spx))
+coredata(x) <- window(coredata(x), start="2009-05-01")
+x
 }
 
 \author{Robert Sams \email{robert@sanctumfi.com}}

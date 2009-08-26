@@ -38,13 +38,12 @@ signalmap(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE,
   state vector is thereafter alternating sequences of 1's and -1's.
   
   \code{xl} and \code{xs} augment the entry rules with exit rules. Where
-  \code{xl[i]} is TRUE and \eqn{s_{i}=1}, \eqn{s_{i}} and the unbroken
-  series of 1's between it and the next entry signal are set to
-  0. Similarly, where \code{xs} is TRUE and \eqn{s_{i}=-1},
-  \eqn{s_{i}} and the unbroken series of -1's between it and the next
-  entry signal are set to 0. In words: "once out, stay out until
-  \emph{any} entry signal occurs". The state vector then has no
-  particular form. 
+  \code{xl[i]} is TRUE and \eqn{s_{i}=1}, \eqn{s_{i}} and the series of
+  consecutive 1's between it and the next entry signal are set to
+  0. Similarly, where \code{xs} is TRUE and \eqn{s_{i}=-1}, \eqn{s_{i}}
+  and the series of consecutive -1's between it and the next entry
+  signal are set to 0. In words: "once out, stay out until \emph{any}
+  entry signal occurs". 
 
   As the above decription implies, entry signals are by default
   unconditional. If \code{entrycond} is TRUE, entry rules become
@@ -80,11 +79,12 @@ signalmap(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE,
     \code{1110} \tab 14\tab \eqn{min(s_{t-1}, 0)}{min[s(t-1), 0]} \cr
     \code{1111} \tab 15\tab 0\cr
   }
-  Binaries 12-15 will be treated like 0-3, as it is a nonesense to have
-  both \code{el[i]} and \code{es[i]} as TRUE.   
+
+  12-15 will be treated like 0-3, as it is a nonesense to have both
+  \code{el[i]} and \code{es[i]} as TRUE.
   
-  When \code{entrywins} is TRUE, binary 5 and 7 map to -1 and binary 10
-  and 11 map to 1.
+  When \code{entrywins} is TRUE, 5 and 7 map to -1 and 10 and 11 map to
+  1.
 
   When \code{entrycond} is TRUE, the signals themselves are altered in
   the code before performing the above mapping. When \code{xl[i]} is

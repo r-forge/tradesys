@@ -1,7 +1,9 @@
 coredata.tsts <- function(x, ...){
   y <- as.matrix.tsts(x)
-  ## remove formulae (if any), Equity, and St
-  y <- y[, -which(colnames(y) %in% c(names(tsys(x)$formulae), "Equity", "States"))]
+  FrameCols <- c("Equity", "States","EL","ES","XL","XS","Delta","Size","Roll",
+                 "Price","RollPrice","Mark","Long","Short","RollLong","RollShort")
+  y <- y[, -which(colnames(y) %in% c(names(tsys(x)$exprvars), FrameCols))]
+  rownames(y) <- NULL
   zoo(y, order.by=index(x))
 }
 

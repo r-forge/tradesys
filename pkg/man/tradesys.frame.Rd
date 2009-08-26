@@ -47,7 +47,7 @@ tradesys.frame(x, data, order.by=index(data))
     \item Place \bold{data} and \bold{index} in a new environment \emph{env}.
     \item Evaluate and assign \bold{el}, \bold{es}, \bold{xl} and \bold{xs} in \emph{env}.
     \item Call \code{signalmap} and assign \bold{states} to \emph{env}.
-    \item Evaluate and assign \bold{exprvars} to \emph{env}.
+    \item Evaluate and assign \bold{exprvars} in \emph{env}.
     \item Evaluate and assign \bold{roll.at} in \emph{env}.
     \item Call \code{prices} and assign its variables to \emph{env}.
     \item Evaluate and assign \bold{size.at} and \bold{delta} in \emph{env}.
@@ -62,8 +62,8 @@ tradesys.frame(x, data, order.by=index(data))
 \value{
 
   data.frame consisting of the calculated vectors: States, Equity,
-  EL, ES, XL, XS, Delta, Size, Roll, Price, Roll, Mark, Long, Short,
-  RollLong, RollShort and \emph{exprvars}.
+  EL, ES, XL, XS, Delta, Size, Roll, Price, RollPrice, Mark, Long,
+  Short, RollLong, RollShort and \emph{exprvars}.
 
 }
 

@@ -20,11 +20,11 @@ statemap(phases)
 }
 
 \details{
-  A tradings system's states is a numeric vector consisting of 1's,
-  -1's and 0's, corresponding to market positions "long", "short" and
-  "flat" respectively.
+  A tradings system's states is a numeric vector consisting of 1's, 0's
+  and -1's, corresponding to market positions "long", "flat" and "short"
+  respectively.  
   
-  The transition of one state to the next we call a "phase" and each
+  The transition of one state to the next is a "phase" and each
   of the nine possible configurations for state pairs
   \eqn{s_{i},s_{i-1}}{s(i),s(i-1)} is mapped to a phase \eqn{h_{i}}{h(i)} using
   the following rules:
