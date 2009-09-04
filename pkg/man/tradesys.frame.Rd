@@ -45,9 +45,9 @@ tradesys.frame(x, data, order.by=index(data))
 
   \enumerate{
     \item Place \bold{data} and \bold{index} in a new environment \emph{env}.
+    \item Evaluate and assign \bold{exprvars} in \emph{env}.
     \item Evaluate and assign \bold{el}, \bold{es}, \bold{xl} and \bold{xs} in \emph{env}.
     \item Call \code{signalmap} and assign \bold{states} to \emph{env}.
-    \item Evaluate and assign \bold{exprvars} in \emph{env}.
     \item Evaluate and assign \bold{roll.at} in \emph{env}.
     \item Call \code{prices} and assign its variables to \emph{env}.
     \item Evaluate and assign \bold{size.at} and \bold{delta} in \emph{env}.

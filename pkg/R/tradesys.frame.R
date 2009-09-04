@@ -20,6 +20,14 @@ tradesys.frame <- function(x, data, order.by=index(data)){
   for(i in seq(1, length(data)))
     assign(names(data)[i], data[[i]], envir=env)
   assign("index", order.by, envir=env)
+  ## Evaluate exprvars
+  if(!is.null(x$exprvars)){
+    expv <- lapply(x$exprvars, eval, envir=env)
+    for(i in seq(1, length(expv)))
+      assign(names(expv)[i], expv[[i]], envir=env)
+  }else{
+    expv <- list()
+  }
   ## Evaluate and assign signals in env
   Signals <- lapply(c(x["el"], x["es"], x["xl"], x["xs"]), eval, env)
   Signals <- lapply(Signals, function(x, y) as.logical(cbind(x, y)[, 1]), data[[1]])
@@ -28,17 +36,11 @@ tradesys.frame <- function(x, data, order.by=index(data)){
   for(i in seq(1, length(Signals)))
     assign(names(Signals)[i], Signals[[i]], envir=env)
   assign("states", states, envir=env)
-  ## Evaluate exprvars
-  if(!is.null(x$exprvars)){
-    expv <- lapply(x$exprvars, eval, envir=env)
-    for(i in seq(1, length(expv)))
-      assign(names(expv)[i], expv[[i]], envir=env)
-  }
   ## Evaluate and assign roll.at in env
   roll.at <- eval(x$roll.at, env)
   assign("roll.at", roll.at, envir=env)
   ## Call prices and assign its variables in env
-  prices <- prices(do.call("cbind", data), states, x$pricemap)
+  prices <- prices(do.call("cbind", c(data, expv)), states, x$pricemap)
   Prices <- as.list(as.data.frame(prices))
   for(i in seq(1, length(Prices)))
     assign(names(Prices)[i], Prices[[i]], envir=env)
