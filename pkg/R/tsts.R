@@ -48,6 +48,10 @@ as.zoo.tsts <- function(x, ...){
   zoo(as.matrix.tsts(x), order.by=attr(x, "index"))
 }
 
+"[.tsts" <- function(x, i, j, drop = FALSE, ...){
+  as.zoo.tsts(x)[i, j, drop = drop, ...]
+}
+
 ##
 ## Extractors/Assignors
 ##

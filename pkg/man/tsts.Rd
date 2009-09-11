@@ -11,6 +11,7 @@
 \alias{tsys<-}
 \alias{tsysvars}
 \alias{tsysvars<-}
+\alias{[.tsts}
 
 \title{Trading System Time Series}
 
