@@ -51,7 +51,7 @@ tradesys.frame <- function(x, data, order.by=index(data)){
   delta <- eval(x$delta, env)
   assign("delta", delta, envir=env)
   ## Call equity and assign equity in env
-  equity <- equity(prices[, 1:2], states, delta, size.at, roll.at, x$percent)[, "Equity"]
+  equity <- equity(prices[, c("Price","RollOut","RollIn")], states, delta, size.at, roll.at, x$percent)[, "Equity"]
   d <- data.frame(States=states, Equity=equity, EL=Signals$el, ES=Signals$es, XL=Signals$xl, XS=Signals$xs,
                   Delta=delta, Size=size.at, Roll=roll.at)
   d <- cbind(d, prices)

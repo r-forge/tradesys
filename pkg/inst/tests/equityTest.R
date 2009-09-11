@@ -47,9 +47,5 @@ test.equity <- function(){
   checkEquals((Price[12] - Price[11]) *-.25 * x[11, "Equity"] + x[11, "Equity"], x[12, "Equity"], checkNames=FALSE)
   checkEquals((Price[29] - Price[21]) * .25 * x[21, "Equity"] + x[21, "Equity"], x[29, "Equity"], checkNames=FALSE)
 
-  ## roll.at examples
-  checkEquals(equity(cbind(c(100,100,50,60), c(55,50,NA,NA)), c(1,1,1,1), roll.at=c(FALSE,TRUE,FALSE,FALSE), delta=1)[, "Equity"], c(1,1,1,1.2))
-  checkEquals(equity(cbind(c(100,100,50,12), c(55,50,10,NA)), c(1,1,1,1), roll.at=c(FALSE,TRUE,TRUE,FALSE), delta=1)[, "Equity"], c(1,1,1,1.2))
-
 }
 

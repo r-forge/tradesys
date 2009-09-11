@@ -2,8 +2,9 @@ equity <- function(prices, states, delta=1, size.at=FALSE, roll.at=FALSE, percen
   ## process prices
   prices <- as.matrix(prices)
   if(ncol(prices) == 1)
-    prices <- cbind(prices, prices) 
-  Rt <- as.vector(prices[, 2])
+    prices <- cbind(prices, prices, prices)
+  It <- as.vector(prices[, 3])
+  Ot <- as.vector(prices[, 2])
   Pt <- as.vector(prices[, 1])
   ## proces states, delta, size.at and roll.at
   states <- cbind(states, Pt)[, 1]
@@ -13,11 +14,12 @@ equity <- function(prices, states, delta=1, size.at=FALSE, roll.at=FALSE, percen
   size.at <- TradeEntries(states) | size.at
   size.at[length(size.at)] <- FALSE ## ignore TRUE on last obs
   roll.at[length(roll.at)] <- FALSE
+  RollAdj <- (It - Ot) * abs(states) * as.numeric(roll.at)
   ## calculate Pi
   Pi <- rep(NA, length(Pt))
   Pi[which(size.at) + 1] <- Pt[which(size.at)]
   for(i in which(roll.at))
-    Pi[i + 1] <- na.locf(Pi, na.rm=FALSE)[i] + Rt[i] - Pt[i]
+    Pi[i + 1] <- na.locf(Pi, na.rm=FALSE)[i] + RollAdj[i] 
   Pi <- na.locf(Pi, na.rm=FALSE)
   Pi[is.na(Pi)] <- Pt[is.na(Pi)]
   ## calculate Di
@@ -36,5 +38,5 @@ equity <- function(prices, states, delta=1, size.at=FALSE, roll.at=FALSE, percen
   Et[size.at] <- cumprod(HPR[size.at] + 1)
   Et <- na.locf(Et, na.rm=FALSE)
   Et[!size.at] <- Et[!size.at] * (HPR[!size.at] + 1)
-  cbind(Trade=TradeID(states), Price=Pt, RollPrice=Rt, States=states, Delta=Di, Size=size.at, Roll=roll.at, HPR, Equity=Et)
+  cbind(Trade=TradeID(states), Price=Pt, RollAdj, States=states, Delta=Di, Size=size.at, Roll=roll.at, HPR, Equity=Et)
 }

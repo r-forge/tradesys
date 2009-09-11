@@ -1,26 +1,26 @@
 pricemapper <- function(pricemap){
   if(!is.vector(pricemap) | !is.character(pricemap))
     stop("pricemap must be a character vector of column names.")
+  if("roll" %in% tolower(names(pricemap))){
+    RollN <- which(tolower(names(pricemap)) == "roll")[1]
+    pricemap["RollOut"] <- pricemap[RollN]
+    pricemap["RollIn"] <- pricemap[RollN]
+    pricemap <- pricemap[-RollN]
+  }
   if(length(pricemap) > 5)
     stop("length(pricemap) must be <= 5")
   if(is.null(names(pricemap))) ## .. then order determines mapping when no names
-    names(pricemap) <- c("Mark","Long","Short","RollLong","RollShort")[1:length(pricemap)]
+    names(pricemap) <- c("Mark","Long","Short","RollOut","RollIn")[1:length(pricemap)]
   if(any(duplicated(names(pricemap))))
     stop("names(pricemap) must be unique")
-  if(any(!names(pricemap) %in% c("Mark","Long","Short","RollLong","RollShort")))
-    stop("All names(pricemap) must be among 'Mark','Long','Short','RollLong','RollShort'")
-  x <- c(pricemap["Mark"], pricemap["Long"], pricemap["Short"], pricemap["RollLong"], pricemap["RollShort"])
-  names(x) <- c("Mark","Long","Short","RollLong","RollShort")
+  if(any(!names(pricemap) %in% c("Mark","Long","Short","RollOut","RollIn")))
+    stop("All names(pricemap) must be among 'Mark','Long','Short','RollOut','RollIn'")
+  x <- c(pricemap["Mark"], pricemap["Long"], pricemap["Short"], pricemap["RollOut"], pricemap["RollIn"])
+  names(x) <- c("Mark","Long","Short","RollOut","RollIn")
   if(is.na(x["Mark"]))
     stop("pricemap must be passed a value for 'Mark'")
-  if(is.na(x["Long"]))
-    x["Long"] <- x["Mark"]
-  if(is.na(x["Short"]))
-    x["Short"] <- x["Mark"]
-  if(is.na(x["RollShort"]))
-    x["RollShort"] <- x["Short"]
-  if(is.na(x["RollLong"]))
-    x["RollLong"] <- x["Long"]
+  if(any(is.na(x)))
+    x[is.na(x)] <- x["Mark"]
   x
 }
 

@@ -42,11 +42,10 @@ trades(prices, states, delta=1, roll.at=FALSE, percent=TRUE,
   \code{equity} computes an equity value at each time \eqn{t}.
   
   \code{prices} should be coercable using \code{as.matrix}. The first
-  column are prices and the second column are roll prices. (Use
-  \code{"Price"} and \code{"RollPrice"} in the return of the \code{prices}
-  function to construct these vectors out of data and states.) Any
-  additional columns are ignored. If only a vector is passed, prices and
-  roll prices are identical.
+  column are prices, the second column are roll-in prices, and the third
+  column are roll-out prices. Any additional columns are ignored. If
+  only a vector is passed, no roll adjustments are made (even if
+  \code{roll.at} contains a TRUE value).
   
   \code{states} must be a vector consisting of 1s, 0s, and -1s only.  Its
   length must be a multiple of \code{nrow(data)} and is generally
@@ -89,10 +88,10 @@ trades(prices, states, delta=1, roll.at=FALSE, percent=TRUE,
   spreads).  
 
   If any \code{roll.at} are true, roll price adjustments are made. It is
-  a logical vector, and if it is TRUE at \eqn{t}, \eqn{R_{t} -
-  P_{t}}{R(t) - P(t)} is added to \eqn{P_{i}}{P(i)} in the calculation
-  of \eqn{E_{t+1}}, where \eqn{R_{t}}{R(t)} is the roll price at
-  \code{t}.
+  a logical vector, and if it is TRUE at \eqn{t}, \eqn{RO_{t} -
+  RI_{t}}{RO(t) - RI(t)} is added to \eqn{P_{i}}{P(i)} in the calculation
+  of \eqn{E_{t+1}}, where \eqn{RO_{t}}{RO(t)} and \eqn{RI_{t}}{RI(t)}
+  are the roll-out and roll-in prices, respectively.
 
   \code{trades} is passed a tsts object and returns a data frame of
   the system's trades. Each row describes a long or short entry with its
@@ -108,12 +107,9 @@ trades(prices, states, delta=1, roll.at=FALSE, percent=TRUE,
   }
   
   Roll trades are calculated when \code{roll.at} has at least one TRUE
-  value, just as with the \code{equity} function. A roll at time
-  \emph{t} is a pair of exit and entry trades--both at time
-  \emph{t}--that close out an existing position with \eqn{P_{t}}{P(t)}
-  and re-open it with \eqn{R_{t}}{R(t)}. So, a roll time that falls
+  value, just as with the \code{equity} function. A roll time that falls
   \emph{on or after} a trade's entry time and \emph{before} its exit
-  will add \eqn{R_{t} - P_{t}}{R(t) - P(t)} to \eqn{P_{e}}.
+  will add \eqn{RO_{t} - RI_{t}}{RO(t) - RI(t)} to \eqn{P_{e}}.
   
 }
   

@@ -28,46 +28,34 @@ prices(x, states, pricemap, roll.at=FALSE)
 
 \details{
   
-  \code{pricemap} specifies which variables in \code{x} contain which
-  of the five types of price information:
+  \code{pricemap} defines a one-to-one mapping between some \code{x}
+  variables and five types of price information:
   
   \itemize{
     \item Mark
     \item Long
     \item Short
-    \item RollLong
-    \item RollShort
+    \item RollOut
+    \item RollIn
   }  
   
   These must be the names of the vector passed to \code{pricemap}. The
   corresponding values are the column names in \code{x} to which the
-  price types are mapped. The vector need not specify all five. By
-  default, 'Long' and 'Short' are keyed to 'Mark', 'RollLong' to 'Long'
-  and 'RollShort' to 'Short'. At least 'Mark' must be defined, but a
-  scalar may be passed, in which case all five are given that value. An
-  error is raised if any \code{pricemap} is not in \code{colnames(x)}.
+  price types are mapped. At least 'Mark' must be defined, but a scalar
+  may be passed, in which case all five are given that value. Any of the
+  five not specified are given the value assigned to 'Mark'. An error is
+  raised if any \code{pricemap} is not in \code{colnames(x)}.
   
-  The function returns a matrix of seven columns: \code{"Price"},
-  \code{"RollPrice"}, \code{"Mark"}, \code{"Long"}, \code{"Short"}, \code{"RollLong"},
-  and \code{"RollShort"} prices. Columns 3-7 simply extract the relevant
-  columns from \code{x} on the basis of the \code{pricemap}.
+  The function returns a matrix of six columns: \code{Price},
+  \code{Mark}, \code{Long}, \code{Short}, \code{RollIn}, and
+  \code{RollOut} prices.
 
-  The \code{"Price"} column is choosen in such a way that times where
+  The \code{Price} column is choosen in such a way that times where
   there is a long entry or short exit are assigned the corresponding
-  price in \code{"Long"} column. Times where there is a short entry or
-  long exit are assigned the corresponding price in the \code{"Short"}
+  price in \code{Long} column. Times where there is a short entry or
+  long exit are assigned the corresponding price in the \code{Short}
   column, and unchanged times are assigned the price in the \code{Mark}
   column.
-
-  The \code{Roll} column contains the value in \code{RollLong},
-  except when state is -1, in which case the value in \code{RollShort}.
-
-  The parameter \code{roll.at} is a logical vector whose length must be
-  a multiple of \code{nrow(x)}. For all those times where \code{roll.at}
-  is TRUE and \code{states} is 1, the value in \code{"Short"} is placed
-  in \code{"Price"}. For all those times where \code{roll.at} is TRUE
-  and \code{states} is -1, the value in \code{"Long"} is placed in
-  \code{"Price"}. 
   
 }
   
@@ -81,8 +69,8 @@ x <- matrix(rnorm(150), ncol=3, dimnames=list(NULL, c("Bid","Ask","Close")))
 
 \value{
 
-  A matrix with columns "Price", "RollPrice", "Mark", "Long", "Short",
-  "RollLong", and "RollShort".
+  A matrix with columns "Price", "Mark", "Long", "Short", "RollOut" and
+  "RollIn".
   
 }
 
