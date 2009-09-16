@@ -61,9 +61,9 @@ tradesys.frame(x, data, order.by=index(data))
 
 \value{
 
-  data.frame consisting of the calculated vectors: States, Equity,
-  EL, ES, XL, XS, Delta, Size, Roll, Price, RollPrice, Mark, Long,
-  Short, RollLong, RollShort and \emph{exprvars}.
+  data.frame consisting of the calculated vectors: Trade, States,
+  Equity, EL, ES, XL, XS, Delta, Size, Roll, Price, RollPrice, Mark,
+  Long, Short, RollLong, RollShort and \emph{exprvars}.
 
 }
 

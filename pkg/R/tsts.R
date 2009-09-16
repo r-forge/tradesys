@@ -63,7 +63,7 @@ tsys <- function(x){
 }
 
 "tsys<-" <- function(x, value){
-  tsts(coredata(x), index(x), tsys=value)
+  tsts(coredata(x), index(x), tsys=value, tsysvars=tsysvars(x))
 }
 
 tsysvars <- function(x){

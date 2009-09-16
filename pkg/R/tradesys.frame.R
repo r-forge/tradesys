@@ -22,9 +22,10 @@ tradesys.frame <- function(x, data, order.by=index(data)){
   assign("index", order.by, envir=env)
   ## Evaluate exprvars
   if(!is.null(x$exprvars)){
-    expv <- lapply(x$exprvars, eval, envir=env)
-    for(i in seq(1, length(expv)))
-      assign(names(expv)[i], expv[[i]], envir=env)
+    for(i in seq(1, length(x$exprvars)))
+      assign(names(x$exprvars)[i], eval(x$exprvars[[i]], envir=env), envir=env)
+    expv <- lapply(names(x$exprvars), get, envir=env)
+    names(expv) <- names(x$exprvars)
   }else{
     expv <- list()
   }
@@ -51,8 +52,8 @@ tradesys.frame <- function(x, data, order.by=index(data)){
   delta <- eval(x$delta, env)
   assign("delta", delta, envir=env)
   ## Call equity and assign equity in env
-  equity <- equity(prices[, c("Price","RollOut","RollIn")], states, delta, size.at, roll.at, x$percent)[, "Equity"]
-  d <- data.frame(States=states, Equity=equity, EL=Signals$el, ES=Signals$es, XL=Signals$xl, XS=Signals$xs,
+  equity <- equity(prices[, c("Price","RollOut","RollIn")], states, delta, size.at, roll.at, x$percent)
+  d <- data.frame(Trade=equity[, "Trade"], States=states, Equity=equity[, "Equity"], EL=Signals$el, ES=Signals$es, XL=Signals$xl, XS=Signals$xs,
                   Delta=delta, Size=size.at, Roll=roll.at)
   d <- cbind(d, prices)
   if(!is.null(x$exprvars))
