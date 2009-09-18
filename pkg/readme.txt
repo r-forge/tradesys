@@ -60,3 +60,6 @@ Ideas and Problems
   long enough. I'm still not sure whether we have the best solution
   and wonder whether the splice and splooth functions (not yet
   included here) can provide the basis for a better approach.
+
+- Optimising signalmap. There must be a way using clever math that we
+  can remove the iteration.

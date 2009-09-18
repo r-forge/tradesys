@@ -55,3 +55,19 @@ TradeExits <- function(states){   ## Exit at i when s(i) != s(i-1) and s(i-1) !=
   c(FALSE, as.logical(diff(states) * states[-length(states)]))
 }
 
+## x is a boolean vector. The return is a numeric vector v of the same
+## length, where v[i] is the offset of first TRUE value in x after i.
+## true.right(c(FALSE,TRUE, TRUE,FALSE, TRUE,FALSE)) ## 2,3,5,5,NA,NA
+## true.right(c(TRUE, TRUE, TRUE,FALSE, TRUE,FALSE)) ## 2,3,5,5,NA,NA
+## true.right(c(TRUE, TRUE, TRUE, TRUE, TRUE, TRUE)) ## 2,3,4,5,6,NA
+## true.right(c(FALSE,FALSE,FALSE,FALSE,FALSE,FALSE))## NA,NA,NA,NA,NA,NA
+
+true.right <- function(x, missing=NA){
+  sapply(1:length(x), function(y){
+    if(any(which(x) > y))
+      return(min(which(x)[which(x) > y]))
+    missing
+  })
+}
+
+
