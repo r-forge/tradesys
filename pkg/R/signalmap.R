@@ -1,13 +1,16 @@
-signalmap <- function(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrycond=FALSE, entrywins=FALSE){
-  entrycond <- entrycond[1]
+signalmap <- function(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrywins=FALSE){
   entrywins <- entrywins[1]
+  el <- cbind(el, es, xl, xs)[, 1]
+  es <- cbind(el, es, xl, xs)[, 2]
+  xl <- cbind(el, es, xl, xs)[, 3]
+  xs <- cbind(el, es, xl, xs)[, 4]
   ## NA's are treated as FALSE
   el[is.na(el)] <- FALSE
   es[is.na(es)] <- FALSE
   xl[is.na(xl)] <- FALSE
   xs[is.na(xs)] <- FALSE
   ## Convert binary to integer
-  x <- 8 * el + 4 * es + 2 * xl + xs
+  x <- bin2int(cbind(el,es,xl,xs))
   ## Reduce the sixteen possible forms to six (0,1,2,3,4,8):
   x[x == 6] <- 4    ## 0110 [6]  --> 0100 [4]
   x[x == 9] <- 8    ## 1001 [9]  --> 1000 [8]
@@ -25,28 +28,6 @@ signalmap <- function(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrycond=FALSE, e
     x[x == 7] <- 3  ## 0111 [7]  --> 0011 [3]
     x[x == 10] <- 2 ## 1010 [10] --> 0010 [2]
     x[x == 11] <- 3 ## 1011 [11] --> 0011 [3]
-  }
-  ## Adjust el and es if entrycond is TRUE
-  if(entrycond){
-    EL <- rep(FALSE, length(el))
-    ES <- rep(FALSE, length(el))
-    XL <- rep(FALSE, length(el))
-    XS <- rep(FALSE, length(el))
-    EL[x == 8] <- TRUE
-    ES[x == 4] <- TRUE
-    XL[x %in% c(2,3)] <- TRUE
-    XS[x %in% c(1,3)] <- TRUE
-    if(any(XL)){
-      Beg <- which(XL)
-      End <- true.right(ES, length(ES))[Beg]
-      apply(cbind(Beg,End), 1, function(x) EL[x[1]:x[2]] <- FALSE)
-    }
-    if(any(XS)){
-      Beg <- which(XS)
-      End <- true.right(EL, length(EL))[Beg]
-      apply(cbind(Beg,End), 1, function(x) ES[x[1]:x[2]] <- FALSE)
-    }
-    x <- 8 * EL + 4 * ES + 2 * XL + XS
   }
   ## Signal to state map
   ## ---------------------------

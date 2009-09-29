@@ -31,8 +31,7 @@ tradesys.frame <- function(x, data, order.by=index(data)){
   }
   ## Evaluate and assign signals in env
   Signals <- lapply(c(x["el"], x["es"], x["xl"], x["xs"]), eval, env)
-  Signals <- lapply(Signals, function(x, y) as.logical(cbind(x, y)[, 1]), data[[1]])
-  states <- do.call("signalmap", c(Signals, x["entrycond"], x["entrywins"]))
+  states <- signalmap(Signals$el, Signals$es, Signals$xl, Signals$xs, x[["entrywins"]])
   states <- cbind(states, data[[1]])[, 1]
   for(i in seq(1, length(Signals)))
     assign(names(Signals)[i], Signals[[i]], envir=env)

@@ -6,12 +6,15 @@
 \title{Signals-to-States}
 
 \description{
+  
   Map signal vectors to a vector of states.
+  
 }
 
 \usage{
-signalmap(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, 
-          entrycond=FALSE, entrywins=FALSE) 
+
+signalmap(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrywins=FALSE) 
+
 }
 
 \arguments{
@@ -19,7 +22,6 @@ signalmap(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE,
   \item{es}{logical. enter short signals.}
   \item{xl}{logical. exit long signals.}
   \item{xs}{logical. exit short signals.}
-  \item{entrycond}{logical. see below.}
   \item{entrywins}{logical. see below.}
 }
 \details{
@@ -45,12 +47,6 @@ signalmap(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE,
   signal are set to 0. In words: "once out, stay out until \emph{any}
   entry signal occurs". 
 
-  As the above decription implies, entry signals are by default
-  unconditional. If \code{entrycond} is TRUE, entry rules become
-  conditional: "once out, stay out until the \emph{opposite} entry
-  signal occurs." The state vector is then alternating sequences of
-  1's and -1's (possibly) punctuated by 0's. 
-  
   Where both an entry and exit signal conflict the exit wins unless
   \code{entrywins=TRUE}. All signal vectors must be logical and of the
   same length (although single-valued logicals are expanded). NA's are
@@ -85,18 +81,13 @@ signalmap(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE,
   
   When \code{entrywins} is TRUE, 5 and 7 map to -1 and 10 and 11 map to
   1.
-
-  When \code{entrycond} is TRUE, the signals themselves are altered in
-  the code before performing the above mapping. When \code{xl[i]} is
-  TRUE, \code{el[i:j]} is set to FALSE where \code{j} is the offset of
-  the first TRUE \code{es} after \code{i}. Symmetrically, when
-  \code{xs[i]} is TRUE, \code{es[i:j]} is set to FALSE where \code{j} is
-  the offset of the first TRUE \code{el} after \code{i}.
-
+  
 }
 
 \value{
+  
   A state vector of the same length as the signal vectors.
+  
 }
 
 \examples{
@@ -113,9 +104,7 @@ es <- c(FALSE,FALSE,FALSE)
 xl <- c(FALSE,TRUE,FALSE)
 
 signalmap(el, es, xl)
-signalmap(el, es, xl, entrycond=TRUE)
 signalmap(es, el, FALSE, xl)
-signalmap(es, el, FALSE, xl, entrycond=TRUE)
 }
 \author{Robert Sams \email{robert@sanctumfi.com}}
 \keyword{math}

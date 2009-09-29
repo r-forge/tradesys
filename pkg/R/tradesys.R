@@ -1,6 +1,6 @@
 tradesys <- function(datavars, pricemap=c(Mark=datavars[1]), el=FALSE, es=FALSE, 
                      xl=FALSE, xs=FALSE, delta=1, size.at=FALSE, roll.at=FALSE, 
-                     percent=TRUE, entrywins=FALSE, entrycond=FALSE, exprvars=NULL){
+                     percent=TRUE, entrywins=FALSE, exprvars=NULL){
   l <- list()
   ## Process datavars
   if(any(duplicated(datavars)))
@@ -37,11 +37,8 @@ tradesys <- function(datavars, pricemap=c(Mark=datavars[1]), el=FALSE, es=FALSE,
     stop("percent must be logical")
   if(!is.logical(entrywins))
     stop("entrywins must be logical")
-  if(!is.logical(entrycond))
-    stop("entrycond must be logical")
   l$percent <- percent
   l$entrywins <- entrywins
-  l$entrycond <- entrycond
   class(l) <- "tradesys"
   l
 }
@@ -67,7 +64,6 @@ print.tradesys <- function(x, ...){
   cat("roll.at:", format(x$roll.at), "\n")
   cat("percent:", format(x$percent), "\n")
   cat("entrywins:", format(x$entrywins), "\n")
-  cat("entrycond:", format(x$entrycond), "\n")
 }
 
 "$<-.tradesys" <- function(x, i=NULL, value){

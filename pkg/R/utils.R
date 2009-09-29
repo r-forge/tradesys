@@ -55,19 +55,38 @@ TradeExits <- function(states){   ## Exit at i when s(i) != s(i-1) and s(i-1) !=
   c(FALSE, as.logical(diff(states) * states[-length(states)]))
 }
 
-## x is a boolean vector. The return is a numeric vector v of the same
-## length, where v[i] is the offset of first TRUE value in x after i.
-## true.right(c(FALSE,TRUE, TRUE,FALSE, TRUE,FALSE)) ## 2,3,5,5,NA,NA
-## true.right(c(TRUE, TRUE, TRUE,FALSE, TRUE,FALSE)) ## 2,3,5,5,NA,NA
-## true.right(c(TRUE, TRUE, TRUE, TRUE, TRUE, TRUE)) ## 2,3,4,5,6,NA
-## true.right(c(FALSE,FALSE,FALSE,FALSE,FALSE,FALSE))## NA,NA,NA,NA,NA,NA
+## bin2int(c(FALSE,FALSE,FALSE,FALSE)) ## 0
+## bin2int(c(FALSE,FALSE,FALSE, TRUE)) ## 1
+## bin2int(c(FALSE,FALSE, TRUE,FALSE)) ## 2
+## bin2int(c(FALSE,FALSE, TRUE, TRUE)) ## 3
+## bin2int(c( TRUE, TRUE, TRUE, TRUE)) ## 15
 
-true.right <- function(x, missing=NA){
-  sapply(1:length(x), function(y){
-    if(any(which(x) > y))
-      return(min(which(x)[which(x) > y]))
-    missing
-  })
+bin2int <- function(x){
+  if(!is.matrix(x))
+    x <- matrix(x, nrow=1)
+  8 * x[,1] + 4 * x[,2] + 2 * x[,3] + x[,4]
+}
+
+## all(bin2int(int2bin(0:15)) == 0:15)
+
+int2bin <- function(x){
+  m <- rbind(c(FALSE,FALSE,FALSE,FALSE), ## 0
+             c(FALSE,FALSE,FALSE, TRUE), ## 1
+             c(FALSE,FALSE, TRUE,FALSE), ## 2
+             c(FALSE,FALSE, TRUE, TRUE), ## 3
+             c(FALSE, TRUE,FALSE,FALSE), ## 4
+             c(FALSE, TRUE,FALSE, TRUE), ## 5
+             c(FALSE, TRUE, TRUE,FALSE), ## 6
+             c(FALSE, TRUE, TRUE, TRUE), ## 7
+             c( TRUE,FALSE,FALSE,FALSE), ## 8
+             c( TRUE,FALSE,FALSE ,TRUE), ## 9
+             c( TRUE,FALSE, TRUE,FALSE), ## 10
+             c( TRUE,FALSE, TRUE, TRUE), ## 11
+             c( TRUE, TRUE,FALSE,FALSE), ## 12
+             c( TRUE, TRUE,FALSE, TRUE), ## 13
+             c( TRUE, TRUE, TRUE,FALSE), ## 14
+             c( TRUE, TRUE, TRUE, TRUE)) ## 15
+  m[x + 1,]
 }
 
 

@@ -22,7 +22,7 @@
 tradesys(datavars, pricemap=c(Mark=datavars[1]),
          el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, delta=1,
          size.at=FALSE, roll.at=FALSE, percent=TRUE, 
-         entrywins=FALSE, entrycond=FALSE, exprvars=NULL)
+         entrywins=FALSE, exprvars=NULL)
 
 }
 
@@ -48,7 +48,6 @@ tradesys(datavars, pricemap=c(Mark=datavars[1]),
   \item{percent}{logical. defines \code{delta} as percentage or absolute
     change in price.}
   \item{entrywins}{logical. see \code{signalmap}.}
-  \item{entrycond}{logical. see \code{signalmap}.}
   \item{exprvars}{a named list of quoted expressions.}
 
 }
@@ -75,13 +74,13 @@ tradesys(datavars, pricemap=c(Mark=datavars[1]),
   information. Consult the documentation for \code{prices} for details.
   
   \code{el}, \code{es}, \code{xl}, and \code{xs} encode the system's
-  enter long, enter short, exit long and exit short signals, respectively.
-  When \code{tradesys.frame} is called, these must be expressions that
-  evaluate to a logical vector. Those logical vectors are used to
-  calculate the system's states using \code{signalmap}. \code{entrywins}
-  and \code{entrycond} are logical values that redefine the meaning of
-  the signal-to-state mapping in certain edge cases. Consult the
-  \code{signalmap} documentation for details.
+  enter long, enter short, exit long and exit short signals,
+  respectively.  When \code{tradesys.frame} is called, these must be
+  expressions that evaluate to a logical vector. Those logical vectors
+  are used to calculate the system's states using
+  \code{signalmap}. \code{entrywins} is a logical that redefine the
+  meaning of the signal-to-state mapping in certain edge cases. Consult
+  the \code{signalmap} documentation for details.
 
   \code{delta} defines the system's leveraging scheme. It must evaluate
   to a numeric vector. See the documentation for \code{equity} for

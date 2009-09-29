@@ -3,6 +3,8 @@ test.tradesys.frame <- function(){
   ##
   ## Test all 48 s(t), s(t-1) possibilities
   ##
+
+  m <- matrix(1, nrow=2, dimnames=list(NULL, "Foo"))
   
   ##  0 0000
   checkEquals(tradesys.frame(tradesys("Foo", el=c(FALSE,FALSE), es=c(FALSE,FALSE), xl=c(FALSE,FALSE), xs=c(FALSE,FALSE)), m)$States, c(0,0))
@@ -79,7 +81,8 @@ test.tradesys.frame <- function(){
   checkEquals(tradesys.frame(tradesys("Foo", el=c(FALSE,TRUE), es=c(FALSE,TRUE), xl=c(FALSE,TRUE), xs=c(FALSE,TRUE)), m)$States, c(0,0))
   checkEquals(tradesys.frame(tradesys("Foo", el=c(TRUE, TRUE), es=c(FALSE,TRUE), xl=c(FALSE,TRUE), xs=c(FALSE,TRUE)), m)$States, c(1,0))
   checkEquals(tradesys.frame(tradesys("Foo", el=c(FALSE,TRUE), es=c(TRUE, TRUE), xl=c(FALSE,TRUE), xs=c(FALSE,TRUE)), m)$States, c(-1,0))
-  
+
+  library(TTR)
   x <- tradesys(c("Close"))
   x$el <- quote(SMA(Close, 60) >= SMA(Close, 120))
   x$es <- quote(SMA(Close, 60) < SMA(Close, 120))
@@ -90,5 +93,5 @@ test.tradesys.frame <- function(){
 
   ## Trade variable gets new value when and only when trade entry or exit
   checkEquals(c(FALSE, diff(y$Trade) != 0), TradeEntries(y$States) | TradeExits(y$States))
-
 }
+
