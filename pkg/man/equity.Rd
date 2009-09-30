@@ -17,7 +17,8 @@
 
 \usage{
 
-equity(prices, states, delta=1, size.at=FALSE, roll.at=FALSE, percent=TRUE)
+equity(prices, states, delta=1, size.at=FALSE, roll.at=FALSE,
+       percent=TRUE, init=1)
 
 trades(prices, states, delta=1, roll.at=FALSE, percent=TRUE,
        order.by=index(prices))
@@ -33,7 +34,9 @@ trades(prices, states, delta=1, roll.at=FALSE, percent=TRUE,
   \item{delta}{numeric vector of delta coefficients.}
   \item{roll.at}{logical. see below.}
   \item{size.at}{logical. see below.}
-  \item{percent}{logical. \emph{percentage} or \emph{absolute} change in price.}
+  \item{percent}{logical. \emph{percentage} or \emph{absolute} change in
+    price.}
+  \item{init}{numeric. initial equity level.}
 
 }
 
@@ -42,8 +45,8 @@ trades(prices, states, delta=1, roll.at=FALSE, percent=TRUE,
   \code{equity} computes an equity value at each time \eqn{t}.
   
   \code{prices} should be coercable using \code{as.matrix}. The first
-  column are prices, the second column are roll-in prices, and the third
-  column are roll-out prices. Any additional columns are ignored. If
+  column are prices, the second column are roll-out prices, and the third
+  column are roll-in prices. Any additional columns are ignored. If
   only a vector is passed, no roll adjustments are made (even if
   \code{roll.at} contains a TRUE value).
   
@@ -68,8 +71,8 @@ trades(prices, states, delta=1, roll.at=FALSE, percent=TRUE,
   \code{size.at=TRUE}, which implements a dynamic leveraging scheme
   whereby a constant equity fraction is risked at each period. 
 
-  Equity is initially normalised to 1, \eqn{E_{0} = 1}{E(0) = 1} and
-  calculated thereafter as:
+  Equity is initially normalised to \code{init}, (by default \eqn{E_ {0}
+  = 1}{E(0) = 1}) and calculated thereafter as:
 
   \deqn{
     E_{t} = \left(\frac{p_{t}}{p_{i}} - 1\right) s_{t-1} \Delta E_{i} + E_{i} 
@@ -88,8 +91,8 @@ trades(prices, states, delta=1, roll.at=FALSE, percent=TRUE,
   spreads).  
 
   If any \code{roll.at} are true, roll price adjustments are made. It is
-  a logical vector, and if it is TRUE at \eqn{t}, \eqn{RO_{t} -
-  RI_{t}}{RO(t) - RI(t)} is added to \eqn{P_{i}}{P(i)} in the calculation
+  a logical vector, and if it is TRUE at \eqn{t}, \eqn{RI_{t} -
+  RO_{t}}{RI(t) - RO(t)} is added to \eqn{P_{i}}{P(i)} in the calculation
   of \eqn{E_{t+1}}, where \eqn{RO_{t}}{RO(t)} and \eqn{RI_{t}}{RI(t)}
   are the roll-out and roll-in prices, respectively.
 

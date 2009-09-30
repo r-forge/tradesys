@@ -1,5 +1,10 @@
-equity <- function(prices, states, delta=1, size.at=FALSE, roll.at=FALSE, percent=TRUE){
-  ## process prices
+equity <- function(prices, states, delta=1, size.at=FALSE, roll.at=FALSE, percent=TRUE, init=1){
+  ## process args
+  states <- as.vector(states)
+  size.at <- as.vector(size.at)
+  roll.at <- as.vector(roll.at)
+  percent <- percent[1]
+  init <- init[1]
   prices <- as.matrix(prices)
   if(ncol(prices) == 1)
     prices <- cbind(prices, prices, prices)
@@ -11,7 +16,7 @@ equity <- function(prices, states, delta=1, size.at=FALSE, roll.at=FALSE, percen
   delta <- cbind(delta, Pt)[, 1]
   size.at <- as.logical(cbind(size.at, Pt)[, 1])
   roll.at <- as.logical(cbind(roll.at, Pt)[, 1])
-  size.at <- TradeEntries(states) | size.at
+  size.at <- TradeEntries(states) | TradeExits(states) | size.at
   size.at[length(size.at)] <- FALSE ## ignore TRUE on last obs
   roll.at[length(roll.at)] <- FALSE
   RollAdj <- (It - Ot) * abs(states) * as.numeric(roll.at)
@@ -34,8 +39,8 @@ equity <- function(prices, states, delta=1, size.at=FALSE, roll.at=FALSE, percen
     HPR <- (Pt - Pi) * c(0, states[-length(states)]) * Di
   ## calculate Et (equity at size.at times)
   Et <- rep(NA, length(HPR))
-  Et[1] <- 1
-  Et[size.at] <- cumprod(HPR[size.at] + 1)
+  Et[1] <- init
+  Et[size.at] <- cumprod(HPR[size.at] + 1) * Et[1]
   Et <- na.locf(Et, na.rm=FALSE)
   Et[!size.at] <- Et[!size.at] * (HPR[!size.at] + 1)
   cbind(Trade=TradeID(states), Price=Pt, RollAdj, States=states, Delta=Di, Size=size.at, Roll=roll.at, HPR, Equity=Et)

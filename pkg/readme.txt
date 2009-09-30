@@ -7,6 +7,7 @@ Todo
 - Add tradesys check to call tradesys.frame with random data.
 - Improve print.tsys.
 - Write summary.tsts.
+- Write subset.tsts and subset.tradesys?
 - Optimize equity, signalmap, statemap, and phasemap.
 - Complete draft of vignette.
 

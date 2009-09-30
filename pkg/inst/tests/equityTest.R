@@ -47,5 +47,8 @@ test.equity <- function(){
   checkEquals((Price[12] - Price[11]) *-.25 * x[11, "Equity"] + x[11, "Equity"], x[12, "Equity"], checkNames=FALSE)
   checkEquals((Price[29] - Price[21]) * .25 * x[21, "Equity"] + x[21, "Equity"], x[29, "Equity"], checkNames=FALSE)
 
+  ## E(t+1) = E(t) when t is a trade exit (BUG FIX at Revision 93)
+  checkEquals(equity(c(100,113,80,70,10), c(1,0,0,0,0), delta=1, size.at=FALSE)[, "Equity"], c(1,1.13,1.13,1.13,1.13))
+
 }
 
