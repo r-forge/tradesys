@@ -21,13 +21,11 @@ prices <- function(x, states, pricemap, roll.at=FALSE){
       y[n, i] <- y[n, "Mark"]
     }
   }
-  ##y <- cbind(Price=y[, "Mark"], RollAdj=y[, "RollOut"] - y[, "RollIn"], y)
   y <- cbind(Price=y[, "Mark"], y)
   h <- phasemap(states)
-  y[h == "EL", "Price"] <- y[h == "EL", "Long"]
-  y[h == "ES", "Price"] <- y[h == "ES", "Short"]
-  y[h == "XL", "Price"] <- y[h == "XL", "Short"]
-  y[h == "XS", "Price"] <- y[h == "XS", "Long"]
-  ## y[, "RollAdj"] <- y[, "RollAdj"] * abs(states) * as.numeric(roll.at)
+  y[h == 8, "Price"] <- y[h == 8, "Long"]
+  y[h == 4, "Price"] <- y[h == 4, "Short"]
+  y[h == 2, "Price"] <- y[h == 2, "Short"]
+  y[h == 1, "Price"] <- y[h == 1, "Long"]
   y
 }

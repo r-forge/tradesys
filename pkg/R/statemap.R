@@ -1,19 +1,13 @@
 statemap <- function(phases){
-  if(any(!phases %in% c("EL","ES","XA","XL","XS","UC")))
-    stop("phases must be a vector of 'EL','ES','XA','XL','XS' and 'UC'")
-  phases <- toupper(phases)
-  x <- rep(NA, length(phases))
-  x[which(phases == "EL")] <- 1
-  x[which(phases == "ES")] <- -1
-  x[which(phases == "XA")] <- 0
+  if(any(!phases %in% c(0,1,2,3,4,8)))
+    stop("phases must be a vector consisting of 0, 1, 2, 3, 4, and 8")
+  x <- c()
+  x[which(phases == 8)] <- 1
+  x[which(phases == 4)] <- -1
+  x[which(phases == 3)] <- 0
   if(is.na(x[1]))
     x[1] <- 0
-  for(i in which(is.na(x))){
-    x[i] <- x[i-1]
-    if(phases[i] == "XL" & x[i-1] == 1)
-      x[i] <- 0
-    if(phases[i] == "XS" & x[i-1] == -1)
-      x[i] <- 0
-  }
+  for(i in (which(phases[-1] %in% 0:2) + 1)) ## ignore phases[1]
+    x[i] <- switch(phases[i] + 1, x[i-1], max(0, x[i-1]), min(0, x[i-1]))
   x
 }
