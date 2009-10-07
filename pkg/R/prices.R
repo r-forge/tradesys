@@ -13,13 +13,11 @@ prices <- function(x, states, pricemap, roll.at=FALSE){
   ## process roll.at
   roll.at <- as.logical(cbind(roll.at, x)[, 1])
   if(any(is.na(y[, "Mark"]))){ ## fill NA's in Mark column
-    message("NA's in 'Mark' column.. filling with previous value")
     y[, "Mark"] <- na.locf(y[, "Mark"])
     y[, "Mark"] <- na.locf(y[, "Mark"], fromLast=TRUE)
   }
   for(i in colnames(y)){ ## ...other cols with NA's get Mark's value
     if(any(n <- is.na(y[, i]))){
-      message(paste("NA's in", i, "column.. filling with value in 'Mark' column."))
       y[n, i] <- y[n, "Mark"]
     }
   }
