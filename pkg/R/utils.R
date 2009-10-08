@@ -54,39 +54,3 @@ TradeEntries <- function(states){ ## Entry at i when s(i) != s(i-1) and s(i) != 
 TradeExits <- function(states){   ## Exit at i when s(i) != s(i-1) and s(i-1) != 0
   c(FALSE, as.logical(diff(states) * states[-length(states)]))
 }
-
-## bin2int(c(FALSE,FALSE,FALSE,FALSE)) ## 0
-## bin2int(c(FALSE,FALSE,FALSE, TRUE)) ## 1
-## bin2int(c(FALSE,FALSE, TRUE,FALSE)) ## 2
-## bin2int(c(FALSE,FALSE, TRUE, TRUE)) ## 3
-## bin2int(c( TRUE, TRUE, TRUE, TRUE)) ## 15
-
-bin2int <- function(x){
-  if(!is.matrix(x))
-    x <- matrix(x, nrow=1)
-  8 * x[,1] + 4 * x[,2] + 2 * x[,3] + x[,4]
-}
-
-## all(bin2int(int2bin(0:15)) == 0:15)
-
-int2bin <- function(x){
-  m <- rbind(c(FALSE,FALSE,FALSE,FALSE), ## 0
-             c(FALSE,FALSE,FALSE, TRUE), ## 1
-             c(FALSE,FALSE, TRUE,FALSE), ## 2
-             c(FALSE,FALSE, TRUE, TRUE), ## 3
-             c(FALSE, TRUE,FALSE,FALSE), ## 4
-             c(FALSE, TRUE,FALSE, TRUE), ## 5
-             c(FALSE, TRUE, TRUE,FALSE), ## 6
-             c(FALSE, TRUE, TRUE, TRUE), ## 7
-             c( TRUE,FALSE,FALSE,FALSE), ## 8
-             c( TRUE,FALSE,FALSE ,TRUE), ## 9
-             c( TRUE,FALSE, TRUE,FALSE), ## 10
-             c( TRUE,FALSE, TRUE, TRUE), ## 11
-             c( TRUE, TRUE,FALSE,FALSE), ## 12
-             c( TRUE, TRUE,FALSE, TRUE), ## 13
-             c( TRUE, TRUE, TRUE,FALSE), ## 14
-             c( TRUE, TRUE, TRUE, TRUE)) ## 15
-  m[x + 1,]
-}
-
-

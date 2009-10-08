@@ -5,14 +5,14 @@ tsts <- function(data, order.by=index(data), ..., tsys=NULL, tsysvars=c("States"
     tsys$datavars <- colnames(data)
     l <- tsys
   }
-  x <- tradesys.frame(l, data, order.by)
+  x <- tradesys.frame(l, data, order.by)[, tsysvars]
   if(is.null(tsysvars))
     tsysvars <- colnames(x)
   else
     tsysvars <- unique(tsysvars)
   if(any(!tsysvars %in% colnames(x)))
     stop("all tsysvars must be a column in the return of tradesys.frame.")
-  x <- cbind(as.matrix(x)[, tsysvars], coredata(data))
+  x <- cbind(as.matrix(x), coredata(data))
   attr(x, "index") <- order.by
   attr(x, "tsys") <- l
   attr(x, "tsysvars") <- tsysvars

@@ -1,19 +1,30 @@
-
 \name{signalmap}
 
 \alias{signalmap}
+\alias{statemap}
+\alias{phasemap}
 
-\title{Signals-to-States}
+\title{Translating between Signals, States and Phases}
 
 \description{
   
-  Map signal vectors to a vector of states.
+  \code{signalmap} returns a vector of states given four signal vectors.
   
+  \code{statemap} returns a vector of states given a vector of phases.
+  
+  \code{phasemap} returns a vector of phases given a vector of states.
 }
 
 \usage{
 
-signalmap(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrywins=FALSE) 
+signalmap(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrywins=FALSE,
+          retval=c("states","phases","binary")) 
+
+statemap(phases)
+
+phasemap(states)
+
+
 
 }
 
@@ -23,64 +34,83 @@ signalmap(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrywins=FALSE)
   \item{xl}{logical. exit long signals.}
   \item{xs}{logical. exit short signals.}
   \item{entrywins}{logical. see below.}
+  \item{retval}{character. see below.}
+  \item{states}{numeric vector of states.}
+  \item{phases}{character vector of phases.}
 }
 \details{
   
   \code{signalmap} converts entry and exit signals into a numeric vector
   of states. A signal is a logical vector and is one of four types:
   \emph{enter long}, \emph{enter short}, \emph{exit long}, and
-  \emph{exit short}. All four signals taken together determine state
-  \eqn{s}. 
-
-  \eqn{s_{i}=1}{s(i)=1} when \code{el[i]} is TRUE and
-  \eqn{s_{i}=-1}{s(i)=-1} when \code{es[i]} is TRUE. When both
-  \code{el[i]} and \code{es[i]} are FALSE,
-  \eqn{s_{i}=s_{i-1}}{s(i)=s(i-1)}. These entry rules imply the property
-  of "once in, always in"; upon the first entry signal, the system's
-  state vector is thereafter alternating sequences of 1's and -1's.
+  \emph{exit short}. All four signals taken together make up a 4-bit
+  binary number between 0 and 15, so \code{el=TRUE} with the other three
+  signals \code{FALSE} is 8, \code{xl=TRUE} with the other three
+  signals \code{FALSE} is 2, and so on. Six of these are called
+  \emph{phases} and are special:
   
-  \code{xl} and \code{xs} augment the entry rules with exit rules. Where
-  \code{xl[i]} is TRUE and \eqn{s_{i}=1}, \eqn{s_{i}} and the series of
-  consecutive 1's between it and the next entry signal are set to
-  0. Similarly, where \code{xs} is TRUE and \eqn{s_{i}=-1}, \eqn{s_{i}}
-  and the series of consecutive -1's between it and the next entry
-  signal are set to 0. In words: "once out, stay out until \emph{any}
-  entry signal occurs". 
-
-  Where both an entry and exit signal conflict the exit wins unless
-  \code{entrywins=TRUE}. All signal vectors must be logical and of the
-  same length (although single-valued logicals are expanded). NA's are
-  treated as FALSE.
-  
-  Here is a complete definition of the mapping computed by
-  \code{signalmap}. Think of each signal quad as a four digit binary
-  number, where the left-most digit represents the enter long signal,
-  the next digit represents the enter short signal, and so on. 
   \tabular{lll}{
-    Bin \tab Int \tab State \eqn{s_{t}}{s(t)}\cr
-    \code{0000} \tab 0 \tab \eqn{s_{t-1}}{s(t-1)} \cr
-    \code{0001} \tab 1 \tab \eqn{max(s_{t-1}, 0)}{max[s(t-1), 0]} \cr
-    \code{0010} \tab 2 \tab \eqn{min(s_{t-1}, 0)}{min[s(t-1), 0]} \cr
-    \code{0011} \tab 3 \tab 0 \cr
-    \code{0100} \tab 4 \tab -1 \cr
-    \code{0101} \tab 5 \tab \eqn{max(s_{t-1}, 0)}{max[s(t-1), 0]}\cr %%%
-    \code{0110} \tab 6 \tab -1\cr
-    \code{0111} \tab 7 \tab 0\cr %%%
-    \code{1000} \tab 8 \tab 1\cr
-    \code{1001} \tab 9 \tab 1\cr
-    \code{1010} \tab 10\tab \eqn{min(s_{t-1}, 0)}{min[s(t-1), 0]}\cr %%%
-    \code{1011} \tab 11\tab 0\cr %%%
-    \code{1100} \tab 12\tab \eqn{s_{t-1}}{s(t-1)} \cr
-    \code{1101} \tab 13\tab \eqn{max(s_{t-1}, 0)}{max[s(t-1), 0]} \cr
-    \code{1110} \tab 14\tab \eqn{min(s_{t-1}, 0)}{min[s(t-1), 0]} \cr
-    \code{1111} \tab 15\tab 0\cr
+    Signals \tab Phase  \tab English \cr
+    \code{0000} \tab 0 \tab Unchanged    \cr
+    \code{0001} \tab 1 \tab Exit Short   \cr
+    \code{0010} \tab 2 \tab Exit Long    \cr
+    \code{0011} \tab 3 \tab Exit All     \cr
+    \code{0100} \tab 4 \tab Enter Short  \cr
+    \code{1000} \tab 8 \tab Enter Long   
   }
-
-  12-15 will be treated like 0-3, as it is a nonesense to have both
-  \code{el[i]} and \code{es[i]} as TRUE.
   
-  When \code{entrywins} is TRUE, 5 and 7 map to -1 and 10 and 11 map to
-  1.
+  A phase specifies the transition from one state to the
+  next. \code{statemap} recursively calculates a vector of states given a
+  vector of phases using the following rules:
+  
+  \tabular{lrl}{
+    \eqn{s_{i} = s_{i-1}}{s(i) = s(i-1)} \tab if \tab \eqn{h_{i} = 0}{h(i) = 0} \cr
+    \eqn{s_{i} = max(0, s_{i-1})}{s(i) = max[0, s(i-1)]} \tab if \tab \eqn{h_{i} = 1}{h(i) = 1}\cr
+    \eqn{s_{i} = min(0, s_{i-1})}{s(i) = min[0, s(i-1)]} \tab if \tab \eqn{h_{i} = 2}{h(i) = 2}\cr
+    \eqn{s_{i} = 0}{s(i) = 0} \tab if \tab \eqn{h_{i} = 3}{h(i) = 3} \cr
+    \eqn{s_{i} = -1}{s(i) = -1} \tab if \tab \eqn{h_{i} = 4}{h(i) = 4} \cr
+    \eqn{s_{i} = 1}{s(i) = 1} \tab if \tab \eqn{h_{i} = 8}{h(i) = 8} 
+  }
+  
+  \code{signalmap} calls \code{statemap} to calculate the state vector
+  from the four logical signal vectors, but it first reduces the ten
+  non-phase combinations to a phase using the following mapping:
+  
+  \tabular{l}{
+    \code{0101 [05] --> 0001 [1]}\cr
+    \code{0110 [06] --> 0100 [4]}\cr
+    \code{0111 [07] --> 0011 [3]}\cr
+    \code{1001 [09] --> 1000 [8]}\cr
+    \code{1010 [10] --> 0010 [2]}\cr
+    \code{1011 [11] --> 0011 [3]}\cr
+    \code{1100 [12] --> 0000 [0]}\cr
+    \code{1101 [13] --> 0001 [1]}\cr
+    \code{1110 [14] --> 0010 [2]}\cr
+    \code{1111 [15] --> 0011 [3]}
+  }
+  
+  If \code{entrywins=TRUE} the mapping is altered so that conflicts
+  between an entry and an exit resolve into the entry, instead of the
+  exit (which is the default behavior above):
+  
+  \tabular{l}{
+    \code{0101 [05] --> 0100 [4]}\cr
+    \code{0110 [06] --> 0100 [4]}\cr
+    \code{0111 [07] --> 0100 [4]}\cr
+    \code{1001 [09] --> 1000 [8]}\cr
+    \code{1010 [10] --> 1000 [8]}\cr
+    \code{1011 [11] --> 1000 [8]}\cr
+    \code{1100 [12] --> 0000 [0]}\cr
+    \code{1101 [13] --> 0001 [1]}\cr
+    \code{1110 [14] --> 0010 [2]}\cr
+    \code{1111 [15] --> 0011 [3]}
+  }
+  
+  \code{phasemap} does the opposite of \code{statemap}, taking a vector of
+  states and returning a vector of phases. If \code{retval="phases"},
+  \code{signalmap} will skip the state calculation and return a vector
+  of phases instead. If \code{retval="binary"}, the signals are simply
+  converted into their 4-bit integer representation and returned.
   
 }
 
@@ -91,6 +121,14 @@ signalmap(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrywins=FALSE)
 }
 
 \examples{
+
+## statemap is invertable
+statemap(p <- phasemap(s <- c(0,0,1,1,1,1,-1,-1,-1,0,0))) == s
+## phasemap is not always invertable.. for example
+q <- p
+q[4] <- 8
+phasemap(statemap(q)) == q
+
 el <- c(TRUE,FALSE)
 es <- c(FALSE,FALSE)
 signalmap(el, es)
@@ -105,6 +143,7 @@ xl <- c(FALSE,TRUE,FALSE)
 
 signalmap(el, es, xl)
 signalmap(es, el, FALSE, xl)
+
 }
 \author{Robert Sams \email{robert@sanctumfi.com}}
 \keyword{math}

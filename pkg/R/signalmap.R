@@ -1,5 +1,6 @@
-signalmap <- function(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrywins=FALSE){
+signalmap <- function(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrywins=FALSE, retval=c("states","phases","binary")){
   entrywins <- entrywins[1]
+  retval <- retval[1]
   el <- cbind(el, es, xl, xs)[, 1]
   es <- cbind(el, es, xl, xs)[, 2]
   xl <- cbind(el, es, xl, xs)[, 3]
@@ -10,7 +11,9 @@ signalmap <- function(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrywins=FALSE){
   xl[is.na(xl)] <- FALSE
   xs[is.na(xs)] <- FALSE
   ## Convert binary to integer
-  x <- bin2int(cbind(el,es,xl,xs))
+  x <- 8 * el + 4 * es + 2 * xl + xs
+  if(retval == "binary")
+    return(x)
   ## Reduce the sixteen possible forms to six (0,1,2,3,4,8):
   x[x == 6] <- 4    ## 0110 [6]  --> 0100 [4]
   x[x == 9] <- 8    ## 1001 [9]  --> 1000 [8]
@@ -29,27 +32,7 @@ signalmap <- function(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrywins=FALSE){
     x[x == 10] <- 2 ## 1010 [10] --> 0010 [2]
     x[x == 11] <- 3 ## 1011 [11] --> 0011 [3]
   }
-  ## Signal to state map
-  ## ---------------------------
-  ## 0000 [0] --> s(t-1) 
-  ## 0001 [1] --> max[s(t-1), 0] 
-  ## 0010 [2] --> min[s(t-1), 0] 
-  ## 0011 [3] --> 0
-  ## 0100 [4] --> -1
-  ## 1000 [8] --> 1
-  y <- rep(NA, length(el))
-  y[x == 3] <- 0
-  y[x == 4] <- -1
-  y[x == 8] <- 1
-  if(is.na(y[1]))
-    y[1] <- 0
-  for(i in which(is.na(y))){
-    if(x[i] == 0)
-      y[i] <- y[i-1]
-    if(x[i] == 1)
-      y[i] <- max(y[i-1], 0)
-    if(x[i] == 2)
-      y[i] <- min(y[i-1], 0)
-  }
-  y
+  if(retval=="states")
+    x <- statemap(x)
+  x
 }
