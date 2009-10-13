@@ -1,0 +1,26 @@
+pnl <- function(prices, states, roll.at=FALSE){
+  if(any(!states %in% c(1,0,-1)))
+    stop("states must consist of 1, 0, and -1")
+  if(any(!as.numeric(roll.at) %in% c(1,0)))
+    stop("roll.at must be a logical vector")
+  prices <- as.matrix(prices)
+  if(nrow(prices) == 1) 
+    return(0) ## ..because PnL of first period is always zero
+  if(ncol(prices) == 1)
+    prices <- cbind(prices, prices, prices)
+  if(ncol(prices) == 2)
+    prices <- cbind(prices[, 1], prices[, 1], prices[, 2])
+  It <- as.vector(prices[, 3])
+  Ot <- as.vector(prices[, 2])
+  Pt <- as.vector(prices[, 1])
+  if(nrow(prices) %% length(roll.at) != 0)
+    stop("length(roll.at) must be a multiple of nrow(prices)")
+  Rt <- as.vector(roll.at)
+  if(nrow(prices) %% length(states) != 0)
+    stop("length(states) must be a multiple of nrow(prices)")
+  St <- as.vector(states)
+  St <- cbind(St, Pt)[, 1]
+  Rt <- as.numeric(cbind(Rt, Pt)[, 1])
+  T <- 2:length(Pt)
+  c(0, (Pt[T] - (Pt[T-1] + (It[T-1] - Ot[T-1]) * Rt[T-1])) * St[T-1])
+}

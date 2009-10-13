@@ -44,9 +44,8 @@ phasemap(states)
   of states. A signal is a logical vector and is one of four types:
   \emph{enter long}, \emph{enter short}, \emph{exit long}, and
   \emph{exit short}. All four signals taken together make up a 4-bit
-  binary number between 0 and 15, so \code{el=TRUE} with the other three
-  signals \code{FALSE} is 8, \code{xl=TRUE} with the other three
-  signals \code{FALSE} is 2, and so on. Six of these are called
+  binary number between 0 and 15 (e.g., \code{el=TRUE} with the other
+  three signals \code{FALSE} is 8). Six of these are called
   \emph{phases} and are special:
   
   \tabular{lll}{
@@ -72,9 +71,9 @@ phasemap(states)
     \eqn{s_{i} = 1}{s(i) = 1} \tab if \tab \eqn{h_{i} = 8}{h(i) = 8} 
   }
   
-  \code{signalmap} calls \code{statemap} to calculate the state vector
-  from the four logical signal vectors, but it first reduces the ten
-  non-phase combinations to a phase using the following mapping:
+  \code{signalmap} calls \code{statemap} in calculating the state
+  vector, but it first reduces the ten non-phase combinations to a phase
+  using the following mapping:
   
   \tabular{l}{
     \code{0101 [05] --> 0001 [1]}\cr

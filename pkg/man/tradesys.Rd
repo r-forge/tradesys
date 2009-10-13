@@ -13,7 +13,7 @@
 
 \description{
 
-  Create a "tradesys" object, a complete definition of trading system.
+  Create a "tradesys" object, a complete definition of a trading system.
 
 }
 
