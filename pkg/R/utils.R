@@ -54,3 +54,18 @@ TradeEntries <- function(states){ ## Entry at i when s(i) != s(i-1) and s(i) != 
 TradeExits <- function(states){   ## Exit at i when s(i) != s(i-1) and s(i-1) != 0
   c(FALSE, as.logical(diff(states) * states[-length(states)]))
 }
+
+which.expand <- function(x, leading=1){
+  x[which(x)] <- which(x)
+  x[which(!x)] <- NA
+  if(is.na(x[1]))
+    x[1] <- leading
+  na.locf(x, FALSE)
+}
+
+## c(1,1,3,3,5,5,5)
+#which.expand(c(FALSE,FALSE,TRUE,FALSE,TRUE,FALSE,FALSE))
+## c(1,1,1,1,1,1,1)
+#which.expand(c(FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE))
+## c(1,2,3,4,5,6,7)
+#which.expand(c(TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE))
