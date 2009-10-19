@@ -1,3 +1,7 @@
+##
+## !!! DEPRECATED !!! 
+##
+
 equity <- function(prices, states, delta=1, size.at=FALSE, roll.at=FALSE, percent=TRUE, init=1){
   ## process args
   states <- as.vector(states)
