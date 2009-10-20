@@ -44,10 +44,10 @@
 }
 
 \examples{
-x <- tsts(spx)
-stopifnot(identical(coredata(x), spx))
-coredata(x) <- window(coredata(x), start="2009-05-01")
-x
+## x <- tsts(spx)
+## stopifnot(identical(coredata(x), spx))
+## coredata(x) <- window(coredata(x), start="2009-05-01")
+## x
 }
 
 \author{Robert Sams \email{robert@sanctumfi.com}}

@@ -8,48 +8,57 @@
 \alias{[<-.tradesys}
 \alias{as.tradesys}
 \alias{as.tradesys.default}
+\alias{tradesys.frame}
 
-\title{Trading System Object}
+\title{Trading System Definition and Evaluation}
 
 \description{
 
-  Create a "tradesys" object, a complete definition of a trading system.
+  Use \code{tradesys} to create a "tradesys" object. Use
+  \code{tradesys.frame} to evaluate such an object with some dataset. 
 
 }
 
 \usage{
 
-tradesys(datavars, pricemap=c(Mark=datavars[1]),
-         el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, delta=1,
-         size.at=FALSE, roll.at=FALSE, percent=TRUE, 
-         entrywins=FALSE, exprvars=NULL)
+tradesys(states=0, size.at=FALSE, roll.at=FALSE, delta=1, prices, 
+         equity=ror(prices, states, roll.at, delta, size.at), ...)
+
+tradesys.frame(x, data, order.by=index(data))
 
 }
 
 \arguments{
+  
 
-  \item{datavars}{character vector defining the system's data variable names.}
-  \item{pricemap}{named character vector defining the mapping between
-    price types and data variable names.}
-  \item{el}{enter long signal. expression that evaluates to a logical
-    vector.}
-  \item{es}{enter short signal. expression that evaluates to a logical
-    vector.}
-  \item{xl}{exit long signal. expression that evaluates to a logical
-    vector.}
-  \item{xs}{exit short signal. expression that evaluates to a logical
-    vector.}
-  \item{delta}{numeric vector defining the relationship between changes
-    in price and changes in equity.}
-  \item{roll.at}{logical vector stating those times at which a roll
-    trade is done.}
-  \item{size.at}{logical vector stating those times at which equity is
-    re-sized to \code{delta}.}
-  \item{percent}{logical. defines \code{delta} as percentage or absolute
-    change in price.}
-  \item{entrywins}{logical. see \code{signalmap}.}
-  \item{exprvars}{a named list of quoted expressions.}
+  \item{x}{a tradesys object.}
 
+  \item{data}{matrix, data.frame, list or environment containing numeric
+    vectors of equal length.}
+  
+  \item{order.by}{time index. see below.}
+  
+  \item{states}{expression that evalutates to a numeric vector of
+    consisting of 1, 0, and -1.}
+  
+  \item{size.at}{expression that evaluates to a logical vector
+    stating those times when returns are compounded.}
+  
+  \item{roll.at}{expression that evaluates to a logical vector
+    stating those times at which a roll trade is done.}
+  
+  \item{delta}{expression that evaluates to a numeric vector
+    defining the percentage change in cumulative return given a change
+    in price.}
+  
+  \item{prices}{expression containing names of data variables of object
+    passed to \code{data} in a call to \code{tradesys.frame}.}
+  
+  \item{equity}{expression that evaluates to a numeric vector of the
+    system's cumulative return.}
+
+  \item{\dots}{ad-hoc quoted expressions.}
+  
 }
 
 \details{
@@ -63,79 +72,64 @@ tradesys(datavars, pricemap=c(Mark=datavars[1]),
   modified value. A \code{print} method prints the contents in a
   sensible manner and the \code{as.list} method and \code{as.tradesys}
   default method allow for translation to and from plain lists.
-  
-  \code{datavars} is a character vector defining the data variable names
-  the 'tradesys' object gets evaluated with in a call to
-  \code{tradesys.frame}. Any of the expressions passed to \code{tradesys}
-  can refer to such data by including one or more of these names in the
-  expression.
-  
-  \code{pricemap} specifies which data variables contain price
-  information. Consult the documentation for \code{prices} for details.
-  
-  \code{el}, \code{es}, \code{xl}, and \code{xs} encode the system's
-  enter long, enter short, exit long and exit short signals,
-  respectively.  When \code{tradesys.frame} is called, these must be
-  expressions that evaluate to a logical vector. Those logical vectors
-  are used to calculate the system's states using
-  \code{signalmap}. \code{entrywins} is a logical that redefine the
-  meaning of the signal-to-state mapping in certain edge cases. Consult
-  the \code{signalmap} documentation for details.
 
-  \code{delta} defines the system's leveraging scheme. It must evaluate
-  to a numeric vector. See the documentation for \code{equity} for
-  details.
+  \code{tradesys.frame} will evaluate a tradesys object passed to
+  \code{x} with data passed to \code{data}.
   
-  \code{size.at} defines the times when the effect of price change on
-  equity is re-sized to equal delta. By default these evaluate to those
-  times when there is a change in state. \code{roll.at} is optional and
-  defines the times when a "roll trade" is performed. Both are
-  expressions that evaluate to logical vectors. \code{percent} is a
-  logical value that specifies whether delta is defined over percentage
-  or absolute changes in price. All three parameters are used in
-  calculating the system's equity vector. Consult documentation of
-  \code{equity} for details.
+  The expressions in stored in \code{x} are evaluated in a new
+  environment that includes \code{data}, which is any numeric matrix,
+  data.frame, list or environment containing all of the data variables
+  contained in the expressions. 
+
+  \code{order.by} is any vector whose objects can be computed by the
+  \code{-} operator (its value is understood to be a measure of time
+  interval) and is equal the number of rows in \code{data}.
   
-  \code{exprvars} must a list of one or more quoted expressions with
-  unique argument names. These provide a convienent way to define an
-  arbitrary number of ad-hoc "derived" variables. The other expressions
-  (except the entry/exit signals) may refer to them by name. They must
-  evaluate to numeric.
+  ??????????????
+  
+  Then all variables are combined into a data frame and returned.
 
 }
 
 \value{
 
-  A tradesys object.
+  \code{tradesys} returns a tradesys object. \code{tradesys.frame}
+  returns a data.frame of the evaluated expressions of the tradesys
+  object passed to it. 
 
 }
 
 \examples{
-x <- tradesys(c("Bid","Ask","Close"))
 
-## assignment
-x$pricemap <- c(Mark="Close", Long="Ask", Short="Bid")
 library(TTR)
-x[["el"]] <- quote(SMA(Close, 60) >= SMA(Close, 120))
-x$es <- quote(SMA(Close, 60) < SMA(Close, 120))
+
+x <- tradesys()
+
+## Assignment
+x[["prices"]] <- quote(Close)
+x$prices <- quote(Close) ## Same as above
+x$states <- quote(signalmap(SMA(Close, 60) >= SMA(Close, 120), SMA(Close, 60) < SMA(Close, 120)))
 
 ## .. same as 'x' but all in one call
-y <- tradesys(c("Bid","Ask","Close"), pricemap=c(Mark="Close",
-Long="Ask", Short="Bid"), el=SMA(Close, 60) >= SMA(Close, 120), es=SMA(Close, 60) < SMA(Close, 120))
+y <- tradesys(prices=Close, states=signalmap(SMA(Close, 60) >= SMA(Close, 120), SMA(Close, 60) < SMA(Close, 120)))
 stopifnot(identical(x, y))
 
 ## .. same as x but via coercion of a list
 stopifnot(identical(x, as.tradesys(as.list(x))))
 
-## extraction
-x$el
-x$es
-x[4:8]
-x[["el"]]
-x$pricemap
+## Extraction
+x$prices
+x$states
+x[1:2]
+x[["delta"]]
 
-## coercion
-as.list(x)
+## Evaluation
+x$AvgTR <- quote(na.locf(ATR(cbind(High,Low,Close), 14)[, 2], fromLast=TRUE))
+x$delta <- quote(1/AvgTR) ## 1 ATR = 1pct chg in equity
+y <- tradesys.frame(x, spx)
+head(y)
+tail(y)
+
 }
 
 \author{Robert Sams \email{robert@sanctumfi.com}}

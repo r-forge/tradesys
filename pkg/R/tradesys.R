@@ -1,44 +1,15 @@
-tradesys <- function(datavars, pricemap=c(Mark=datavars[1]), el=FALSE, es=FALSE, 
-                     xl=FALSE, xs=FALSE, delta=1, size.at=FALSE, roll.at=FALSE, 
-                     percent=TRUE, entrywins=FALSE, exprvars=NULL){
-  l <- list()
-  ## Process datavars
-  if(any(duplicated(datavars)))
-    stop("datavars be unique.")
-  l$datavars <- datavars
-  ## Process pricemap arg
-  if(any(!pricemap %in% c(datavars, names(exprvars))))
-    stop("all pricemap must be in datavars or names(exprvars)")
-  l$pricemap <- pricemapper(pricemap)
-  ## Process formulae arg (we expect a named list of calls)
-  if(!is.null(exprvars)){
-    if(any(unlist(lapply(exprvars, class)) != "call"))
-      stop("exprvars must be a list of call objects")
-    if(any(names(exprvars) == ""))
-      stop("all exprvars must be named")
-    if(any(duplicated(names(exprvars))))
-      stop("names(exprvars) be unique")
-    if(any(names(exprvars) %in% datavars))
-      stop("exprvars cannot have a name matching datavars.")
-    l$exprvars <- exprvars
-  }else{
-    l["exprvars"] <- list(NULL)
-  }
-  ## Process expression args
-  l$el <- substitute(el)
-  l$es <- substitute(es)
-  l$xl <- substitute(xl)
-  l$xs <- substitute(xs)
-  l$delta <- substitute(delta)
-  l$size.at <- substitute(size.at)
-  l$roll.at <- substitute(roll.at)
-  ## Process logical args
-  if(!is.logical(percent))
-    stop("percent must be logical")
-  if(!is.logical(entrywins))
-    stop("entrywins must be logical")
-  l$percent <- percent
-  l$entrywins <- entrywins
+tradesys <- function(states=0, size.at=FALSE, roll.at=FALSE, delta=1, prices, 
+                     equity=ror(prices, states, roll.at, delta, size.at), ...){
+  l <- list(states=substitute(states),
+            size.at=substitute(size.at),
+            roll.at=substitute(roll.at),
+            delta=substitute(delta),
+            prices=substitute(prices),
+            equity=substitute(equity))
+  Dots <- list(...)
+  if(any(duplicated(names(Dots))))
+    stop("Expressions passed to ... must be (uniquely) tagged.")
+  l <- c(l, Dots)
   class(l) <- "tradesys"
   l
 }
@@ -48,22 +19,7 @@ tradesys <- function(datavars, pricemap=c(Mark=datavars[1]), el=FALSE, es=FALSE,
 ##
 
 print.tradesys <- function(x, ...){
-  cat("datavars: ", x$datavars, "\n")
-  cat("pricemap:", paste(names(x$pricemap), x$pricemap, sep="="), "\n")
-  cat("el:", format(x$el), "\n")
-  cat("es:", format(x$es), "\n")
-  cat("xl:", format(x$xl), "\n")
-  cat("xs:", format(x$xs), "\n")
-  if(!is.null(x$exprvars)){
-    cat("** exprvars **\n")
-    for(i in 1:length(x$exprvars))
-      cat(names(x$exprvars)[i],":", format(x$exprvars[[i]]), "\n")
-  }
-  cat("delta:", format(x$delta), "\n")
-  cat("size.at:", format(x$size.at), "\n")
-  cat("roll.at:", format(x$roll.at), "\n")
-  cat("percent:", format(x$percent), "\n")
-  cat("entrywins:", format(x$entrywins), "\n")
+  print(as.list(x, ...))
 }
 
 "$<-.tradesys" <- function(x, i=NULL, value){
@@ -72,9 +28,7 @@ print.tradesys <- function(x, ...){
     y <- value
   else
     y[[i]] <- value
-  y <- try(do.call("tradesys", y))
-  if(class(y) == "try-error")
-    return(x)
+  class(y) <- "tradesys"
   y
 }
 
@@ -83,13 +37,7 @@ print.tradesys <- function(x, ...){
 }
 
 "[<-.tradesys" <- function(x, i, value){
-  y <- as.list.tradesys(x)
-  y[i] <- value
-  y <- try(do.call("tradesys", y))
-  if(class(y) == "try-error")
-    return(x)
-  y
-  
+  "$<-.tradesys"(x, i, value)
 }
 
 as.list.tradesys <- function(x, ...){
@@ -106,8 +54,12 @@ as.tradesys <- function(x, ...){
 }
 
 as.tradesys.default <- function(x, ...){
-  if(is.list(x))
-    return(do.call("tradesys", x))
-  else
+  y <- tradesys()
+  if(!is.list(x))
     stop("the default method coerces only lists.")
+  if(any(duplicated(names(x))))
+    stop("names(x) must be unique.")
+  for(i in 1:length(x))
+    y[[names(x)[i]]] <- x[[i]]
+  y
 }

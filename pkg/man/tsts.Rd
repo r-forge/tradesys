@@ -74,41 +74,41 @@ tsts(data, order.by=index(data), ..., tsys=NULL, tsysvars=c("States","Equity"))
 }
 
 \examples{
-library(TTR)
+## library(TTR)
 
-x <- tsts(spx, el=SMA(Close, 20) >= SMA(Close, 10),
-          es=SMA(Close, 20) < SMA(Close, 10), pricemap="Close")
+## x <- tsts(spx, el=SMA(Close, 20) >= SMA(Close, 10),
+##           es=SMA(Close, 20) < SMA(Close, 10), pricemap="Close")
 
-is.tsts(x)
-tail(x)
-tail(coredata(x))
+## is.tsts(x)
+## tail(x)
+## tail(coredata(x))
 
-class(x[1:10, ]) ## row indexing strips tsts attribute
-class(x[, 1:2])  ## ... so does column indexing
+## class(x[1:10, ]) ## row indexing strips tsts attribute
+## class(x[, 1:2])  ## ... so does column indexing
 
-## Basic methods
-## print(x) 
-head(x)
-tail(x)
-start(x)
-end(x)
+## ## Basic methods
+## ## print(x) 
+## head(x)
+## tail(x)
+## start(x)
+## end(x)
 
-## Coercion methods
-tail(as.matrix(x))
-tail(as.zoo(x))
+## ## Coercion methods
+## tail(as.matrix(x))
+## tail(as.zoo(x))
 
-## Extractor/assignment functions
-index(x) <- index(x) + 1
-tail(index(x))
-tsys(x)
-tsys(x)$el <- quote(SMA(Close, 60) >= SMA(Close, 120))
-tsys(x)$es <- quote(SMA(Close, 60) <  SMA(Close, 120))
-tail(x)
-tsysvars(x)
-tsysvars(x) <- c("States","EL","ES","Delta")
-tail(x)
-coredata(x) <- coredata(x)[, c("Open","Close")]
-tail(x)
+## ## Extractor/assignment functions
+## index(x) <- index(x) + 1
+## tail(index(x))
+## tsys(x)
+## tsys(x)$el <- quote(SMA(Close, 60) >= SMA(Close, 120))
+## tsys(x)$es <- quote(SMA(Close, 60) <  SMA(Close, 120))
+## tail(x)
+## tsysvars(x)
+## tsysvars(x) <- c("States","EL","ES","Delta")
+## tail(x)
+## coredata(x) <- coredata(x)[, c("Open","Close")]
+## tail(x)
 }
 
 \author{Robert Sams \email{robert@sanctumfi.com}}
