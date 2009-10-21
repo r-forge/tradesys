@@ -1,4 +1,4 @@
-ror <- function(prices, states, roll.at=FALSE, delta=1, size.at=TRUE){
+ror <- function(prices, states, roll.at=FALSE, size.at=TRUE, delta=1){
   RoR <- pnl(prices, states, roll.at) 
   if(nrow(as.matrix(prices)) %% length(delta) != 0)
     stop("length(delta) must be a multiple of nrow(prices)")

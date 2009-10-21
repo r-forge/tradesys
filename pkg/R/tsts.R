@@ -1,21 +1,13 @@
-tsts <- function(data, order.by=index(data), ..., tsys=NULL, tsysvars=c("States","Equity")){
-  if(is.null(tsys)){
-    l <- tradesys(datavars=colnames(data), ...)
-  }else{
-    tsys$datavars <- colnames(data)
-    l <- tsys
-  }
-  x <- tradesys.frame(l, data, order.by)[, tsysvars]
-  if(is.null(tsysvars))
-    tsysvars <- colnames(x)
+tsts <- function(data, order.by=index(data), ..., tsys=NULL){
+  if(is.null(tsys))
+    l <- tradesys(...)
   else
-    tsysvars <- unique(tsysvars)
-  if(any(!tsysvars %in% colnames(x)))
-    stop("all tsysvars must be a column in the return of tradesys.frame.")
-  x <- cbind(as.matrix(x), coredata(data))
+    l <- tsys
+  x <- tradesys.frame(l, data, order.by)
+  x <- x[, -which(colnames(x) == "Index")]
+  x <- as.matrix(x)
   attr(x, "index") <- order.by
   attr(x, "tsys") <- l
-  attr(x, "tsysvars") <- tsysvars
   class(x) <- c("tsts","zoo")
   x
 }
@@ -63,13 +55,7 @@ tsys <- function(x){
 }
 
 "tsys<-" <- function(x, value){
-  tsts(coredata(x), index(x), tsys=value, tsysvars=tsysvars(x))
+  tsts(coredata(x), index(x), tsys=value)
 }
 
-tsysvars <- function(x){
-  attr(x, "tsysvars")
-}
 
-"tsysvars<-" <- function(x, value){
-  tsts(coredata(x), index(x), tsys=tsys(x), tsysvars=value)
-}

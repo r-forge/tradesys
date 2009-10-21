@@ -15,7 +15,7 @@
 
 \usage{
 
-ror(prices, states, roll.at=FALSE, delta=1, size.at=TRUE)
+ror(prices, states, roll.at=FALSE, size.at=TRUE, delta=1)
 
 pnl(prices, states, roll.at=FALSE)
 
@@ -26,8 +26,8 @@ pnl(prices, states, roll.at=FALSE)
   \item{prices}{numeric matrix or coerciable via \code{as.matrix}.}
   \item{states}{numeric ector of states.}
   \item{roll.at}{logical. See below.}
-  \item{delta}{numeric. See below.}
   \item{size.at}{logical. See below.}
+  \item{delta}{numeric. See below.}
 
 }
 
@@ -87,7 +87,7 @@ pnl(prices, states, roll.at=FALSE)
   This defines a leveraging scheme whereby open positions are re-sized
   at every period to maintain a constant \eqn{\Delta} sensitivity of
   price-to-equity, which may or may not be what is intended. A useful
-  specification is \code{size.at=phasemap(states) != 0}, which defines
+  specification is \code{size.at=phasemap(states)!= 0}, which defines
   the assumption that positions are sized to \eqn{\Delta} at initiation
   only. Another useful specification is \code{delta=n/prices}, which
   means that an \eqn{x\%} change in price (since the last TRUE \code{size.at})
@@ -109,15 +109,15 @@ pnl(prices, states, roll.at=FALSE)
 \examples{
 
   ## Intuitive examples: Price -.5, +.5
-  ror(c(1.0,0.5,1.0), c( 1, 1, 1), delta=1.0,  size.at=FALSE) ## c(1.0000, 0.5000, 1.0000)
-  ror(c(1.0,0.5,1.0), c( 1, 1, 1), delta=1.0,  size.at=TRUE)  ## c(1.0000, 0.5000, 0.7500)
-  ror(c(1.0,0.5,1.0), c( 1, 1, 1), delta=0.5,  size.at=TRUE)  ## c(1.0000, 0.7500, 0.9375)
-  ror(c(1.0,0.5,1.0), c( 1, 1, 1), delta=2.0,  size.at=TRUE)  ## c(1.0000, 0.0000, 0.0000)
-  ror(c(1.0,0.5,1.0), c( 1, 1, 1), delta=1.5,  size.at=TRUE)  ## c(1.0000, 0.2500, 0.4375)
-  ror(c(1.0,0.5,1.0), c( 1,-1, 1), delta=1.0,  size.at=FALSE) ## c(1.0000, 0.5000, 0.0000)
-  ror(c(1.0,0.5,1.0), c( 1,-1, 1), delta=1.0,  size.at=TRUE)  ## c(1.0000, 0.5000, 0.2500)
-  ror(c(1.0,0.5,1.0), c(-1, 1, 1), delta=1.0,  size.at=FALSE) ## c(1.0000, 1.5000, 2.0000)
-  ror(c(1.0,0.5,1.0), c(-1, 1, 1), delta=0.5,  size.at=TRUE)  ## c(1.0000, 1.2500, 1.5625)
+  ror(c(1.0,0.5,1.0), c( 1, 1,1), delta=1.0, size.at=FALSE) ## c(1.0000,0.5000,1.0000)
+  ror(c(1.0,0.5,1.0), c( 1, 1,1), delta=1.0, size.at=TRUE)  ## c(1.0000,0.5000,0.7500)
+  ror(c(1.0,0.5,1.0), c( 1, 1,1), delta=0.5, size.at=TRUE)  ## c(1.0000,0.7500,0.9375)
+  ror(c(1.0,0.5,1.0), c( 1, 1,1), delta=2.0, size.at=TRUE)  ## c(1.0000,0.0000,0.0000)
+  ror(c(1.0,0.5,1.0), c( 1, 1,1), delta=1.5, size.at=TRUE)  ## c(1.0000,0.2500,0.4375)
+  ror(c(1.0,0.5,1.0), c( 1,-1,1), delta=1.0, size.at=FALSE) ## c(1.0000,0.5000,0.0000)
+  ror(c(1.0,0.5,1.0), c( 1,-1,1), delta=1.0, size.at=TRUE)  ## c(1.0000,0.5000,0.2500)
+  ror(c(1.0,0.5,1.0), c(-1, 1,1), delta=1.0, size.at=FALSE) ## c(1.0000,1.5000,2.0000)
+  ror(c(1.0,0.5,1.0), c(-1, 1,1), delta=0.5, size.at=TRUE)  ## c(1.0000,1.2500,1.5625)
 
   ## Variable deltas
   ror(c(1.0,0.5,1.0), c(1,-1,1), delta=c(1,1,1), size.at=TRUE) ## c(1.00,0.50,0.25)

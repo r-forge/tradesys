@@ -1,29 +1,3 @@
-pricemapper <- function(pricemap){
-  if(!is.vector(pricemap) | !is.character(pricemap))
-    stop("pricemap must be a character vector of column names.")
-  if("roll" %in% tolower(names(pricemap))){
-    RollN <- which(tolower(names(pricemap)) == "roll")[1]
-    pricemap["RollOut"] <- pricemap[RollN]
-    pricemap["RollIn"] <- pricemap[RollN]
-    pricemap <- pricemap[-RollN]
-  }
-  if(length(pricemap) > 5)
-    stop("length(pricemap) must be <= 5")
-  if(is.null(names(pricemap))) ## .. then order determines mapping when no names
-    names(pricemap) <- c("Mark","Long","Short","RollOut","RollIn")[1:length(pricemap)]
-  if(any(duplicated(names(pricemap))))
-    stop("names(pricemap) must be unique")
-  if(any(!names(pricemap) %in% c("Mark","Long","Short","RollOut","RollIn")))
-    stop("All names(pricemap) must be among 'Mark','Long','Short','RollOut','RollIn'")
-  x <- c(pricemap["Mark"], pricemap["Long"], pricemap["Short"], pricemap["RollOut"], pricemap["RollIn"])
-  names(x) <- c("Mark","Long","Short","RollOut","RollIn")
-  if(is.na(x["Mark"]))
-    stop("pricemap must be passed a value for 'Mark'")
-  if(any(is.na(x)))
-    x[is.na(x)] <- x["Mark"]
-  x
-}
-
 ## Labels each consecutive string of 1s or -1s with 1, 2, 3, ..., etc. 0s get 0.
 ## TradeID(c(0,1,1,1,-1,-1,0,0,1,1))
 ## TradeID(c(0,0,0,0,0,0,0,0,0,0))

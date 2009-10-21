@@ -37,9 +37,11 @@
 }
 
 \examples{
-##x <- matrix(rnorm(20), ncol=2, dimnames=list(NULL, c("Foo","Bar")))
-##x <- tsts(x)
-##cbind(x, Bam=1:10) 
+x <- matrix(rnorm(20), ncol=2, dimnames=list(NULL, c("Foo","Bar")))
+x <- tsts(x, prices=Foo)
+y <- cbind(x, Bam=1:10)
+coredata(x)
+coredata(y)
 }
 
 \author{Robert Sams \email{robert@sanctumfi.com}}

@@ -1,10 +1,14 @@
-tradesys <- function(states=0, size.at=FALSE, roll.at=FALSE, delta=1, prices, 
-                     equity=ror(prices, states, roll.at, delta, size.at), ...){
-  l <- list(states=substitute(states),
-            size.at=substitute(size.at),
+tradesys <- function(prices, rollout=prices, rollin=prices,
+                     states=0, roll.at=FALSE, size.at=FALSE, delta=1, 
+                     equity=ror(cbind(prices,rollout,rollin), states,
+                       roll.at, size.at, delta), ...){
+  l <- list(prices=substitute(prices),
+            rollout=substitute(rollout),
+            rollin=substitute(rollin),
+            states=substitute(states),
             roll.at=substitute(roll.at),
+            size.at=substitute(size.at),
             delta=substitute(delta),
-            prices=substitute(prices),
             equity=substitute(equity))
   Dots <- list(...)
   if(any(duplicated(names(Dots))))

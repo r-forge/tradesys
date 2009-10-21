@@ -21,8 +21,10 @@
 
 \usage{
 
-tradesys(states=0, size.at=FALSE, roll.at=FALSE, delta=1, prices, 
-         equity=ror(prices, states, roll.at, delta, size.at), ...)
+tradesys(prices, rollout=prices, rollin=prices,
+         states=0, roll.at=FALSE, size.at=FALSE, delta=1, 
+         equity=ror(cbind(prices,rollout,rollin), states,
+         roll.at, size.at, delta), ...)
 
 tradesys.frame(x, data, order.by=index(data))
 
@@ -51,8 +53,11 @@ tradesys.frame(x, data, order.by=index(data))
     defining the percentage change in cumulative return given a change
     in price.}
   
-  \item{prices}{expression containing names of data variables of object
-    passed to \code{data} in a call to \code{tradesys.frame}.}
+  \item{prices}{expression returning valuation price.}
+
+  \item{rollout}{expression returning roll-out price.}
+
+  \item{rollin}{expression returning roll-in price.}
   
   \item{equity}{expression that evaluates to a numeric vector of the
     system's cumulative return.}
@@ -65,36 +70,39 @@ tradesys.frame(x, data, order.by=index(data))
 
   A 'tradesys' object is a complete description of a trading
   system. \code{tradesys} returns its formal arguments as a named list
-  with class attribute 'tradesys'. The argument values are first checked for
-  consistency. A 'tradesys' object can be subsetted in the usual list way
-  (the 'tradesys' class is stripped) and the \code{[.tradesys<-} and
-  \code{$.tradesys<-} assignment methods call \code{tradesys} with the
-  modified value. A \code{print} method prints the contents in a
-  sensible manner and the \code{as.list} method and \code{as.tradesys}
-  default method allow for translation to and from plain lists.
+  with class attribute 'tradesys'. A 'tradesys' object can be subsetted
+  in the usual list way. (If any of the tradesys formals are not
+  included in the subsetted object, the 'tradesys' class is stripped.)
+  The \code{as.list} method and \code{as.tradesys} default method allow
+  for translation to and from plain lists.
 
   \code{tradesys.frame} will evaluate a tradesys object passed to
-  \code{x} with data passed to \code{data}.
-  
-  The expressions in stored in \code{x} are evaluated in a new
-  environment that includes \code{data}, which is any numeric matrix,
+  \code{x} with data passed to \code{data}, which is any numeric matrix,
   data.frame, list or environment containing all of the data variables
-  contained in the expressions. 
+  contained in the expressions. The expressions compute on the variables
+  in \code{data} by containing data variable names. An expression may
+  also contain the name of another expression (the default expression
+  passed to \code{equity} does this, for example). This is possible by
+  evaluating the expressions as \emph{promises}. Any scheme of
+  cross-referencing is possible (circular references generate an error,
+  of course). Ad-hoc expressions may be passed to \dots, these must be
+  inside a call to \code{quote}.
 
   \code{order.by} is any vector whose objects can be computed by the
   \code{-} operator (its value is understood to be a measure of time
-  interval) and is equal the number of rows in \code{data}.
+  interval) and is equal the number of rows in \code{data}. It can be
+  referred to inside an expression via the name 'Index'. 
   
-  ??????????????
-  
-  Then all variables are combined into a data frame and returned.
+  All expressions must evaluate to a multiple of the length of the
+  evaluation of \code{prices}. All variables are combined into a data
+  frame and returned.
 
 }
 
 \value{
 
   \code{tradesys} returns a tradesys object. \code{tradesys.frame}
-  returns a data.frame of the evaluated expressions of the tradesys
+  returns a data.frame in the evaluated expressions of the tradesys
   object passed to it. 
 
 }
