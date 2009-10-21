@@ -26,6 +26,14 @@ print.tradesys <- function(x, ...){
   print(as.list(x, ...))
 }
 
+"[.tradesys" <- function(x, i){
+  y <- as.list.tradesys(x)[i]
+  FNames <- names(formals(tradesys))
+  if(!all(FNames[-length(FNames)] %in% names(y)))
+    return(y)
+  as.tradesys(y)
+}
+ 
 "$<-.tradesys" <- function(x, i=NULL, value){
   y <- as.list.tradesys(x)
   if(is.null(i))

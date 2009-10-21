@@ -3,6 +3,7 @@
 \alias{tradesys}
 \alias{print.tradesys}
 \alias{as.list.tradesys}
+\alias{[.tradesys}
 \alias{$<-.tradesys}
 \alias{[[<-.tradesys}
 \alias{[<-.tradesys}
@@ -30,8 +31,7 @@ tradesys.frame(x, data, order.by=index(data))
 
 }
 
-\arguments{
-  
+\arguments{  
 
   \item{x}{a tradesys object.}
 
@@ -39,6 +39,12 @@ tradesys.frame(x, data, order.by=index(data))
     vectors of equal length.}
   
   \item{order.by}{time index. see below.}
+  
+  \item{prices}{expression returning valuation price.}
+
+  \item{rollout}{expression returning roll-out price.}
+
+  \item{rollin}{expression returning roll-in price.}
   
   \item{states}{expression that evalutates to a numeric vector of
     consisting of 1, 0, and -1.}
@@ -52,17 +58,11 @@ tradesys.frame(x, data, order.by=index(data))
   \item{delta}{expression that evaluates to a numeric vector
     defining the percentage change in cumulative return given a change
     in price.}
-  
-  \item{prices}{expression returning valuation price.}
-
-  \item{rollout}{expression returning roll-out price.}
-
-  \item{rollin}{expression returning roll-in price.}
-  
+    
   \item{equity}{expression that evaluates to a numeric vector of the
     system's cumulative return.}
 
-  \item{\dots}{ad-hoc quoted expressions.}
+  \item{\dots}{ad-hoc quoted expressions.}  
   
 }
 
@@ -101,9 +101,10 @@ tradesys.frame(x, data, order.by=index(data))
 
 \value{
 
-  \code{tradesys} returns a tradesys object. \code{tradesys.frame}
-  returns a data.frame in the evaluated expressions of the tradesys
-  object passed to it. 
+  \code{tradesys} returns a tradesys object.
+
+  \code{tradesys.frame} returns a data.frame in the evaluated
+  expressions of the tradesys object passed to it.
 
 }
 
@@ -116,10 +117,13 @@ x <- tradesys()
 ## Assignment
 x[["prices"]] <- quote(Close)
 x$prices <- quote(Close) ## Same as above
-x$states <- quote(signalmap(SMA(Close, 60) >= SMA(Close, 120), SMA(Close, 60) < SMA(Close, 120)))
+x$states <- quote(signalmap(SMA(Close, 60) >= SMA(Close, 120),
+                  SMA(Close, 60) < SMA(Close, 120)))
 
 ## .. same as 'x' but all in one call
-y <- tradesys(prices=Close, states=signalmap(SMA(Close, 60) >= SMA(Close, 120), SMA(Close, 60) < SMA(Close, 120)))
+y <- tradesys(prices=Close, states=signalmap(SMA(Close, 60)
+              >= SMA(Close, 120), SMA(Close, 60) < SMA(Close, 120)))
+
 stopifnot(identical(x, y))
 
 ## .. same as x but via coercion of a list
