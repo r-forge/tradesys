@@ -40,11 +40,11 @@ tradesys.frame(x, data, order.by=index(data))
   
   \item{order.by}{time index. see below.}
   
-  \item{prices}{expression returning valuation price.}
+  \item{prices}{expression returning vector of valuation prices.}
 
-  \item{rollout}{expression returning roll-out price.}
+  \item{rollout}{expression returning vector of roll-out prices.}
 
-  \item{rollin}{expression returning roll-in price.}
+  \item{rollin}{expression returning vector of roll-in prices.}
   
   \item{states}{expression that evalutates to a numeric vector of
     consisting of 1, 0, and -1.}
@@ -90,12 +90,18 @@ tradesys.frame(x, data, order.by=index(data))
 
   \code{order.by} is any vector whose objects can be computed by the
   \code{-} operator (its value is understood to be a measure of time
-  interval) and is equal the number of rows in \code{data}. It can be
-  referred to inside an expression via the name 'Index'. 
+  interval) and is equal to the number of rows in \code{data}. It can be
+  referred to inside an expression via the name 'Index'.
   
   All expressions must evaluate to a multiple of the length of the
   evaluation of \code{prices}. All variables are combined into a data
   frame and returned.
+
+  \code{prices}, \code{rollout}, and \code{rollin} define the pricing
+  vectors (the latter two are used only when \code{roll.at} evaluates to
+  a vector with at least one TRUE value). The expression passed is often
+  as simple as a data variable name (eg \code{prices=Close}), but more
+  complicated expressions can be passed. See \code{choose.prices}. 
 
 }
 

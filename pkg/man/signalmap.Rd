@@ -3,6 +3,7 @@
 \alias{signalmap}
 \alias{statemap}
 \alias{phasemap}
+\alias{changemap}
 
 \title{Translating between Signals, States and Phases}
 
@@ -13,6 +14,9 @@
   \code{statemap} returns a vector of states given a vector of phases.
   
   \code{phasemap} returns a vector of phases given a vector of states.
+
+  \code{changemap} returns a vector of changes given a vector of states.
+  
 }
 
 \usage{
@@ -24,7 +28,7 @@ statemap(phases)
 
 phasemap(states)
 
-
+changemap(states)
 
 }
 
@@ -110,6 +114,10 @@ phasemap(states)
   \code{signalmap} will skip the state calculation and return a vector
   of phases instead. If \code{retval="binary"}, the signals are simply
   converted into their 4-bit integer representation and returned.
+  
+  \code{changemap} returns a vector containing 1 where there is a long
+  entry or short exit, -1 where there is a short entry or long exit, and
+  0 otherwise.
   
 }
 

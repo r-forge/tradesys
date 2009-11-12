@@ -1,5 +1,6 @@
 Todo
 
+- Write trades() function.
 - Unit Tests: tradesys.frame.
 - Unit Tests: tsts class and its methods.
 - Unit Tests: signalmap and phasemap.

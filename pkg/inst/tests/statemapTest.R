@@ -42,4 +42,8 @@ test.statemap <- function(){
   checkEquals(statemap(c(8,4)), c(1,-1))
   checkEquals(statemap(c(8,8)), c(1,1))
 
+  ## changemap in terms of phasemap
+  s <- sample(c(1,0,-1), 1000, TRUE)
+  checkEquals(changemap(s), sapply(phasemap(s), function(x){switch(x+1, 0, 1, -1, , -1, , , , 1)}))
+
 }
