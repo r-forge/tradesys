@@ -34,11 +34,11 @@ splooth(x, at, method=c("diff","ratio","wavg"))
 \details{
   
   Time series splicing is required when we want to construct a series
-  out of contiguous time windows across a set of separate series. (For
-  example, constructing a futures sequence from an ordered set of
-  specific contract expiries.) The matrix of time series from which to
-  take the data is called the \emph{splicing} series. The time series
-  returned is called the \emph{spliced} series.
+  out of contiguous time windows across a set of separate series (e.g.,
+  constructing the "front" futures contract's time series from the set
+  of time series of expiry month A, Month B, etc.). The matrix of time
+  series from which to take the data is called the \emph{splicing}
+  series. The time series returned is called the \emph{spliced} series.
 
   \code{x} is the splicing series and must be coercible by
   \code{as.matrix}. Let \eqn{X_{n}^{c}}{X[n,c]} be the \eqn{n \times
@@ -67,10 +67,10 @@ splooth(x, at, method=c("diff","ratio","wavg"))
   first column of \eqn{X} until we hit another splice time
   \eqn{w_{j+1}}{w[j+1]}, when we start taking values from the second
   column, and so on until we finish taking values from the last column
-  of \eqn{X}, the last value being row
-  \eqn{w_{j+c}-1}{w[j+c]-1}. Now we have a column of \eqn{Y}. Repeat
-  the process, but this time starting with \eqn{w_{j+1}}{w[j+1]}. Keep
-  going until we have all \eqn{d} columns.
+  of \eqn{X}, the last value being row \eqn{w_{j+c}-1}{w[j+c]-1}. Now we
+  have the \eqn{j}-th column of \eqn{Y}. Repeat the process, but this
+  time starting with \eqn{w_{j+1}}{w[j+1]}. Keep going until we have all
+  \eqn{1, 2, ..., d} columns.
   
   If \eqn{Y_{t}}{Y[t]} is a spliced timeseries and \eqn{t} is a splice
   time, then the change between observations \eqn{Y_{t}}{Y[t]} and
@@ -80,7 +80,7 @@ splooth(x, at, method=c("diff","ratio","wavg"))
   series. \emph{Sploothing} is the technique of smoothing out these
   jumps to remove the distortion. \code{splooth} is passed a spliced
   matrix to \code{x} and the splice times used in creating it are passed
-  a logical vector to \code{at}. \code{method} defines the splicing
+  as a logical vector to \code{at}. \code{method} defines the splicing
   technique to use.
   
   Three different sploothing methods are supported. Each method adjusts
@@ -104,8 +104,10 @@ splooth(x, at, method=c("diff","ratio","wavg"))
   will be infused into the sploothed series. It is also possible for
   this method to cause the series to change sign.
   
-  The \emph{ratio method} is used when \code{method="ratio"}. It is 
-  calculated as:
+  The \emph{ratio method} is used when \code{method="ratio"}. The
+  process is the same as with the difference method except that the
+  ratio of the values is used instead of their difference, and we take a
+  cumulative product instead of a sum. It is calculated as:
 
   \deqn{
     \hat{Y}_{t}^{j} = Y_{t}^{j}\prod_{i=n}^{t}\left[(Y_{i}^{j} / Y_{i}^{j+1} - 1) a_{i} + 1\right]
@@ -119,11 +121,11 @@ splooth(x, at, method=c("diff","ratio","wavg"))
   \code{method="wavg"}. It is calculated as:
 
   \deqn{
-    \hat{Y}_{t}^{j} = Y_{t}^{j}\frac{k - t}{k - i} + Y_{t}^{j+1}\frac{t - j}{k - j}
-  }{Z[t,j] = Y[t,j](k-t)/(k-1) + Y[t,j+1](t-j)/(k-j)}
+    \hat{Y}_{t}^{j} = Y_{t}^{j}\frac{k - t}{k - i} + Y_{t}^{j+1}\frac{t - i}{k - i}
+  }{Z[t,j] = Y[t,j](k-t)/(k-1) + Y[t,j+1](t-i)/(k-i)}
 
-  where \eqn{k} is the next splice time after \eqn{t}, and \eqn{j} is
-  the last splice time prior to \eqn{t}. This method takes a weighted
+  where \eqn{k} is the next splice time on or after \eqn{t}, and \eqn{i}
+  is the last splice time prior to \eqn{t}. This method takes a weighted
   average of the two series at each point in time, instead of
   back-adjusting the jump observed at splice time only. The closer
   \eqn{t} gets to the splice time, the more weight is given to

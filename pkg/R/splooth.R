@@ -21,7 +21,7 @@ splooth <- function(x, at, method=c("diff","ratio","wavg")){
       adj[at] <- x[at, i] / x[at, i + 1]
       y <- x[, i] * rev(cumprod(rev(adj)))
     }else if(method == "wavg"){
-      ## !! Code Me !! 
+      ## !! CODE ME !!
     }else{
       stop("method must be 'diff', 'ratio', or 'wavg'")
     }
