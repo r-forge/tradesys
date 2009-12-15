@@ -1,6 +1,8 @@
 coredata.tsts <- function(x, ...){
   y <- as.matrix.tsts(x)
-  y <- y[, -which(colnames(y) %in% names(tsys(x)))]
+  ExclCols <- which(colnames(y) %in% names(tsys(x)))
+  if(length(ExclCols) > 1)
+    y <- y[, -ExclCols]
   rownames(y) <- NULL
   zoo(y, order.by=index(x))
 }

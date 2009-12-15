@@ -1,6 +1,6 @@
 tsts <- function(data, order.by=index(data), ..., tsys=NULL){
   if(is.null(tsys))
-    l <- tradesys(...)
+    l <- list(...)
   else
     l <- tsys
   x <- tradesys.frame(l, data, order.by)
@@ -8,8 +8,7 @@ tsts <- function(data, order.by=index(data), ..., tsys=NULL){
   x <- as.matrix(x)
   attr(x, "index") <- order.by
   attr(x, "tsys") <- l
-  class(x) <- c("tsts","zoo")
-  x
+  structure(x, class=c("tsts","zoo"))
 }
 
 ###
@@ -26,14 +25,14 @@ tail.tsts <- function(x, ...){
 
 print.tsts <- function(x, ...){
   print(as.zoo.tsts(x))
+  structure(x, class=c("tsts","zoo"))
 }
 
 as.matrix.tsts <- function(x, ...){
   rownames(x) <- format(attr(x, "index"))
   attr(x, "index") <- NULL
   attr(x, "tsys") <- NULL
-  class(x) <- "matrix"
-  x
+  structure(x, class="matrix")
 }
 
 as.zoo.tsts <- function(x, ...){

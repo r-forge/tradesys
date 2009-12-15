@@ -38,7 +38,7 @@
 
 \examples{
 x <- matrix(rnorm(20), ncol=2, dimnames=list(NULL, c("Foo","Bar")))
-x <- tsts(x, prices=Foo)
+x <- tsts(x, prices=quote(Foo))
 y <- cbind(x, Bam=1:10)
 coredata(x)
 coredata(y)

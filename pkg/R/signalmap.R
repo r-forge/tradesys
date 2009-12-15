@@ -1,10 +1,11 @@
 signalmap <- function(el=FALSE, es=FALSE, xl=FALSE, xs=FALSE, entrywins=FALSE, retval=c("states","phases","binary")){
   entrywins <- entrywins[1]
   retval <- retval[1]
-  el <- cbind(el, es, xl, xs)[, 1]
-  es <- cbind(el, es, xl, xs)[, 2]
-  xl <- cbind(el, es, xl, xs)[, 3]
-  xs <- cbind(el, es, xl, xs)[, 4]
+  m <- cbind(el, es, xl, xs)
+  el <- m[, 1]
+  es <- m[, 2]
+  xl <- m[, 3]
+  xs <- m[, 4]
   ## NA's are treated as FALSE
   el[is.na(el)] <- FALSE
   es[is.na(es)] <- FALSE
