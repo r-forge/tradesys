@@ -58,16 +58,4 @@ test.ror <- function(){
   checkException(ror(Prices, c(-1, 1, 1), c(FALSE,FALSE,FALSE), c(FALSE,FALSE,FALSE), c(1,1)))
   checkException(ror(Prices, c(-1, 1, 1), c(FALSE,FALSE,FALSE), c(FALSE,FALSE),       c(1,1,1)))
   
-  ##
-  ## Tests of Deprecated Function 'equity'
-  ##
-  
-  ## E(t+1) = E(t) when t is a trade exit (BUG FIX at Revision 93)
-  checkEquals(equity(c(100,113,80,70,10), c(1,0,0,0,0), delta=1, size.at=FALSE)[, "Equity"], c(1,1.13,1.13,1.13,1.13))
-
-  ## Test equity vs ror
-  Prices <- rnorm(1000, 1, 1)
-  checkEquals(ror(Prices, 1, delta=2, size.at=FALSE), equity(Prices, 1, delta=2, size.at=FALSE, percent=FALSE)[, "Equity"])
-  checkEquals(ror(Prices, 1, delta=2, size.at=TRUE), equity(Prices, 1, delta=2, size.at=TRUE, percent=FALSE)[, "Equity"])
-
 }

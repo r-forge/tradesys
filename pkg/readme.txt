@@ -5,7 +5,6 @@ Todo
 - Unit Tests: tsts class and its methods.
 - Unit Tests: signalmap and phasemap.
 - Document unit tests.
-- Remove equity() and its dependencies in utils.R.
 - Optimize statemap?
 - Complete draft of vignette.
 - Update or remove 'Optimal Leverage' code.
