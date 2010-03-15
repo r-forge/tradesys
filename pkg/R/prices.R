@@ -1,4 +1,4 @@
-choose.prices <- function(states, uc, chg=uc, ent=chg, xit=chg, lng=chg, sht=chg,
+prices <- function(states, uc, chg=uc, ent=chg, xit=chg, lng=chg, sht=chg,
                           el=if(identical(ent, chg)) lng else ent,
                           es=if(identical(ent, chg)) sht else ent,
                           xl=if(identical(xit, chg)) sht else xit,
