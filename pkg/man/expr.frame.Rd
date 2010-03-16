@@ -1,8 +1,8 @@
 \name{expr.frame}
 
+\alias{expr.frame}
 \alias{exprlist}
-\alias{exprlist<-}
-\alias{"$<-.expr.frame"}
+\alias{$<-.expr.frame}
 \alias{as.data.frame.expr.frame}
 \alias{as.list.expr.frame}
 \alias{print.expr.frame}
@@ -20,15 +20,16 @@
 
 \usage{
 
+expr.frame(x, exprlist)
+
 exprlist(x)
-exprlist(x) <- value
   
 }
 
 \arguments{
   
-  \item{x}{a data.frame or expr.frame.}
-  \item{value}{a named list of quoted expressions.}
+  \item{x}{Object of class "expr.frame".}
+  \item{exprlist}{a named list of quoted expressions.}
 
 }
 
@@ -49,16 +50,17 @@ exprlist(x) <- value
 d <- spx[1:10,]
 
 ## exprlist assigment creates 'expr.frame' object
-exprlist(d)$RoR <- quote(c(1, Close[-1] / Close[-length(Close)]))
+d <- expr.frame(d, list(RoR=quote(c(1, Close[-1] / Close[-length(Close)]))))
 class(d); d
 
-## We can now modify with the $ assignment method instead
+## We can now add/modify with the $ assignment method instead
 d$Rtn <- quote(RoR - 1)
+d$Close <- d$Close * 1.01
+## d$RoR <- quote(ror(Close, delta=1/Close)) ## !!! Why Error? !!!
 exprlist(d); d
 
 ## Retreive original data
 coredata(d) 
-## stopifnot(identical(coredata(d), d[1:5,]))
 
 ## Coercion
 as.data.frame(d)
@@ -68,15 +70,6 @@ as.list(d)
 d[1:2]
 d$ror
 ## d[, 1:7] ## !!! FIX ME !!!
-
-## Assign NULL to remove an expression
-exprlist(d)$Rtn <- NULL
-d
-
-## NULL assigned to the list itself will strip the expr.frame class
-exprlist(d) <- NULL
-class(d); d
-
 
 }
 

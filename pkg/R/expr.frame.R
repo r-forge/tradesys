@@ -1,31 +1,33 @@
+expr.frame <- function(x, exprlist){
+  y <- inside(as.data.frame(x), exprlist)
+  attr(y, "exprlist") <- exprlist
+  structure(y, class="expr.frame")
+}
+
 exprlist <- function(x){
   attr(x, "exprlist")
 }
 
-"exprlist<-" <- function(x, value){
-  if(is.null(value)){
-    return(as.data.frame.expr.frame(x))
-  }
-  y <- inside(coredata(x), value)
-  attr(y, "exprlist") <- value  
-  structure(y[, match(names(y), c(names(x), setdiff(names(value), names(exprlist(x)))))], class = "expr.frame")
-}
-
 "$<-.expr.frame" <- function(x, name, ..., value){
-  ## if value is an expression, just call exprlist<-
-  if(is.call(value)){ 
-    exprlist(x)[[name]] <- value
-    return(x)
-  }
-  ## if name matches a name in exprlist, remove the item in exprlist
-  if(name %in% names(exprlist(x))){ 
-    exprlist(x)[[name]] <- NULL
+  if(is.call(value)){ ## if value is an expression..
+    l <- exprlist(x)
+    l[[name]] <- value
+    y <- inside(coredata(x), l)
+    if(name %in% names(exprlist(x))){
+      y <- y[, match(names(y), names(x))]
+    }else{
+      y <- y[, match(names(y), c(names(x), name))]
+    }
+    attr(y, "exprlist") <- l
+    return(structure(y, class = "expr.frame"))
   }
   ## Make the assignment to coredata(x) and re-create the expr.list
   d <- coredata(x)
   d[[name]] <- value
-  exprlist(d) <- exprlist(x)
-  d[, match(names(d), unique(c(names(x), name)))]
+  d <- inside(d, exprlist(x)[setdiff(names(exprlist(x)), name)])
+  d <- d[, match(names(d), unique(c(names(x), name)))]
+  attr(d, "exprlist") <- exprlist(x)
+  structure(d, class="expr.frame")
 }
 
 ## Column-subsetting [, [<- Methods
@@ -33,12 +35,12 @@ exprlist <- function(x){
 ## rbind
 ## cbind / merge
 
-as.data.frame.expr.frame <- function (x, ...){
+as.data.frame.expr.frame <- function(x, ...){
   attributes(x)$exprlist <- NULL
   structure(x, class="data.frame")
 }
 
-as.list.expr.frame <- function (x, ...){
+as.list.expr.frame <- function(x, ...){
   as.list(as.data.frame.expr.frame(x, ...))
 }
 
