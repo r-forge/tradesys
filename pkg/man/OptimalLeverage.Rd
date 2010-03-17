@@ -68,10 +68,10 @@ GambleGrowthBin(odds, prob, f=Kelly(odds, prob))
 }
 \references{
   "A New Interpretation of the Information Rate", J.L. Kelly, Jr.,
-  \emph{AT\&T Bell Labs Journal}, July 1956
+  \emph{AT&T Bell Labs Journal}, July 1956
 
   \emph{The Mathematics of Money Management}, Ralph Vince, 1992, John
-  Wiley \& Sons, Inc.
+  Wiley & Sons, Inc.
 }
 
 \examples{

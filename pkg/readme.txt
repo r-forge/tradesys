@@ -1,20 +1,17 @@
 Todo
 
 - Write trades() function.
-- Unit Tests: tradesys.frame.
-- Unit Tests: tsts class and its methods.
 - Unit Tests: signalmap and phasemap.
 - Document unit tests.
 - Optimize statemap?
 - Complete draft of vignette.
 - Update or remove 'Optimal Leverage' code.
-- Add splice code.
 
 Ideas and Problems 
 
-- Evaluation in tradesys.frame and trustworthy programming. There is a
-  problem here in that we want the tradesys expressions to be flexible
-  enough to include any function from any package, even user-defined
+- Evaluation in expr.frame and trustworthy programming. There is a
+  problem here in that we want the expressions to be flexible enough
+  to include any function from any package, even user-defined
   functions not in package namespace. The current system creates a new
   environment and defines its enclosure to be the .GlobalEnv.. this is
   a hack, as we can get unintended evaluations of functions and names

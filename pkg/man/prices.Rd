@@ -37,7 +37,7 @@ prices(states, uc, chg=uc, ent=chg, xit=chg, lng=chg, sht=chg,
 
   This is a convenience function for constructing a single price vector
   from multiple vectors. Generally, all arguements get vectors of
-  identical length, and all arguments must be passed vectors whose
+  identical length, but all arguments must be passed vectors whose
   length is a multiple of the length of \code{states}. The return can be
   passed to the \code{prices} argument of functions \code{pnl} and
   \code{ror}. 
@@ -69,17 +69,6 @@ spx <- spx[1:100,]
 
 ## Example 3: same as above, but with 10bps slippage at entries/exits.
 (ex3 <- prices(s, spx$Close, lng=c(spx$Open[-1], NA) * 1.001, sht=c(spx$Open[-1], NA) * .999))
-
-## Unit Tests
-p <- prices(s, rep(0, 100), el=rep(8, 100), es=rep(4, 100), xl=rep(2, 100), xs=rep(1, 100))
-stopifnot(identical(phasemap(s), p)) 
-
-################################################################
-## Why the rounding error at the 15th dec. place?
-## stopifnot(identical(ex3 - ex2, ex2 * .001 * changemap(s)))
-################################################################
-
-stopifnot(identical(round(ex3 - ex2, 14), round(ex2 * .001 * changemap(s), 14)))
 
 }
 

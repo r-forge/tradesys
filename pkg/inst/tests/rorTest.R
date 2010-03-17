@@ -18,6 +18,7 @@ test.ror <- function(){
 
   ## 1000 Random Prices, States and Deltas
   Prices <- rnorm(1000, 1, 1)
+  Prices <- runif(1000, 1, 100)
   States <- statemap(c(0,1,2,3,4,8)[1 + round(5 * runif(1000, 0, 1))])
   Deltas <- rnorm(1000, 1, 1)
 
