@@ -1,11 +1,16 @@
 \name{expr.frame}
 
 \alias{expr.frame}
+\alias{print.expr.frame}
+\alias{summary.expr.frame}
 \alias{exprlist}
 \alias{$<-.expr.frame}
+\alias{dimnames.expr.frame}
 \alias{as.data.frame.expr.frame}
 \alias{as.list.expr.frame}
-\alias{print.expr.frame}
+\alias{as.matrix.expr.frame}
+\alias{as.zoo.expr.frame}
+
 \alias{coredata.expr.frame}
   
 \title{Expression Frames}
@@ -65,6 +70,8 @@ coredata(d)
 ## Coercion
 as.data.frame(d)
 as.list(d)
+as.matrix(d)
+as.zoo(d, order.by=rownames(d))
 
 ## Subsetting
 d[1:2]
